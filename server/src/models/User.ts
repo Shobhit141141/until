@@ -5,6 +5,9 @@ const userSchema = new mongoose.Schema(
     walletAddress: { type: String, required: true, unique: true, index: true },
     username: { type: String, required: false, unique: true, sparse: true },
     pfp: { type: String, required: false },
+    totalSpent: { type: Number, required: true, default: 0 },
+    totalEarned: { type: Number, required: true, default: 0 },
+    bestScore: { type: Number, required: true, default: 0 },
   },
   { timestamps: true }
 );

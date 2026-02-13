@@ -37,3 +37,12 @@ export async function createUser(
   });
   return user.toObject() as UserDoc;
 }
+
+export async function findOrCreateUser(
+  walletAddress: string
+): Promise<UserDoc> {
+  const existing = await User.findOne({ walletAddress }).lean().exec();
+  if (existing) return existing as unknown as UserDoc;
+  const shortId = Math.random().toString(36).slice(2, 8);
+  return createUser(walletAddress, `anon_${shortId}`);
+}
