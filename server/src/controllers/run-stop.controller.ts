@@ -1,11 +1,15 @@
 import type { Request, Response } from "express";
 import * as runStateService from "../services/run-state.service.js";
 import * as runService from "../services/run.service.js";
-import * as benchmarkService from "../services/benchmark.service.js";
+import {
+  pointsToGrossEarnedStx,
+  grossToNetEarnedStx,
+  computeProfit,
+} from "../config/tokenomics.js";
 
 const MICRO_STX_PER_STX = 1_000_000;
 
-/** User stopped. Server computes score from run state and evaluates benchmark. */
+/** User stopped. Settlement: totalPoints → gross → net; profit = netEarned − totalSpent. */
 export async function stopRun(req: Request, res: Response): Promise<void> {
   const { runId, walletAddress: wallet } = req.body as { runId?: string; walletAddress?: string };
 
@@ -29,25 +33,26 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  const score = run.completedLevels;
-  const spentStx = Number(run.spentMicroStx) / MICRO_STX_PER_STX;
-  const benchmark = benchmarkService.getBenchmark(score);
-  const earnedStx = benchmarkService.computeEarnedStx(score, benchmark);
+  const totalSpentStx = Number(run.spentMicroStx) / MICRO_STX_PER_STX;
+  const grossEarnedStx = pointsToGrossEarnedStx(run.totalPoints);
+  const netEarnedStx = grossToNetEarnedStx(grossEarnedStx);
+  const profit = computeProfit(netEarnedStx, totalSpentStx);
 
   try {
     const result = await runService.endRun(walletAddress, {
       questionIds: [],
-      score,
-      spent: spentStx,
-      earned: earnedStx,
+      score: run.totalPoints,
+      spent: totalSpentStx,
+      earned: netEarnedStx,
     });
     res.status(201).json({
       runId: result.runId,
-      score,
-      spent: spentStx,
-      earned: earnedStx,
-      benchmark,
-      payout: earnedStx > 0,
+      totalPoints: run.totalPoints,
+      completedLevels: run.completedLevels,
+      spent: totalSpentStx,
+      grossEarnedStx,
+      netEarnedStx,
+      profit,
     });
   } catch (err) {
     if (err instanceof Error && err.message === "User not found") {

@@ -1,11 +1,15 @@
 import type { Request, Response } from "express";
 import * as runStateService from "../services/run-state.service.js";
 import * as runService from "../services/run.service.js";
-import * as benchmarkService from "../services/benchmark.service.js";
+import {
+  pointsToGrossEarnedStx,
+  grossToNetEarnedStx,
+  computeProfit,
+} from "../config/tokenomics.js";
 
 const MICRO_STX_PER_STX = 1_000_000;
 
-/** Submit answer. Server-only verification. Never trust client for correctness. */
+/** Submit answer. Server-only verification. Score = basePoints × timeMultiplier; settlement from totalPoints. */
 export async function submitAnswer(req: Request, res: Response): Promise<void> {
   const { runId, selectedIndex } = req.body as { runId?: string; selectedIndex?: number };
 
@@ -31,30 +35,34 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
       correct: true,
       level: result.level,
       completedLevels: result.completedLevels,
+      totalPoints: result.totalPoints,
     });
     return;
   }
 
-  // Wrong answer: run ended. Persist run (locked rewards = user keeps).
-  const score = result.completedLevels;
-  const spentStx = Number(result.spentMicroStx) / MICRO_STX_PER_STX;
-  const benchmark = benchmarkService.getBenchmark(score);
-  const earnedStx = benchmarkService.computeEarnedStx(score, benchmark);
+  // Wrong answer: run ended. Settle with totalPoints → gross → net; profit = netEarned − totalSpent.
+  const totalSpentStx = Number(result.spentMicroStx) / MICRO_STX_PER_STX;
+  const grossEarnedStx = pointsToGrossEarnedStx(result.totalPoints);
+  const netEarnedStx = grossToNetEarnedStx(grossEarnedStx);
+  const profit = computeProfit(netEarnedStx, totalSpentStx);
 
   try {
     const endResult = await runService.endRun(result.walletAddress, {
       questionIds: [],
-      score,
-      spent: spentStx,
-      earned: earnedStx,
+      score: result.totalPoints,
+      spent: totalSpentStx,
+      earned: netEarnedStx,
     });
     res.json({
       correct: false,
       runEnded: true,
-      completedLevels: score,
+      completedLevels: result.completedLevels,
+      totalPoints: result.totalPoints,
       spentMicroStx: result.spentMicroStx.toString(),
       runId: endResult.runId,
-      earned: earnedStx,
+      grossEarnedStx,
+      netEarnedStx,
+      profit,
     });
   } catch (err) {
     if (err instanceof Error && err.message === "User not found") {

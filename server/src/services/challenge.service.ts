@@ -1,23 +1,19 @@
 import { randomUUID } from "crypto";
 import type { ChallengeStoreEntry, PaymentChallengePayload } from "../types/question.types.js";
-import { CHALLENGE_EXPIRY_MS, QUESTION_PRICE_MICRO_STX } from "../types/question.types.js";
+import { CHALLENGE_EXPIRY_MS } from "../types/question.types.js";
 import { STACKS_RECIPIENT_ADDRESS } from "../config/stacks.js";
+import { getCostMicroStx } from "../config/tokenomics.js";
 
 const store = new Map<string, ChallengeStoreEntry>();
-
-function getDefaultPrice(): bigint {
-  const env = process.env.QUESTION_PRICE_MICRO_STX;
-  if (env != null && env !== "") return BigInt(env);
-  return QUESTION_PRICE_MICRO_STX;
-}
 
 function getRecipient(): string {
   return STACKS_RECIPIENT_ADDRESS || "";
 }
 
-export function issueChallenge(): PaymentChallengePayload {
+/** Issue 402 challenge for a given difficulty (0–9). Cost from tokenomics curve. */
+export function issueChallenge(difficulty: number): PaymentChallengePayload {
   const nonce = randomUUID();
-  const priceMicroStx = getDefaultPrice();
+  const priceMicroStx = getCostMicroStx(difficulty);
   const recipient = getRecipient();
   const expiresAt = new Date(Date.now() + CHALLENGE_EXPIRY_MS);
   store.set(nonce, { priceMicroStx, recipient, used: false, expiresAt });

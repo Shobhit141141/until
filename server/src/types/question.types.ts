@@ -20,17 +20,21 @@ export type AiQuestionPayload = {
   confidence_score: number;
 };
 
-export const QUESTION_PRICE_MICRO_STX = 1_000_000n; // 1 STX per question default
+/** Fallback only; use tokenomics getCostMicroStx(difficulty) for 402. */
+export const QUESTION_PRICE_MICRO_STX = 1_000n; // 0.001 STX default for difficulty 0
 export const CHALLENGE_EXPIRY_MS = 15 * 60 * 1000; // 15 min
 
 /** In-memory only. Never stored in DB. Never sent to client. */
 export type RunStateEntry = {
-  level: number;
+  level: number; // difficulty 0–9
   correctIndex: number;
   expiresAt: Date;
   walletAddress: string;
   completedLevels: number;
   spentMicroStx: bigint;
+  totalPoints: number;
+  questionDeliveredAt: Date;
+  estimatedSolveTimeSec: number;
 };
 
 export const RUN_STATE_TTL_MS = 30 * 60 * 1000; // 30 min

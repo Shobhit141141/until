@@ -4,10 +4,13 @@ import * as stacksService from "../services/stacks.service.js";
 import * as userService from "../services/user.service.js";
 import * as questionService from "../services/question.service.js";
 import * as runStateService from "../services/run-state.service.js";
+import { getCostMicroStx, getDifficultyLabel } from "../config/tokenomics.js";
 import { logger } from "../config/logger.js";
 
-export function getNextQuestion(_req: Request, res: Response): void {
-  const challenge = challengeService.issueChallenge();
+/** GET: issue 402 with cost for given difficulty. Client sends ?difficulty=0 for first question. */
+export function getNextQuestion(req: Request, res: Response): void {
+  const difficulty = Math.max(0, Math.min(9, Number(req.query.difficulty) || 0));
+  const challenge = challengeService.issueChallenge(difficulty);
   res.status(402).json(challenge);
 }
 
@@ -36,6 +39,29 @@ export async function submitPaymentAndGetQuestion(
   if (!entry) {
     res.status(402).json({ error: "Challenge not found" });
     return;
+  }
+
+  // Resolve difficulty and verify payment amount matches tokenomics cost for this level
+  let difficulty: number;
+  if (runId) {
+    const run = runStateService.getRun(runId);
+    if (!run) {
+      res.status(400).json({ error: "Run not found or expired" });
+      return;
+    }
+    difficulty = run.level;
+    const expectedMicroStx = getCostMicroStx(difficulty);
+    if (entry.priceMicroStx !== expectedMicroStx) {
+      res.status(402).json({ error: "Payment amount does not match cost for this level" });
+      return;
+    }
+  } else {
+    difficulty = Math.max(0, Math.min(9, Number(req.body.difficulty) ?? 0));
+    const expectedMicroStx = getCostMicroStx(difficulty);
+    if (entry.priceMicroStx !== expectedMicroStx) {
+      res.status(402).json({ error: "Payment amount does not match cost for this level" });
+      return;
+    }
   }
 
   const verification = await stacksService.verifyPayment(txId, {
@@ -69,8 +95,8 @@ export async function submitPaymentAndGetQuestion(
     level = run.level;
     resolvedRunId = runId;
   } else {
-    level = 1;
-    resolvedRunId = ""; // set after we have correctIndex
+    level = difficulty; // 0 for first question
+    resolvedRunId = "";
   }
 
   try {
@@ -91,12 +117,15 @@ export async function submitPaymentAndGetQuestion(
 
     const priceMicroStx = entry.priceMicroStx;
 
+    const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 60;
+
     if (resolvedRunId) {
       const updated = runStateService.setQuestionForRun(
         resolvedRunId,
         level,
         payload.correct_index,
-        priceMicroStx
+        priceMicroStx,
+        estimatedSolveTimeSec
       );
       if (!updated) {
         res.status(400).json({ error: "Run not found or expired" });
@@ -107,7 +136,8 @@ export async function submitPaymentAndGetQuestion(
         walletAddress,
         level,
         payload.correct_index,
-        priceMicroStx
+        priceMicroStx,
+        estimatedSolveTimeSec
       );
     }
 
@@ -116,6 +146,7 @@ export async function submitPaymentAndGetQuestion(
       question: payload.question,
       options: payload.options,
       difficulty: payload.difficulty,
+      difficultyLabel: getDifficultyLabel(level),
       estimated_solve_time_sec: payload.estimated_solve_time_sec,
       runId: resolvedRunId,
       level,
