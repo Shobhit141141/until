@@ -25,7 +25,7 @@ export const DIFFICULTY_LABELS: readonly string[] = [
 ];
 
 /** 100 points = 0.01 STX. So 1 point = 0.0001 STX. */
-export const STX_PER_POINT = 0.0001;
+export const STX_PER_POINT = 0.00015;
 
 /** No platform fee. netEarned = grossEarned. */
 export const PLATFORM_FEE = 0;

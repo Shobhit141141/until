@@ -26,6 +26,17 @@ export async function isQuestionHashSeen(promptHash: string): Promise<boolean> {
   return !!exists;
 }
 
+/** Question texts this user has already been asked (any run). Used to avoid repeats across runs. */
+export async function getSeenQuestionTextsForUser(userId: Types.ObjectId): Promise<Set<string>> {
+  const docs = await Question.find({ user: userId }).select("question").lean().exec();
+  const set = new Set<string>();
+  for (const d of docs) {
+    const q = (d as { question?: string }).question;
+    if (typeof q === "string" && q.trim()) set.add(q.trim());
+  }
+  return set;
+}
+
 /**
  * Orchestration: repeat check → AI service → persist (no correct_index in DB).
  * Called only after payment verification (controller responsibility).
@@ -80,6 +91,8 @@ export async function getQuestionForRun(
   let restBatch: AiQuestionPayload[] | undefined;
   let runCategory: string | undefined;
 
+  const seenForUser = await getSeenQuestionTextsForUser(userId);
+
   if (runId) {
     runCategory = runBatchService.getCategoryForRun(runId);
     if (!runCategory) {
@@ -115,6 +128,34 @@ export async function getQuestionForRun(
         throw lastErr ?? new Error("Question generation failed after retries");
       }
     }
+    let skipAttempts = 0;
+    const maxSkipAttempts = 10;
+    while (seenForUser.has(popped.question.trim()) && skipAttempts < maxSkipAttempts) {
+      skipAttempts++;
+      const next = runBatchService.popQuestion(runId);
+      if (next) {
+        popped = next;
+        continue;
+      }
+      const genSeed = `run-${runId}-${level}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const input: aiService.GenerateQuestionInput = {
+        level,
+        category: runCategory,
+        timeLimitSec: 120,
+        previousDifficulty: level > 0 ? level - 1 : undefined,
+        seed: genSeed,
+      };
+      if (await isQuestionHashSeen(hashPrompt(aiService.buildPrompt(input)))) break;
+      try {
+        const generated = await aiService.generateQuestionContent(input);
+        if (!seenForUser.has(generated.question.trim())) {
+          popped = generated;
+          break;
+        }
+      } catch {
+        break;
+      }
+    }
     payload = popped;
     runBatchService.refillRunBatchIfNeeded(runId);
   } else {
@@ -122,8 +163,27 @@ export async function getQuestionForRun(
       ? preferredCategory
       : runBatchService.pickCategoryForNewRun();
     const { first, rest } = await runBatchService.createInitialBatch(category);
-    payload = first;
-    restBatch = rest;
+    const candidates = [first, ...rest];
+    let filtered = candidates.filter((q) => !seenForUser.has(q.question.trim()));
+    if (filtered.length === 0) {
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const genSeed = `init-new-${Date.now()}-${attempt}-${Math.random().toString(36).slice(2, 8)}`;
+        const input: aiService.GenerateQuestionInput = { level: 0, category: category!, timeLimitSec: 120, seed: genSeed };
+        const prompt = aiService.buildPrompt(input);
+        if (await isQuestionHashSeen(hashPrompt(prompt))) continue;
+        try {
+          const generated = await aiService.generateQuestionContent(input);
+          if (!seenForUser.has(generated.question.trim())) {
+            filtered = [generated];
+            break;
+          }
+        } catch {
+          // ignore, try next
+        }
+      }
+    }
+    payload = filtered.length > 0 ? filtered[0]! : first;
+    restBatch = filtered.length > 1 ? filtered.slice(1) : filtered.length === 1 ? [] : rest;
   }
 
   const topicForDoc = runCategory ?? category;

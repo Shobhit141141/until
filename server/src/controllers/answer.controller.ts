@@ -7,6 +7,8 @@ import {
   grossToNetEarnedStx,
   computeProfit,
 } from "../config/tokenomics.js";
+import { logTransaction } from "../config/logger.js";
+import * as creditsService from "../services/credits.service.js";
 
 const MICRO_STX_PER_STX = 1_000_000;
 
@@ -49,6 +51,8 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
   const profit = computeProfit(netEarnedStx, totalSpentStx);
   const profitMicroStx = Math.round(profit * MICRO_STX_PER_STX);
   await runService.addProfitToCredits(result.walletAddress, profitMicroStx);
+  const balanceAfterProfit = await creditsService.getBalance(result.walletAddress);
+  logTransaction("profit (wrong)", result.walletAddress, profit, balanceAfterProfit.creditsStx, { runId });
 
   try {
     const questionIds = "questionIds" in result ? result.questionIds : [];
@@ -67,11 +71,16 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
       result.completedLevels,
       endResult.runId
     );
+    if (milestoneBonusStx > 0) {
+      const balanceAfter = await creditsService.getBalance(result.walletAddress);
+      logTransaction("milestone_bonus", result.walletAddress, milestoneBonusStx, balanceAfter.creditsStx, { runId: endResult.runId });
+    }
     res.json({
       correct: false,
       runEnded: true,
       completedLevels: result.completedLevels,
       totalPoints: result.totalPoints,
+      spent: totalSpentStx,
       spentMicroStx: result.spentMicroStx.toString(),
       runId: endResult.runId,
       grossEarnedStx,

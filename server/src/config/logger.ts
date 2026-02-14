@@ -20,3 +20,19 @@ export const logger = winston.createLogger({
   ),
   transports: [new winston.transports.Console()],
 });
+
+/** Pretty log for credit/STX transactions. amountStx can be positive (credit) or negative (debit). */
+export function logTransaction(
+  type: string,
+  walletAddress: string,
+  amountStx: number,
+  balanceStx: number,
+  ref?: { txId?: string; runId?: string }
+): void {
+  const walletShort = walletAddress.length >= 12 ? `${walletAddress.slice(0, 8)}…${walletAddress.slice(-4)}` : walletAddress;
+  const sign = amountStx >= 0 ? "+" : "";
+  const refStr = ref?.txId ? ` txId=${ref.txId.slice(0, 12)}…` : ref?.runId ? ` runId=${ref.runId.slice(0, 8)}…` : "";
+  logger.info(
+    `[TX] ${type.padEnd(16)} wallet=${walletShort} ${sign}${amountStx.toFixed(4)} STX  balance=${balanceStx.toFixed(4)} STX${refStr}`
+  );
+}

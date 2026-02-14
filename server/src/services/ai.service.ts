@@ -3,6 +3,7 @@
  * No DB, no payment, no business rules. Gemini primary, Mistral fallback. Swap provider here without touching question flow.
  */
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getCategoryPromptContext } from "../config/categories.js";
 import { GEMINI_API_KEY, GEMINI_MODEL } from "../config/gemini.js";
 import { MISTRAL_API_KEY, MISTRAL_MODEL } from "../config/mistral.js";
 import type { AiQuestionPayload } from "../types/question.types.js";
@@ -26,13 +27,13 @@ const SYSTEM_PROMPT_TEMPLATE = `You are generating skill-based quiz questions fo
 Each question must have exactly one correct answer.
 
 CONSTRAINTS:
-- Category: {{category}}
+- Category (follow these guidelines strictly):
+{{category}}
 - Difficulty level: {{difficulty}} (0–9)
 - No clichés or common trivia.
 - No ambiguity or subjective wording.
 - No trick questions.
 - Must be solvable by reasoning only. If a user can answer by memorization → reject the question.
-- Increase difficulty by adding constraints, not obscurity.
 - Stay strictly within the chosen category.
 - Do not reference previous questions.
 
@@ -43,6 +44,7 @@ OUTPUT STRICT JSON ONLY:
 /** Exported so question service can hash the same prompt used for the LLM call. */
 export function buildPrompt(input: GenerateQuestionInput): string {
   const { level, category, previousDifficulty, seed } = input;
+  const categoryContext = getCategoryPromptContext(category);
   const prevPart =
     previousDifficulty != null
       ? `Difficulty must be >= ${previousDifficulty} (no regression). `
@@ -50,7 +52,7 @@ export function buildPrompt(input: GenerateQuestionInput): string {
   const seedPart = seed ? `Deterministic seed: ${seed}.` : "";
   return (
     SYSTEM_PROMPT_TEMPLATE
-      .replace("{{category}}", category)
+      .replace("{{category}}", categoryContext)
       .replace("{{difficulty}}", String(level)) +
     `\n${prevPart}${seedPart}`
   );
@@ -230,7 +232,8 @@ export function buildBatchPrompt(
 ): string {
   const seedPart = seed ? `Deterministic seed: ${seed}.` : "";
   const levels = Array.from({ length: count }, (_, i) => startLevel + i);
-  return `${SYSTEM_PROMPT_TEMPLATE.replace("{{category}}", category).replace("{{difficulty}}", `one of ${levels.join(", ")} (assign each question a different level in order)`)}
+  const categoryContext = getCategoryPromptContext(category);
+  return `${SYSTEM_PROMPT_TEMPLATE.replace("{{category}}", categoryContext).replace("{{difficulty}}", `one of ${levels.join(", ")} (assign each question a different level in order)`)}
 
 Generate exactly ${count} questions. Same category for all. Difficulty progression: ${levels.join(", ")}. Each question must be distinct. No clichés; clever, not tricky.
 ${seedPart}

@@ -3,7 +3,7 @@ import * as creditsService from "../services/credits.service.js";
 import * as stacksService from "../services/stacks.service.js";
 import { STACKS_RECIPIENT_ADDRESS } from "../config/stacks.js";
 import { getTopUpSuggestedMicroStx } from "../config/tokenomics.js";
-import { logger } from "../config/logger.js";
+import { logger, logTransaction } from "../config/logger.js";
 
 const MICRO_STX_PER_STX = 1_000_000;
 
@@ -82,6 +82,8 @@ export async function topUp(req: Request, res: Response): Promise<void> {
       res.status(402).json({ error: result.reason });
       return;
     }
+    const amountStx = Number(verification.amountMicroStx) / MICRO_STX_PER_STX;
+    logTransaction("top_up", verification.senderAddress, amountStx, result.creditsStx, { txId });
     res.status(200).json({
       creditsStx: result.creditsStx,
       creditsMicroStx: result.creditsMicroStx,
@@ -110,6 +112,8 @@ export async function withdraw(req: Request, res: Response): Promise<void> {
     res.status(400).json({ error: result.reason });
     return;
   }
+
+  logTransaction("withdraw", walletAddress, -result.withdrawnStx, result.creditsStx);
 
   res.json({
     creditsStx: result.creditsStx,

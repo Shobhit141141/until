@@ -95,6 +95,7 @@ export type SubmitAnswerWrong = {
   runEnded: true;
   completedLevels: number;
   totalPoints?: number;
+  spent?: number;
   spentMicroStx: string;
   runId: string;
   grossEarnedStx?: number;
@@ -154,7 +155,16 @@ export type CreditTransactionEntry = {
 
 export type CreditsHistoryResponse = { transactions: CreditTransactionEntry[] };
 
-export type CategoriesResponse = { categories: string[] };
+export type CategoryMetadata = {
+  description: string;
+  rules: string[];
+  difficulty_scaling: string;
+  example: string;
+};
+export type CategoriesResponse = {
+  categories: string[];
+  metadata?: Record<string, CategoryMetadata>;
+};
 
 export type RunHistoryQuestion = {
   question: string;

@@ -8,6 +8,7 @@ import {
   grossToNetEarnedStx,
   computeProfit,
 } from "../config/tokenomics.js";
+import { logTransaction } from "../config/logger.js";
 
 const MICRO_STX_PER_STX = 1_000_000;
 
@@ -52,6 +53,7 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
       balance.creditsMicroStx,
       { refRunId: runId }
     );
+    logTransaction("profit", walletAddress, profit, balance.creditsStx, { runId });
   }
 
   const { bonusStx: milestoneBonusStx, milestoneTier } = await runService.computeAndAddMilestoneBonus(
@@ -59,6 +61,10 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
     run.completedLevels,
     runId
   );
+  if (milestoneBonusStx > 0) {
+    const balanceAfter = await creditsService.getBalance(walletAddress);
+    logTransaction("milestone_bonus", walletAddress, milestoneBonusStx, balanceAfter.creditsStx, { runId });
+  }
 
   try {
     const result = await runService.endRun(walletAddress, {

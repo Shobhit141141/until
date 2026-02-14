@@ -89,7 +89,10 @@ export async function deductCredits(
   if (amount <= 0) return { ok: false, reason: "Amount must be positive" };
 
   const updated = await User.findOneAndUpdate(
-    { walletAddress, creditsMicroStx: { $gte: amount } },
+    {
+      walletAddress,
+      $expr: { $gte: [{ $ifNull: ["$creditsMicroStx", 0] }, amount] },
+    },
     { $inc: { creditsMicroStx: -amount } },
     { new: true }
   )

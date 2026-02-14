@@ -808,32 +808,44 @@ export default function Home() {
         </div>
       )}
 
-      {step === "wrong" && result && "runEnded" in result && (
-        <div className="flex flex-col gap-3">
-          <p className="font-medium text-red-700 dark:text-red-400">Wrong. Run ended.</p>
-          {"correctOptionText" in result && result.correctOptionText && (
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">
-              Correct answer: <strong>{result.correctOptionText}</strong>
-            </p>
-          )}
-          {"reasoning" in result && result.reasoning && (
-            <div className="rounded border border-zinc-200 dark:border-zinc-700 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-              <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">Why</p>
-              <p className="text-sm text-zinc-700 dark:text-zinc-300">{result.reasoning}</p>
-            </div>
-          )}
-          {result.totalPoints != null && <p>Total points: {result.totalPoints}</p>}
-          {result.profit != null && <p>Profit: {result.profit} STX</p>}
-          {result.milestoneBonusStx != null && result.milestoneBonusStx > 0 && (
-            <p className="text-zinc-600 dark:text-zinc-400">
-              Milestone bonus ({result.milestoneTier === "100" ? "100%" : "70%"}): {result.milestoneBonusStx.toFixed(4)} STX
-            </p>
-          )}
-          <button type="button" onClick={startOver} className="rounded border px-4 py-2 w-fit">
-            Start over
-          </button>
-        </div>
-      )}
+      {step === "wrong" && result && "runEnded" in result && (() => {
+        const r = result as SubmitAnswerWrong;
+        const hasBreakdown = r.grossEarnedStx != null && r.netEarnedStx != null && r.profit != null && (r.spent != null || r.spentMicroStx);
+        const spentStx = r.spent ?? (r.spentMicroStx ? Number(r.spentMicroStx) / MICRO_STX_PER_STX : 0);
+        return (
+          <div className="flex flex-col gap-4">
+            <p className="font-medium text-red-700 dark:text-red-400">Wrong. Run ended.</p>
+            {"correctOptionText" in r && r.correctOptionText && (
+              <p className="text-sm text-zinc-700 dark:text-zinc-300">
+                Correct answer: <strong>{r.correctOptionText}</strong>
+              </p>
+            )}
+            {"reasoning" in r && r.reasoning && (
+              <div className="rounded border border-zinc-200 dark:border-zinc-700 p-3 bg-zinc-50 dark:bg-zinc-900/50">
+                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">Why</p>
+                <p className="text-sm text-zinc-700 dark:text-zinc-300">{r.reasoning}</p>
+              </div>
+            )}
+            {hasBreakdown && (
+              <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-2 text-sm">
+                <p className="font-medium text-zinc-700 dark:text-zinc-300">How points and returns were decided</p>
+                <ul className="list-none space-y-1 text-zinc-600 dark:text-zinc-400">
+                  <li>• Total points: <strong className="text-foreground">{r.totalPoints ?? 0}</strong> (from {r.completedLevels} correct answer{r.completedLevels !== 1 ? "s" : ""}; each = base points x time multiplier)</li>
+                  <li>• Points to STX: 100 pts = 0.01 STX, earned = <strong className="text-foreground">{(r.totalPoints ?? 0) * 0.0001} = {(r.netEarnedStx ?? 0).toFixed(4)}</strong> STX</li>
+                  <li>• Spent (questions paid): <strong className="text-foreground">{spentStx.toFixed(4)}</strong> STX</li>
+                  <li>• Profit: earned minus spent = <strong className="text-foreground">{(r.profit ?? 0).toFixed(4)}</strong> STX (added to your credits)</li>
+                  {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && (
+                    <li>• Milestone bonus ({r.milestoneTier === "100" ? "100%" : "70%"}): <strong className="text-foreground">{r.milestoneBonusStx.toFixed(4)}</strong> STX</li>
+                  )}
+                </ul>
+              </div>
+            )}
+            <button type="button" onClick={startOver} className="rounded border px-4 py-2 w-fit">
+              Start over
+            </button>
+          </div>
+        );
+      })()}
 
       {step === "stopped" && result && "totalPoints" in result && "grossEarnedStx" in result && "spent" in result && (() => {
         const r = result as StopRunResponse;
