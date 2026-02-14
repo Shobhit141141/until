@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import { creditsRoutes } from "./routes/credits.routes.js";
 import { leaderboardRoutes } from "./routes/leaderboard.routes.js";
 import { nextQuestionRoutes } from "./routes/next-question.routes.js";
 import { runRoutes } from "./routes/run.routes.js";
@@ -17,6 +18,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/next-question", nextQuestionRoutes);
+app.use("/credits", creditsRoutes);
 app.use("/users", userRoutes);
 app.use("/run", runRoutes);
 app.use("/leaderboard", leaderboardRoutes);

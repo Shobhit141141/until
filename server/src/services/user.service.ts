@@ -46,3 +46,45 @@ export async function findOrCreateUser(
   const shortId = Math.random().toString(36).slice(2, 8);
   return createUser(walletAddress, `anon_${shortId}`);
 }
+
+/** Add credits (top-up or profit). deltaMicroStx can be negative (e.g. withdraw). */
+export async function addCredits(
+  walletAddress: string,
+  deltaMicroStx: number
+): Promise<UserDoc | null> {
+  const doc = await User.findOneAndUpdate(
+    { walletAddress },
+    { $inc: { creditsMicroStx: deltaMicroStx } },
+    { new: true, runValidators: true }
+  )
+    .lean()
+    .exec();
+  return doc as UserDoc | null;
+}
+
+/** Get current credits in microSTX. Returns 0 if user not found. */
+export async function getCreditsMicroStx(walletAddress: string): Promise<number> {
+  const doc = await User.findOne({ walletAddress })
+    .select("creditsMicroStx")
+    .lean()
+    .exec();
+  return (doc as { creditsMicroStx?: number } | null)?.creditsMicroStx ?? 0;
+}
+
+/** Deduct credits if sufficient. Returns true if deducted, false if insufficient or user not found. */
+export async function deductCreditsIfSufficient(
+  walletAddress: string,
+  amountMicroStx: number
+): Promise<boolean> {
+  const doc = await User.findOneAndUpdate(
+    {
+      walletAddress,
+      $expr: { $gte: [{ $ifNull: ["$creditsMicroStx", 0] }, amountMicroStx] },
+    },
+    { $inc: { creditsMicroStx: -amountMicroStx } },
+    { new: true }
+  )
+    .lean()
+    .exec();
+  return doc != null;
+}

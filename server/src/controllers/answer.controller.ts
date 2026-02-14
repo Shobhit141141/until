@@ -40,15 +40,18 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  // Wrong answer: run ended. Settle with totalPoints → gross → net; profit = netEarned − totalSpent.
+  // Wrong answer: run ended. Settle with totalPoints → earned (no platform fee); profit = earned − totalSpent.
   const totalSpentStx = Number(result.spentMicroStx) / MICRO_STX_PER_STX;
   const grossEarnedStx = pointsToGrossEarnedStx(result.totalPoints);
   const netEarnedStx = grossToNetEarnedStx(grossEarnedStx);
   const profit = computeProfit(netEarnedStx, totalSpentStx);
+  const profitMicroStx = Math.round(profit * MICRO_STX_PER_STX);
+  await runService.addProfitToCredits(result.walletAddress, profitMicroStx);
 
   try {
+    const questionIds = "questionIds" in result ? result.questionIds : [];
     const endResult = await runService.endRun(result.walletAddress, {
-      questionIds: [],
+      questionIds,
       score: result.totalPoints,
       spent: totalSpentStx,
       earned: netEarnedStx,

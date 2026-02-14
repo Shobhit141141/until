@@ -27,8 +27,24 @@ export const DIFFICULTY_LABELS: readonly string[] = [
 /** 100 points = 0.01 STX. So 1 point = 0.0001 STX. */
 export const STX_PER_POINT = 0.0001;
 
-/** Platform fee. netEarned = grossEarned × (1 − fee). */
-export const PLATFORM_FEE = 0.1;
+/** No platform fee. netEarned = grossEarned. */
+export const PLATFORM_FEE = 0;
+
+/** Minimum STX to withdraw from credits balance. */
+export const MIN_WITHDRAW_STX = 0.01;
+
+/** Suggested top-up amount (one wallet interaction). */
+export const TOP_UP_SUGGESTED_STX = 0.05;
+
+const MICRO_STX_PER_STX = 1_000_000;
+
+export function getMinWithdrawMicroStx(): bigint {
+  return BigInt(Math.round(MIN_WITHDRAW_STX * MICRO_STX_PER_STX));
+}
+
+export function getTopUpSuggestedMicroStx(): bigint {
+  return BigInt(Math.round(TOP_UP_SUGGESTED_STX * MICRO_STX_PER_STX));
+}
 
 /** Time multiplier. */
 export const TIME_MULTIPLIER_MIN = 0.5;
@@ -60,9 +76,9 @@ export function pointsToGrossEarnedStx(totalPoints: number): number {
   return totalPoints * STX_PER_POINT;
 }
 
-/** netEarnedStx = grossEarned × (1 − PLATFORM_FEE) */
+/** netEarnedStx = grossEarned (no platform fee). */
 export function grossToNetEarnedStx(grossStx: number): number {
-  return grossStx * (1 - PLATFORM_FEE);
+  return grossStx;
 }
 
 /** profit = netEarned − totalSpent */

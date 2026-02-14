@@ -35,6 +35,8 @@ export type RunStateEntry = {
   totalPoints: number;
   questionDeliveredAt: Date;
   estimatedSolveTimeSec: number;
+  /** MongoDB Question ids for this run (audit trail). */
+  questionIds: string[];
 };
 
 export const RUN_STATE_TTL_MS = 30 * 60 * 1000; // 30 min

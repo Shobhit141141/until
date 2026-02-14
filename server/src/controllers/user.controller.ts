@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import * as userService from "../services/user.service.js";
 import type { UserDoc, UserResponse } from "../types/user.types.js";
 
+const MICRO_STX_PER_STX = 1_000_000;
+
 function toResponse(doc: UserDoc): UserResponse {
   return {
     walletAddress: doc.walletAddress,
@@ -10,6 +12,7 @@ function toResponse(doc: UserDoc): UserResponse {
     totalSpent: doc.totalSpent ?? 0,
     totalEarned: doc.totalEarned ?? 0,
     bestScore: doc.bestScore ?? 0,
+    creditsStx: (doc.creditsMicroStx ?? 0) / MICRO_STX_PER_STX,
     createdAt: doc.createdAt.toISOString(),
     updatedAt: doc.updatedAt.toISOString(),
   };

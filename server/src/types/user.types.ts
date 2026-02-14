@@ -13,6 +13,7 @@ export type UserDoc = {
   totalSpent: number;
   totalEarned: number;
   bestScore: number;
+  creditsMicroStx: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -24,6 +25,7 @@ export type UserResponse = {
   totalSpent: number;
   totalEarned: number;
   bestScore: number;
+  creditsStx: number;
   createdAt: string;
   updatedAt: string;
 };

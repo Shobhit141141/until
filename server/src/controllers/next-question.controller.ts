@@ -4,7 +4,9 @@ import * as stacksService from "../services/stacks.service.js";
 import * as userService from "../services/user.service.js";
 import * as questionService from "../services/question.service.js";
 import * as runStateService from "../services/run-state.service.js";
-import { getCostMicroStx, getDifficultyLabel } from "../config/tokenomics.js";
+import * as creditsService from "../services/credits.service.js";
+import { getCostMicroStx, getDifficultyLabel, TOP_UP_SUGGESTED_STX } from "../config/tokenomics.js";
+import { STACKS_RECIPIENT_ADDRESS } from "../config/stacks.js";
 import { logger } from "../config/logger.js";
 
 /** GET: issue 402 with cost for given difficulty. Client sends ?difficulty=0 for first question. */
@@ -32,13 +34,133 @@ export async function submitPaymentAndGetQuestion(
     runId?: string;
     topicPool?: string;
     difficulty?: number;
+    useCredits?: boolean;
+    walletAddress?: string;
   };
   const txId = typeof raw.txId === "string" ? raw.txId.trim() : "";
   const nonce = typeof raw.nonce === "string" ? raw.nonce.trim() : "";
   const runId = typeof raw.runId === "string" ? raw.runId.trim() || undefined : undefined;
   const topicPool = typeof raw.topicPool === "string" ? raw.topicPool : "general";
+  const useCredits = raw.useCredits === true;
+  const walletAddressBody = typeof raw.walletAddress === "string" ? raw.walletAddress.trim() : "";
 
-  logger.info(`POST /next-question txId=${txId ? `${txId.slice(0, 8)}...` : ""} nonceLen=${nonce.length} runId=${runId ?? "none"}`);
+  logger.info(`POST /next-question txId=${txId ? `${txId.slice(0, 8)}...` : ""} nonceLen=${nonce.length} runId=${runId ?? "none"} useCredits=${useCredits}`);
+
+  // Credits path: deduct from balance, no on-chain payment
+  if (useCredits && walletAddressBody) {
+    let level: number;
+    if (runId) {
+      const run = runStateService.getRun(runId);
+      if (!run) {
+        res.status(400).json({ error: "Run not found or expired" });
+        return;
+      }
+      if (run.walletAddress !== walletAddressBody) {
+        res.status(403).json({ error: "Run does not belong to this wallet" });
+        return;
+      }
+      level = run.level;
+    } else {
+      level = Math.max(0, Math.min(9, Number(raw.difficulty) ?? 0));
+    }
+    const costMicroStx = getCostMicroStx(level);
+    const deducted = await userService.deductCreditsIfSufficient(walletAddressBody, Number(costMicroStx));
+    if (!deducted) {
+      const current = await userService.getCreditsMicroStx(walletAddressBody);
+      res.status(402).json({
+        error: "Insufficient credits",
+        topUp: true,
+        suggestedAmountStx: TOP_UP_SUGGESTED_STX,
+        recipient: (STACKS_RECIPIENT_ADDRESS || "").trim(),
+        creditsStx: current / 1_000_000,
+        requiredStx: Number(costMicroStx) / 1_000_000,
+      });
+      return;
+    }
+    const balanceAfter = await userService.getCreditsMicroStx(walletAddressBody);
+    await creditsService.recordTransaction(
+      walletAddressBody,
+      "deduct",
+      -Number(costMicroStx),
+      balanceAfter,
+      runId ? { refRunId: runId } : undefined
+    );
+    const user = await userService.findOrCreateUser(walletAddressBody);
+    let resolvedRunId: string;
+    const seed = `credits-${level}-${walletAddressBody}-${Date.now()}`;
+    try {
+      const { payload, questionId } = await questionService.getQuestionForRun(
+        level,
+        String(topicPool),
+        user._id,
+        seed
+      );
+      const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 60;
+      if (runId) {
+        const updated = runStateService.setQuestionForRun(
+          runId,
+          level,
+          payload.correct_index,
+          costMicroStx,
+          estimatedSolveTimeSec
+        );
+        if (!updated) {
+          await userService.addCredits(walletAddressBody, Number(costMicroStx));
+          const refundBalance = await userService.getCreditsMicroStx(walletAddressBody);
+          await creditsService.recordTransaction(
+            walletAddressBody,
+            "refund",
+            Number(costMicroStx),
+            refundBalance,
+            runId ? { refRunId: runId } : undefined
+          );
+          res.status(400).json({ error: "Run not found or expired" });
+          return;
+        }
+        runStateService.addQuestionIdToRun(runId, questionId);
+        resolvedRunId = runId;
+      } else {
+        resolvedRunId = runStateService.createRun(
+          walletAddressBody,
+          level,
+          payload.correct_index,
+          costMicroStx,
+          estimatedSolveTimeSec
+        );
+        runStateService.addQuestionIdToRun(resolvedRunId, questionId);
+      }
+      res.json({
+        question: payload.question,
+        options: payload.options,
+        difficulty: payload.difficulty,
+        difficultyLabel: getDifficultyLabel(level),
+        estimated_solve_time_sec: payload.estimated_solve_time_sec,
+        runId: resolvedRunId,
+        level,
+      });
+    } catch (err) {
+      await userService.addCredits(walletAddressBody, Number(costMicroStx));
+      const refundBalance = await userService.getCreditsMicroStx(walletAddressBody);
+      await creditsService.recordTransaction(
+        walletAddressBody,
+        "refund",
+        Number(costMicroStx),
+        refundBalance,
+        undefined
+      );
+      const errMsg = err instanceof Error ? err.message : String(err);
+      logger.error(errMsg);
+      const isRateLimit =
+        typeof errMsg === "string" &&
+        (errMsg.includes("429") || errMsg.includes("quota") || errMsg.includes("rate limit"));
+      res.status(502).json({
+        error: isRateLimit
+          ? "AI rate limit reached. Credits refunded. Try again in a few minutes."
+          : "Question generation failed; credits refunded",
+      });
+    }
+    return;
+  }
 
   if (!txId || !nonce) {
     res.status(400).json({ error: "txId and nonce required" });
@@ -123,19 +245,11 @@ export async function submitPaymentAndGetQuestion(
   }
 
   try {
-    const payload = await questionService.generateQuestion(
-      {
-        level,
-        topicPool: String(topicPool),
-        difficultyScalar: 0.5 + level * 0.1,
-        timeLimitSec: 120,
-        seed: `level-${level}-${nonce}`,
-      },
-      {
-        txId,
-        nonce,
-        userId: user._id,
-      }
+    const { payload, questionId } = await questionService.getQuestionForRun(
+      level,
+      String(topicPool),
+      user._id,
+      `level-${level}-${nonce}`
     );
 
     const priceMicroStx = entry.priceMicroStx;
@@ -154,6 +268,7 @@ export async function submitPaymentAndGetQuestion(
         res.status(400).json({ error: "Run not found or expired" });
         return;
       }
+      runStateService.addQuestionIdToRun(resolvedRunId, questionId);
     } else {
       resolvedRunId = runStateService.createRun(
         walletAddress,
@@ -162,6 +277,7 @@ export async function submitPaymentAndGetQuestion(
         priceMicroStx,
         estimatedSolveTimeSec
       );
+      runStateService.addQuestionIdToRun(resolvedRunId, questionId);
     }
 
     // Never send correct_index to client

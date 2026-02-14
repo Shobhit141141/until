@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema(
     totalSpent: { type: Number, required: true, default: 0 },
     totalEarned: { type: Number, required: true, default: 0 },
     bestScore: { type: Number, required: true, default: 0 },
+    /** Credits balance in microSTX (1 STX = 1e6). Used for pay-from-balance flow. */
+    creditsMicroStx: { type: Number, required: true, default: 0 },
   },
   { timestamps: true }
 );

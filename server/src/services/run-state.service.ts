@@ -46,6 +46,7 @@ export function createRun(
     totalPoints: 0,
     questionDeliveredAt: now,
     estimatedSolveTimeSec,
+    questionIds: [],
   });
   return runId;
 }
@@ -83,7 +84,7 @@ export function setQuestionForRun(
 
 export type SubmitResult =
   | { ok: true; correct: true; level: number; completedLevels: number; totalPoints: number }
-  | { ok: true; correct: false; runEnded: true; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number }
+  | { ok: true; correct: false; runEnded: true; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number; questionIds: string[] }
   | { ok: false; reason: string };
 
 /** Verify answer server-side. Score = basePoints × timeMultiplier. On wrong: end run, return totalPoints. */
@@ -114,7 +115,7 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
   }
 
   // Wrong answer: points = 0 for this question; run ends; previous points preserved in totalPoints
-  const { walletAddress, completedLevels, spentMicroStx, totalPoints } = entry;
+  const { walletAddress, completedLevels, spentMicroStx, totalPoints, questionIds } = entry;
   store.delete(runId);
   return {
     ok: true,
@@ -124,15 +125,26 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
     completedLevels,
     spentMicroStx,
     totalPoints,
+    questionIds: questionIds ?? [],
   };
 }
 
-/** User stopped. Returns run summary (including totalPoints) for settlement; clears state. */
+/** Append a Question id to the run (audit trail). */
+export function addQuestionIdToRun(runId: string, questionId: string): boolean {
+  const entry = store.get(runId);
+  if (!entry || new Date() > entry.expiresAt) return false;
+  entry.questionIds.push(questionId);
+  store.set(runId, entry);
+  return true;
+}
+
+/** User stopped. Returns run summary (including totalPoints and questionIds) for settlement; clears state. */
 export function stopRun(runId: string): {
   walletAddress: string;
   completedLevels: number;
   spentMicroStx: bigint;
   totalPoints: number;
+  questionIds: string[];
 } | null {
   const entry = store.get(runId);
   if (!entry) return null;
@@ -145,6 +157,7 @@ export function stopRun(runId: string): {
     completedLevels: entry.completedLevels,
     spentMicroStx: entry.spentMicroStx,
     totalPoints: entry.totalPoints,
+    questionIds: entry.questionIds ?? [],
   };
   store.delete(runId);
   return result;

@@ -1,10 +1,30 @@
 const getBase = () =>
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:7000";
 
+export type PaymentRequiredPayload = {
+  amount: string;
+  recipient: string;
+  nonce: string;
+};
+
+export type TopUpRequiredPayload = {
+  topUp: true;
+  suggestedAmountStx: number;
+  recipient: string;
+  creditsStx?: number;
+  requiredStx?: number;
+};
+
 export async function apiFetch<T>(
   path: string,
-  opts?: RequestInit & { body?: unknown }
-): Promise<{ data?: T; status: number; error?: string; paymentRequired?: { amount: string; recipient: string; nonce: string } }> {
+  opts?: Omit<RequestInit, "body"> & { body?: unknown }
+): Promise<{
+  data?: T;
+  status: number;
+  error?: string;
+  paymentRequired?: PaymentRequiredPayload;
+  topUpRequired?: TopUpRequiredPayload;
+}> {
   const base = getBase();
   const { body, ...rest } = opts ?? {};
   const res = await fetch(`${base}${path}`, {
@@ -16,10 +36,23 @@ export async function apiFetch<T>(
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  const paymentRequired = res.status === 402;
+  const is402 = res.status === 402;
   const json = await res.json().catch(() => ({}));
 
-  if (paymentRequired) {
+  if (is402) {
+    if (json.topUp === true && json.recipient) {
+      return {
+        status: 402,
+        topUpRequired: {
+          topUp: true,
+          suggestedAmountStx: Number(json.suggestedAmountStx) || 0.05,
+          recipient: json.recipient ?? "",
+          creditsStx: json.creditsStx,
+          requiredStx: json.requiredStx,
+        },
+        error: json.error,
+      };
+    }
     return {
       status: 402,
       paymentRequired: {
@@ -76,6 +109,7 @@ export type StopRunResponse = {
   grossEarnedStx: number;
   netEarnedStx: number;
   profit: number;
+  creditsStx?: number;
 };
 export type LeaderboardEntry = {
   rank: number;
@@ -91,6 +125,25 @@ export type UserMe = {
   totalSpent: number;
   totalEarned: number;
   bestScore: number;
+  creditsStx: number;
   createdAt: string;
   updatedAt: string;
 };
+
+export type TopUpInfo = {
+  recipient: string;
+  suggestedAmountMicroStx: number;
+  suggestedAmountStx: number;
+};
+
+export type CreditTransactionEntry = {
+  id: string;
+  type: "top_up" | "deduct" | "profit" | "refund" | "withdraw";
+  amountMicroStx: number;
+  balanceAfterMicroStx: number;
+  refTxId?: string;
+  refRunId?: string;
+  createdAt: string;
+};
+
+export type CreditsHistoryResponse = { transactions: CreditTransactionEntry[] };

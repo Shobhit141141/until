@@ -72,3 +72,25 @@ export async function verifyPayment(
 
   return { ok: true, senderAddress: tx.sender_address };
 }
+
+export type TopUpVerificationResult =
+  | { ok: true; senderAddress: string; amountMicroStx: bigint }
+  | { ok: false; reason: string };
+
+/** Verify an STX transfer to platform (for credit top-up). No memo/nonce check. */
+export async function verifyTopUp(
+  txId: string,
+  recipientAddress: string
+): Promise<TopUpVerificationResult> {
+  const tx = await getTransaction(txId);
+  if (!tx) return { ok: false, reason: "Transaction not found" };
+  if (tx.tx_status === "pending") return { ok: false, reason: "Transaction pending" };
+  if (tx.tx_status !== "success") return { ok: false, reason: "Transaction not successful" };
+  const transfer = tx.token_transfer;
+  if (!transfer) return { ok: false, reason: "Not an STX transfer transaction" };
+  if (transfer.recipient_address !== recipientAddress)
+    return { ok: false, reason: "Recipient mismatch" };
+  const amountMicroStx = BigInt(transfer.amount);
+  if (amountMicroStx <= 0n) return { ok: false, reason: "Amount must be positive" };
+  return { ok: true, senderAddress: tx.sender_address, amountMicroStx };
+}

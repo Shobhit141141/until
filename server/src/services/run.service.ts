@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { User } from "../models/User.js";
 import { GameRun } from "../models/GameRun.js";
 import { Question } from "../models/Question.js";
+import * as userService from "./user.service.js";
 
 export type EndRunInput = {
   questionIds: string[];
@@ -46,4 +47,12 @@ export async function endRun(
   }
 
   return { runId: run._id.toString() };
+}
+
+/** Add run profit to user's credit balance (for stop & wrong flows). */
+export async function addProfitToCredits(
+  walletAddress: string,
+  profitMicroStx: number
+): Promise<void> {
+  await userService.addCredits(walletAddress, profitMicroStx);
 }

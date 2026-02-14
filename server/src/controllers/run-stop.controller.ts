@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import * as runStateService from "../services/run-state.service.js";
 import * as runService from "../services/run.service.js";
+import * as creditsService from "../services/credits.service.js";
 import {
   pointsToGrossEarnedStx,
   grossToNetEarnedStx,
@@ -9,7 +10,7 @@ import {
 
 const MICRO_STX_PER_STX = 1_000_000;
 
-/** User stopped. Settlement: totalPoints → gross → net; profit = netEarned − totalSpent. */
+/** User stopped. Settlement: totalPoints → earned (no platform fee); profit = earned − totalSpent. */
 export async function stopRun(req: Request, res: Response): Promise<void> {
   const { runId, walletAddress: wallet } = req.body as { runId?: string; walletAddress?: string };
 
@@ -38,13 +39,27 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
   const netEarnedStx = grossToNetEarnedStx(grossEarnedStx);
   const profit = computeProfit(netEarnedStx, totalSpentStx);
 
+  if (profit > 0) {
+    const profitMicroStx = Math.round(profit * MICRO_STX_PER_STX);
+    await runService.addProfitToCredits(walletAddress, profitMicroStx);
+    const balance = await creditsService.getBalance(walletAddress);
+    await creditsService.recordTransaction(
+      walletAddress,
+      "profit",
+      profitMicroStx,
+      balance.creditsMicroStx,
+      { refRunId: runId }
+    );
+  }
+
   try {
     const result = await runService.endRun(walletAddress, {
-      questionIds: [],
+      questionIds: run.questionIds ?? [],
       score: run.totalPoints,
       spent: totalSpentStx,
       earned: netEarnedStx,
     });
+    const balance = await creditsService.getBalance(walletAddress);
     res.status(201).json({
       runId: result.runId,
       totalPoints: run.totalPoints,
@@ -53,6 +68,7 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
       grossEarnedStx,
       netEarnedStx,
       profit,
+      creditsStx: balance.creditsStx,
     });
   } catch (err) {
     if (err instanceof Error && err.message === "User not found") {
