@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+import morgan from "morgan";
 import { leaderboardRoutes } from "./routes/leaderboard.routes.js";
 import { nextQuestionRoutes } from "./routes/next-question.routes.js";
 import { runRoutes } from "./routes/run.routes.js";
@@ -6,6 +8,8 @@ import { userRoutes } from "./routes/user.routes.js";
 
 const app = express();
 
+app.use(cors({ origin: true }));
+app.use(morgan("dev"));
 app.use(express.json());
 
 app.get("/health", (_req, res) => {

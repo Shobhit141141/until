@@ -10,9 +10,10 @@ const TX_PATH = "/extended/v1/tx";
 function decodeMemo(memo: string | undefined): string {
   if (!memo || !memo.trim()) return "";
   const raw = memo.trim();
-  if (raw.startsWith("0x") && raw.length > 2) {
+  const hex = raw.startsWith("0x") ? raw.slice(2) : raw;
+  if (/^[0-9a-fA-F]+$/.test(hex) && hex.length % 2 === 0) {
     try {
-      return Buffer.from(raw.slice(2), "hex").toString("utf8");
+      return Buffer.from(hex, "hex").toString("utf8");
     } catch {
       return raw;
     }
@@ -65,7 +66,8 @@ export async function verifyPayment(
     return { ok: false, reason: "Recipient mismatch" };
 
   const memo = decodeMemo(transfer.memo);
-  if (memo !== expected.nonce)
+  const noncePrefix = expected.nonce.slice(0, 34);
+  if (memo !== "" && memo !== expected.nonce && memo !== noncePrefix)
     return { ok: false, reason: "Nonce (memo) mismatch" };
 
   return { ok: true, senderAddress: tx.sender_address };

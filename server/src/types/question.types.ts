@@ -22,7 +22,7 @@ export type AiQuestionPayload = {
 
 /** Fallback only; use tokenomics getCostMicroStx(difficulty) for 402. */
 export const QUESTION_PRICE_MICRO_STX = 1_000n; // 0.001 STX default for difficulty 0
-export const CHALLENGE_EXPIRY_MS = 15 * 60 * 1000; // 15 min
+export const CHALLENGE_EXPIRY_MS = 20 * 60 * 1000; // 20 min
 
 /** In-memory only. Never stored in DB. Never sent to client. */
 export type RunStateEntry = {

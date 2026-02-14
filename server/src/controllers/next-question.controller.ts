@@ -8,34 +8,57 @@ import { getCostMicroStx, getDifficultyLabel } from "../config/tokenomics.js";
 import { logger } from "../config/logger.js";
 
 /** GET: issue 402 with cost for given difficulty. Client sends ?difficulty=0 for first question. */
-export function getNextQuestion(req: Request, res: Response): void {
+export async function getNextQuestion(req: Request, res: Response): Promise<void> {
   const difficulty = Math.max(0, Math.min(9, Number(req.query.difficulty) || 0));
-  const challenge = challengeService.issueChallenge(difficulty);
-  res.status(402).json(challenge);
+  try {
+    const challenge = await challengeService.issueChallenge(difficulty);
+    res.status(402).json(challenge);
+  } catch (err) {
+    logger.error(err instanceof Error ? err.message : String(err));
+    res.status(503).json({
+      error:
+        err instanceof Error ? err.message : "Server misconfiguration: payment recipient not set",
+    });
+  }
 }
 
 export async function submitPaymentAndGetQuestion(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { txId, nonce, runId, topicPool = "general" } = req.body as {
+  const raw = req.body as {
     txId?: string;
     nonce?: string;
     runId?: string;
     topicPool?: string;
+    difficulty?: number;
   };
+  const txId = typeof raw.txId === "string" ? raw.txId.trim() : "";
+  const nonce = typeof raw.nonce === "string" ? raw.nonce.trim() : "";
+  const runId = typeof raw.runId === "string" ? raw.runId.trim() || undefined : undefined;
+  const topicPool = typeof raw.topicPool === "string" ? raw.topicPool : "general";
+
+  logger.info(`POST /next-question txId=${txId ? `${txId.slice(0, 8)}...` : ""} nonceLen=${nonce.length} runId=${runId ?? "none"}`);
 
   if (!txId || !nonce) {
     res.status(400).json({ error: "txId and nonce required" });
     return;
   }
 
-  if (!challengeService.isChallengeValid(nonce)) {
-    res.status(402).json({ error: "Invalid or expired challenge" });
+  const challengeStatus = await challengeService.getChallengeStatus(nonce);
+  if (challengeStatus !== "valid") {
+    logger.warn(`Challenge invalid status=${challengeStatus} nonceTail=${nonce.length >= 8 ? nonce.slice(-8) : nonce}`);
+    const message =
+      challengeStatus === "not_found"
+        ? "Challenge not found. Get a new one (click Get first question again)."
+        : challengeStatus === "used"
+          ? "Challenge already used. Get a new challenge for the next question."
+          : "Challenge expired. Get a new one (click Get first question again).";
+    res.status(402).json({ error: message });
     return;
   }
 
-  const entry = challengeService.getChallenge(nonce);
+  const entry = await challengeService.getChallenge(nonce);
   if (!entry) {
     res.status(402).json({ error: "Challenge not found" });
     return;
@@ -56,7 +79,7 @@ export async function submitPaymentAndGetQuestion(
       return;
     }
   } else {
-    difficulty = Math.max(0, Math.min(9, Number(req.body.difficulty) ?? 0));
+    difficulty = Math.max(0, Math.min(9, Number(raw.difficulty) ?? 0));
     const expectedMicroStx = getCostMicroStx(difficulty);
     if (entry.priceMicroStx !== expectedMicroStx) {
       res.status(402).json({ error: "Payment amount does not match cost for this level" });
@@ -75,7 +98,7 @@ export async function submitPaymentAndGetQuestion(
     return;
   }
 
-  challengeService.consumeChallenge(nonce);
+  await challengeService.consumeChallenge(nonce);
   const user = await userService.findOrCreateUser(verification.senderAddress);
   const walletAddress = verification.senderAddress;
 
