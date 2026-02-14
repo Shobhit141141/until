@@ -56,6 +56,11 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
       spent: totalSpentStx,
       earned: netEarnedStx,
     });
+    const { bonusStx: milestoneBonusStx, milestoneTier } = await runService.computeAndAddMilestoneBonus(
+      result.walletAddress,
+      result.completedLevels,
+      endResult.runId
+    );
     res.json({
       correct: false,
       runEnded: true,
@@ -66,6 +71,8 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
       grossEarnedStx,
       netEarnedStx,
       profit,
+      milestoneBonusStx,
+      milestoneTier: milestoneTier ?? null,
     });
   } catch (err) {
     if (err instanceof Error && err.message === "User not found") {

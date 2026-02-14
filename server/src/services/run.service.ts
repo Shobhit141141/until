@@ -3,6 +3,8 @@ import { User } from "../models/User.js";
 import { GameRun } from "../models/GameRun.js";
 import { Question } from "../models/Question.js";
 import * as userService from "./user.service.js";
+import * as creditsService from "./credits.service.js";
+import { computeMilestoneBonus, MAX_QUESTIONS } from "../config/tokenomics.js";
 
 export type EndRunInput = {
   questionIds: string[];
@@ -55,4 +57,30 @@ export async function addProfitToCredits(
   profitMicroStx: number
 ): Promise<void> {
   await userService.addCredits(walletAddress, profitMicroStx);
+}
+
+const MICRO_STX_PER_STX = 1_000_000;
+
+/** Compute milestone bonus and add to credits; record audit. Returns bonus in STX and tier. */
+export async function computeAndAddMilestoneBonus(
+  walletAddress: string,
+  completedLevels: number,
+  runId: string
+): Promise<{ bonusStx: number; milestoneTier: "70" | "100" | null }> {
+  const bonusStx = computeMilestoneBonus(completedLevels);
+  if (bonusStx <= 0) {
+    return { bonusStx: 0, milestoneTier: null };
+  }
+  const bonusMicroStx = Math.round(bonusStx * MICRO_STX_PER_STX);
+  await userService.addCredits(walletAddress, bonusMicroStx);
+  const balance = await creditsService.getBalance(walletAddress);
+  await creditsService.recordTransaction(
+    walletAddress,
+    "milestone_bonus",
+    bonusMicroStx,
+    balance.creditsMicroStx,
+    { refRunId: runId }
+  );
+  const milestoneTier: "70" | "100" = completedLevels >= MAX_QUESTIONS ? "100" : "70";
+  return { bonusStx, milestoneTier };
 }

@@ -36,6 +36,12 @@ export const MIN_WITHDRAW_STX = 0.01;
 /** Suggested top-up amount (one wallet interaction). */
 export const TOP_UP_SUGGESTED_STX = 0.05;
 
+/** Run cap for milestone tiers (e.g. 10). */
+export const MAX_QUESTIONS = 10;
+
+/** Fixed incentive pool for milestone bonuses (STX). Target 10–15% of expected full-run spend (e.g. ~0.10 STX for 10 questions) → 0.01–0.015 STX. Bonus should feel exciting, not dominate earnings. */
+export const BONUS_POOL_STX = Number(process.env.BONUS_POOL_STX) || 0.0125;
+
 const MICRO_STX_PER_STX = 1_000_000;
 
 export function getMinWithdrawMicroStx(): bigint {
@@ -46,9 +52,9 @@ export function getTopUpSuggestedMicroStx(): bigint {
   return BigInt(Math.round(TOP_UP_SUGGESTED_STX * MICRO_STX_PER_STX));
 }
 
-/** Time multiplier. */
-export const TIME_MULTIPLIER_MIN = 0.5;
-export const TIME_MULTIPLIER_MAX = 1.5;
+/** Time multiplier. Timing = bonus, not gate. */
+export const TIME_MULTIPLIER_MIN = 0.8;
+export const TIME_MULTIPLIER_MAX = 1.6;
 
 export function getCostStx(difficulty: number): number {
   const d = Math.max(0, Math.min(difficulty, DIFFICULTY_LEVELS - 1));
@@ -86,13 +92,22 @@ export function computeProfit(netEarnedStx: number, totalSpentStx: number): numb
   return netEarnedStx - totalSpentStx;
 }
 
-/** Time multiplier. Faster solve => higher multiplier. */
+/** Milestone bonus (fixed, no RNG). 70% completion => BONUS_POOL/4; 100% => BONUS_POOL. */
+export function computeMilestoneBonus(completedLevels: number): number {
+  if (completedLevels >= MAX_QUESTIONS) return BONUS_POOL_STX;
+  const threshold70 = Math.ceil(0.7 * MAX_QUESTIONS);
+  if (completedLevels >= threshold70) return BONUS_POOL_STX / 4;
+  return 0;
+}
+
+/** Time multiplier. ratio = estimated/actual; faster solve => higher multiplier. Smooth, no cliffs. */
 export function computeTimeMultiplier(
   solveTimeSec: number,
   estimatedSolveTimeSec: number
 ): number {
   if (estimatedSolveTimeSec <= 0) return TIME_MULTIPLIER_MAX;
-  const ratio = solveTimeSec / (2 * estimatedSolveTimeSec);
-  const raw = TIME_MULTIPLIER_MAX - ratio * (TIME_MULTIPLIER_MAX - TIME_MULTIPLIER_MIN);
+  if (solveTimeSec <= 0) return TIME_MULTIPLIER_MAX;
+  const ratio = estimatedSolveTimeSec / solveTimeSec;
+  const raw = 0.8 + 0.4 * Math.log2(ratio + 1);
   return Math.max(TIME_MULTIPLIER_MIN, Math.min(TIME_MULTIPLIER_MAX, raw));
 }

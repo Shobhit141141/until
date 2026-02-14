@@ -629,6 +629,11 @@ export default function Home() {
           <p className="font-medium text-red-700 dark:text-red-400">Wrong. Run ended.</p>
           {result.totalPoints != null && <p>Total points: {result.totalPoints}</p>}
           {result.profit != null && <p>Profit: {result.profit} STX</p>}
+          {result.milestoneBonusStx != null && result.milestoneBonusStx > 0 && (
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Milestone bonus ({result.milestoneTier === "100" ? "100%" : "70%"}): {result.milestoneBonusStx.toFixed(4)} STX
+            </p>
+          )}
           <button type="button" onClick={startOver} className="rounded border px-4 py-2 w-fit">
             Start over
           </button>
@@ -652,10 +657,14 @@ export default function Home() {
                 <li>• Points → STX: 100 pts = 0.01 STX → earned = <strong className="text-foreground">{r.totalPoints} × 0.0001 = {r.netEarnedStx.toFixed(4)}</strong> STX</li>
                 <li>• Spent (questions paid): <strong className="text-foreground">{r.spent.toFixed(4)}</strong> STX</li>
                 <li>• Profit: earned − spent = <strong className="text-foreground">{r.profit.toFixed(4)}</strong> STX (added to your credits)</li>
+                {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && (
+                  <li>• Milestone bonus ({r.milestoneTier === "100" ? "100%" : "70%"}): <strong className="text-foreground">{r.milestoneBonusStx.toFixed(4)}</strong> STX</li>
+                )}
               </ul>
             </div>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
               Summary: {r.completedLevels} correct, {r.totalPoints} pts → {r.netEarnedStx.toFixed(4)} STX earned. Spent {r.spent.toFixed(4)} STX. Profit: {r.profit.toFixed(4)} STX.
+              {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && ` Milestone bonus: ${r.milestoneBonusStx.toFixed(4)} STX.`}
             </p>
             <button type="button" onClick={startOver} className="rounded border px-4 py-2 w-fit">
               Play again

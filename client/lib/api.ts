@@ -100,6 +100,8 @@ export type SubmitAnswerWrong = {
   grossEarnedStx?: number;
   netEarnedStx?: number;
   profit?: number;
+  milestoneBonusStx?: number;
+  milestoneTier?: "70" | "100" | null;
 };
 export type StopRunResponse = {
   runId: string;
@@ -110,6 +112,8 @@ export type StopRunResponse = {
   netEarnedStx: number;
   profit: number;
   creditsStx?: number;
+  milestoneBonusStx?: number;
+  milestoneTier?: "70" | "100" | null;
 };
 export type LeaderboardEntry = {
   rank: number;

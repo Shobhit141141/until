@@ -52,6 +52,12 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
     );
   }
 
+  const { bonusStx: milestoneBonusStx, milestoneTier } = await runService.computeAndAddMilestoneBonus(
+    walletAddress,
+    run.completedLevels,
+    runId
+  );
+
   try {
     const result = await runService.endRun(walletAddress, {
       questionIds: run.questionIds ?? [],
@@ -68,6 +74,8 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
       grossEarnedStx,
       netEarnedStx,
       profit,
+      milestoneBonusStx,
+      milestoneTier: milestoneTier ?? null,
       creditsStx: balance.creditsStx,
     });
   } catch (err) {
