@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import * as runStateService from "../services/run-state.service.js";
+import * as runBatchService from "../services/run-batch.service.js";
 import * as runService from "../services/run.service.js";
 import {
   pointsToGrossEarnedStx,
@@ -40,7 +41,8 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  // Wrong answer: run ended. Settle with totalPoints → earned (no platform fee); profit = earned − totalSpent.
+  // Wrong answer: run ended. Clear run batch and settle.
+  runBatchService.clearRunBatch(runId);
   const totalSpentStx = Number(result.spentMicroStx) / MICRO_STX_PER_STX;
   const grossEarnedStx = pointsToGrossEarnedStx(result.totalPoints);
   const netEarnedStx = grossToNetEarnedStx(grossEarnedStx);
@@ -50,8 +52,12 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
 
   try {
     const questionIds = "questionIds" in result ? result.questionIds : [];
+    const questionResults = "questionResults" in result ? result.questionResults : [];
+    const deliveredQuestionInfo = "deliveredQuestionInfo" in result ? result.deliveredQuestionInfo : [];
     const endResult = await runService.endRun(result.walletAddress, {
       questionIds,
+      questionResults,
+      deliveredQuestionInfo,
       score: result.totalPoints,
       spent: totalSpentStx,
       earned: netEarnedStx,
@@ -73,6 +79,8 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
       profit,
       milestoneBonusStx,
       milestoneTier: milestoneTier ?? null,
+      correctOptionText: "correctOptionText" in result ? result.correctOptionText : undefined,
+      reasoning: "reasoning" in result ? result.reasoning : undefined,
     });
   } catch (err) {
     if (err instanceof Error && err.message === "User not found") {

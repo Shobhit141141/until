@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import { categoriesRoutes } from "./routes/categories.routes.js";
 import { creditsRoutes } from "./routes/credits.routes.js";
 import { leaderboardRoutes } from "./routes/leaderboard.routes.js";
 import { nextQuestionRoutes } from "./routes/next-question.routes.js";
@@ -17,6 +18,7 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+app.use("/categories", categoriesRoutes);
 app.use("/next-question", nextQuestionRoutes);
 app.use("/credits", creditsRoutes);
 app.use("/users", userRoutes);

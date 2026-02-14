@@ -3,12 +3,19 @@ import type { Types } from "mongoose";
 import { Question } from "../models/Question.js";
 import { logger } from "../config/logger.js";
 import * as aiService from "./ai.service.js";
-import * as questionPoolService from "./question-pool.service.js";
+import * as runBatchService from "./run-batch.service.js";
+import { isValidCategory } from "../config/categories.js";
 import type { AiQuestionPayload } from "../types/question.types.js";
 
 export type { GenerateQuestionInput } from "./ai.service.js";
 
-export type GetQuestionForRunResult = { payload: AiQuestionPayload; questionId: string };
+export type GetQuestionForRunResult = {
+  payload: AiQuestionPayload;
+  questionId: string;
+  /** Set only for first question (no runId); so controller can createRun(..., category) and setBatch. */
+  category?: string;
+  restBatch?: AiQuestionPayload[];
+};
 
 function hashPrompt(prompt: string): string {
   return createHash("sha256").update(prompt).digest("hex").slice(0, 16);
@@ -45,7 +52,7 @@ export async function generateQuestion(
     estimated_solve_time_sec: payload.estimated_solve_time_sec,
     confidence_score: payload.confidence_score,
     level: input.level,
-    topic: input.topicPool,
+    topic: input.category,
     prompt_hash: promptHash,
     tx_id: opts?.txId,
     nonce: opts?.nonce,
@@ -56,26 +63,70 @@ export async function generateQuestion(
 }
 
 /**
- * Get a question for a run: from in-memory pool (batch of 10) or generate single. Creates Question doc for audit trail; never stores correct_index.
- * Returns payload (for run state + client) and questionId (to attach to run).
+ * Get a question for a run: from per-run batch (same category). Remove from cache when used.
+ * First question (no runId): pick category, create initial batch, return first + restBatch.
+ * Later questions (runId): pop from run batch; refill in background when few left.
+ * Creates Question doc for audit; never stores correct_index.
  */
 export async function getQuestionForRun(
+  runId: string | undefined,
   level: number,
-  topicPool: string,
   userId: Types.ObjectId,
-  seed?: string
+  seed?: string,
+  preferredCategory?: string
 ): Promise<GetQuestionForRunResult> {
-  let payload: AiQuestionPayload | null = await questionPoolService.takeFromPool(level);
-  if (!payload) {
-    const input: aiService.GenerateQuestionInput = {
-      level,
-      topicPool,
-      difficultyScalar: 0.5 + level * 0.1,
-      timeLimitSec: 120,
-      seed: seed ?? `run-${level}-${Date.now()}`,
-    };
-    payload = await aiService.generateQuestionContent(input);
+  let payload: AiQuestionPayload;
+  let category: string | undefined;
+  let restBatch: AiQuestionPayload[] | undefined;
+  let runCategory: string | undefined;
+
+  if (runId) {
+    runCategory = runBatchService.getCategoryForRun(runId);
+    if (!runCategory) {
+      throw new Error("Run not found or expired");
+    }
+    let popped = runBatchService.popQuestion(runId);
+    if (!popped) {
+      const baseSeed = seed ?? `run-${runId}-${level}-${Date.now()}`;
+      const maxTries = 2;
+      let lastErr: Error | null = null;
+      for (let tryCount = 0; tryCount < maxTries; tryCount++) {
+        const trySeed = tryCount === 0 ? baseSeed : `${baseSeed}-retry-${tryCount}`;
+        const input: aiService.GenerateQuestionInput = {
+          level,
+          category: runCategory,
+          timeLimitSec: 120,
+          previousDifficulty: level > 0 ? level - 1 : undefined,
+          seed: trySeed,
+        };
+        const prompt = aiService.buildPrompt(input);
+        if (await isQuestionHashSeen(hashPrompt(prompt))) {
+          lastErr = new Error("Repeated question hash");
+          continue;
+        }
+        try {
+          popped = await aiService.generateQuestionContent(input);
+          break;
+        } catch (err) {
+          lastErr = err instanceof Error ? err : new Error(String(err));
+        }
+      }
+      if (!popped) {
+        throw lastErr ?? new Error("Question generation failed after retries");
+      }
+    }
+    payload = popped;
+    runBatchService.refillRunBatchIfNeeded(runId);
+  } else {
+    category = preferredCategory && isValidCategory(preferredCategory)
+      ? preferredCategory
+      : runBatchService.pickCategoryForNewRun();
+    const { first, rest } = await runBatchService.createInitialBatch(category);
+    payload = first;
+    restBatch = rest;
   }
+
+  const topicForDoc = runCategory ?? category;
   const doc = await Question.create({
     user: userId,
     question: payload.question,
@@ -84,8 +135,12 @@ export async function getQuestionForRun(
     estimated_solve_time_sec: payload.estimated_solve_time_sec,
     confidence_score: payload.confidence_score,
     level,
-    topic: topicPool,
+    topic: topicForDoc ?? "unknown",
   });
-  logger.info("Question for run", { questionId: doc._id.toString(), level });
-  return { payload, questionId: doc._id.toString() };
+  logger.info("Question for run", { questionId: doc._id.toString(), level, category: topicForDoc });
+  return {
+    payload,
+    questionId: doc._id.toString(),
+    ...(category != null && { category, restBatch }),
+  };
 }

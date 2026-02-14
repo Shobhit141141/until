@@ -30,7 +30,8 @@ export function createRun(
   level: number,
   correctIndex: number,
   spentMicroStx: bigint,
-  estimatedSolveTimeSec: number
+  estimatedSolveTimeSec: number,
+  category: string
 ): string {
   schedulePrune();
   const runId = randomUUID();
@@ -47,6 +48,9 @@ export function createRun(
     questionDeliveredAt: now,
     estimatedSolveTimeSec,
     questionIds: [],
+    category,
+    questionResults: [],
+    deliveredQuestionInfo: [],
   });
   return runId;
 }
@@ -82,12 +86,14 @@ export function setQuestionForRun(
   return true;
 }
 
+export type QuestionResultEntry = { questionId: string; selectedIndex: number; points: number };
+
 export type SubmitResult =
   | { ok: true; correct: true; level: number; completedLevels: number; totalPoints: number }
-  | { ok: true; correct: false; runEnded: true; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number; questionIds: string[] }
+  | { ok: true; correct: false; runEnded: true; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number; questionIds: string[]; questionResults: QuestionResultEntry[]; deliveredQuestionInfo: DeliveredQuestionInfo[]; correctOptionText?: string; reasoning?: string }
   | { ok: false; reason: string };
 
-/** Verify answer server-side. Score = basePoints × timeMultiplier. On wrong: end run, return totalPoints. */
+/** Verify answer server-side. Score = basePoints × timeMultiplier. Record per-question result for history. */
 export function submitAnswer(runId: string, selectedIndex: number): SubmitResult {
   const entry = store.get(runId);
   if (!entry) return { ok: false, reason: "Run not found or expired" };
@@ -100,9 +106,14 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
   const solveTimeSec = (Date.now() - entry.questionDeliveredAt.getTime()) / 1000;
   const timeMultiplier = computeTimeMultiplier(solveTimeSec, entry.estimatedSolveTimeSec);
   const basePoints = getBasePoints(entry.level);
+  const points = correct ? basePoints * timeMultiplier : 0;
+  const currentQuestionId = entry.questionIds[entry.questionIds.length - 1];
+  if (currentQuestionId) {
+    entry.questionResults = entry.questionResults ?? [];
+    entry.questionResults.push({ questionId: currentQuestionId, selectedIndex, points });
+  }
 
   if (correct) {
-    const points = basePoints * timeMultiplier;
     entry.totalPoints += points;
     const completedLevels = entry.completedLevels + 1;
     const nextLevel = Math.min(entry.level + 1, DIFFICULTY_LEVELS - 1);
@@ -114,8 +125,11 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
     return { ok: true, correct: true, level: nextLevel, completedLevels, totalPoints: entry.totalPoints };
   }
 
-  // Wrong answer: points = 0 for this question; run ends; previous points preserved in totalPoints
-  const { walletAddress, completedLevels, spentMicroStx, totalPoints, questionIds } = entry;
+  // Wrong answer: run ends; return questionResults and correct-answer info for this question
+  const { walletAddress, completedLevels, spentMicroStx, totalPoints, questionIds, questionResults, deliveredQuestionInfo } = entry;
+  const lastDelivered = (deliveredQuestionInfo ?? [])[(deliveredQuestionInfo ?? []).length - 1];
+  const correctOptionText = lastDelivered?.options?.[entry.correctIndex];
+  const reasoning = lastDelivered?.reasoning;
   store.delete(runId);
   return {
     ok: true,
@@ -126,6 +140,10 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
     spentMicroStx,
     totalPoints,
     questionIds: questionIds ?? [],
+    questionResults: questionResults ?? [],
+    deliveredQuestionInfo: deliveredQuestionInfo ?? [],
+    correctOptionText,
+    reasoning,
   };
 }
 
@@ -138,13 +156,33 @@ export function addQuestionIdToRun(runId: string, questionId: string): boolean {
   return true;
 }
 
-/** User stopped. Returns run summary (including totalPoints and questionIds) for settlement; clears state. */
+export type DeliveredQuestionInfo = { questionId: string; correctIndex: number; options: string[]; reasoning?: string };
+
+/** Store correct answer options and reasoning for a delivered question (for showing on wrong / history). */
+export function addDeliveredQuestionInfo(
+  runId: string,
+  questionId: string,
+  correctIndex: number,
+  options: string[],
+  reasoning?: string
+): boolean {
+  const entry = store.get(runId);
+  if (!entry || new Date() > entry.expiresAt) return false;
+  entry.deliveredQuestionInfo = entry.deliveredQuestionInfo ?? [];
+  entry.deliveredQuestionInfo.push({ questionId, correctIndex, options, reasoning });
+  store.set(runId, entry);
+  return true;
+}
+
+/** User stopped. Returns run summary (questionIds, questionResults, deliveredQuestionInfo) for settlement and history. */
 export function stopRun(runId: string): {
   walletAddress: string;
   completedLevels: number;
   spentMicroStx: bigint;
   totalPoints: number;
   questionIds: string[];
+  questionResults: QuestionResultEntry[];
+  deliveredQuestionInfo: DeliveredQuestionInfo[];
 } | null {
   const entry = store.get(runId);
   if (!entry) return null;
@@ -158,6 +196,8 @@ export function stopRun(runId: string): {
     spentMicroStx: entry.spentMicroStx,
     totalPoints: entry.totalPoints,
     questionIds: entry.questionIds ?? [],
+    questionResults: entry.questionResults ?? [],
+    deliveredQuestionInfo: entry.deliveredQuestionInfo ?? [],
   };
   store.delete(runId);
   return result;

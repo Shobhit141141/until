@@ -6,8 +6,14 @@ import * as userService from "./user.service.js";
 import * as creditsService from "./credits.service.js";
 import { computeMilestoneBonus, MAX_QUESTIONS } from "../config/tokenomics.js";
 
+export type QuestionDetailInput = { questionId: string; selectedIndex: number; points: number };
+
+export type DeliveredQuestionInfoInput = { questionId: string; correctIndex: number; options: string[]; reasoning?: string };
+
 export type EndRunInput = {
   questionIds: string[];
+  questionResults?: QuestionDetailInput[];
+  deliveredQuestionInfo?: DeliveredQuestionInfoInput[];
   score: number;
   spent: number;
   earned: number;
@@ -24,6 +30,23 @@ export async function endRun(
     .filter((id) => mongoose.Types.ObjectId.isValid(id))
     .map((id) => new mongoose.Types.ObjectId(id));
 
+  const infoByQuestionId = new Map(
+    (input.deliveredQuestionInfo ?? []).map((d) => [d.questionId, d])
+  );
+
+  const questionDetails = (input.questionResults ?? [])
+    .filter((r) => mongoose.Types.ObjectId.isValid(r.questionId))
+    .map((r) => {
+      const info = infoByQuestionId.get(r.questionId);
+      return {
+        questionId: new mongoose.Types.ObjectId(r.questionId),
+        selectedIndex: r.selectedIndex,
+        points: r.points,
+        correctIndex: info?.correctIndex ?? -1,
+        reasoning: info?.reasoning,
+      };
+    });
+
   const run = await GameRun.create({
     user: user._id,
     walletAddress,
@@ -31,6 +54,7 @@ export async function endRun(
     spent: input.spent,
     earned: input.earned,
     questions: questionObjectIds,
+    questionDetails,
   });
 
   await User.updateOne(
@@ -83,4 +107,70 @@ export async function computeAndAddMilestoneBonus(
   );
   const milestoneTier: "70" | "100" = completedLevels >= MAX_QUESTIONS ? "100" : "70";
   return { bonusStx, milestoneTier };
+}
+
+export type RunHistoryQuestion = {
+  question: string;
+  options: string[];
+  level?: number;
+  selectedIndex: number;
+  points: number;
+  correctOptionText?: string;
+  reasoning?: string;
+};
+
+export type RunHistoryEntry = {
+  runId: string;
+  createdAt: string;
+  score: number;
+  spent: number;
+  earned: number;
+  questions: RunHistoryQuestion[];
+};
+
+/** Get run history for a wallet: each run with question text, user's answer index, points. */
+export async function getRunHistory(
+  walletAddress: string,
+  limit: number = 20
+): Promise<RunHistoryEntry[]> {
+  const runs = await GameRun.find({ walletAddress })
+    .sort({ createdAt: -1 })
+    .limit(Math.min(50, Math.max(1, limit)))
+    .populate({
+      path: "questionDetails.questionId",
+      select: "question options level",
+    })
+    .lean()
+    .exec();
+
+  return runs.map((r: Record<string, unknown>) => {
+    const details = (r.questionDetails ?? []) as Array<{
+      questionId: { question: string; options: string[]; level?: number } | null;
+      selectedIndex: number;
+      points: number;
+      correctIndex?: number;
+      reasoning?: string;
+    }>;
+    const questions: RunHistoryQuestion[] = details.map((d) => {
+      const options = d.questionId?.options ?? [];
+      const correctIndex = typeof d.correctIndex === "number" && d.correctIndex >= 0 && d.correctIndex < options.length ? d.correctIndex : undefined;
+      return {
+        question: d.questionId?.question ?? "",
+        options,
+        level: d.questionId?.level,
+        selectedIndex: d.selectedIndex,
+        points: d.points,
+        correctOptionText: correctIndex != null ? options[correctIndex] : undefined,
+        reasoning: d.reasoning,
+      };
+    });
+    return {
+      runId: (r._id as mongoose.Types.ObjectId).toString(),
+      createdAt: (r.createdAt as Date)?.toISOString?.() ?? new Date().toISOString(),
+      score: Number(r.score),
+      spent: Number(r.spent),
+      earned: Number(r.earned),
+      questions,
+    };
+  });
 }

@@ -13,34 +13,47 @@ const MAX_SOLVE_TIME_SEC = 300;
 const MAX_RETRIES = 2;
 
 export type GenerateQuestionInput = {
+  /** Difficulty level 0–9 (same category throughout run). */
   level: number;
-  topicPool: string;
-  difficultyScalar: number;
+  /** Curated category (e.g. Applied Science, Logical Reasoning). */
+  category: string;
   timeLimitSec: number;
   previousDifficulty?: number;
   seed?: string;
 };
 
+const SYSTEM_PROMPT_TEMPLATE = `You are generating skill-based quiz questions for a paid system.
+Each question must have exactly one correct answer.
+
+CONSTRAINTS:
+- Category: {{category}}
+- Difficulty level: {{difficulty}} (0–9)
+- No clichés or common trivia.
+- No ambiguity or subjective wording.
+- No trick questions.
+- Must be solvable by reasoning only. If a user can answer by memorization → reject the question.
+- Increase difficulty by adding constraints, not obscurity.
+- Stay strictly within the chosen category.
+- Do not reference previous questions.
+
+OUTPUT STRICT JSON ONLY:
+{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":42,"confidence_score":0.91,"reasoning":"Short explanation of why the correct answer is correct."}
+- correct_index is 0–3. difficulty and confidence_score 0–1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" (1-3 sentences) explaining why the correct answer is correct.`;
+
 /** Exported so question service can hash the same prompt used for the LLM call. */
 export function buildPrompt(input: GenerateQuestionInput): string {
-  const { level, topicPool, difficultyScalar, timeLimitSec, previousDifficulty, seed } = input;
-  const seedPart = seed ? `Use deterministic seed: ${seed}.` : "";
+  const { level, category, previousDifficulty, seed } = input;
   const prevPart =
     previousDifficulty != null
-      ? `Difficulty must be >= ${previousDifficulty} (no regression).`
+      ? `Difficulty must be >= ${previousDifficulty} (no regression). `
       : "";
-  return `Generate exactly one skill-based multiple choice quiz question. Verifiable facts only, single correct answer, no ambiguity.
-
-Topic pool: ${topicPool}
-Level: ${level}
-Difficulty scalar (monotonic): ${difficultyScalar}
-Time limit for solving (seconds): ${timeLimitSec}
-${prevPart}
-${seedPart}
-
-Respond with ONLY a single JSON object, no markdown, no explanation:
-{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":42,"confidence_score":0.91}
-- correct_index is 0-3. difficulty and confidence_score 0-1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}].`;
+  const seedPart = seed ? `Deterministic seed: ${seed}.` : "";
+  return (
+    SYSTEM_PROMPT_TEMPLATE
+      .replace("{{category}}", category)
+      .replace("{{difficulty}}", String(level)) +
+    `\n${prevPart}${seedPart}`
+  );
 }
 
 function parsePayload(text: string): AiQuestionPayload | null {
@@ -70,6 +83,7 @@ function parsePayload(text: string): AiQuestionPayload | null {
       !Number.isFinite(confidence_score)
     )
       return null;
+    const reasoning = typeof o.reasoning === "string" && o.reasoning.trim() ? o.reasoning.trim() : undefined;
     return {
       question: String(o.question),
       options: [options[0], options[1], options[2], options[3]],
@@ -77,6 +91,7 @@ function parsePayload(text: string): AiQuestionPayload | null {
       difficulty,
       estimated_solve_time_sec,
       confidence_score,
+      ...(reasoning && { reasoning }),
     };
   } catch {
     return null;
@@ -206,21 +221,23 @@ async function generateQuestionContentMistral(
 
 const BATCH_SIZE = 10;
 
-/** Prompt for generating N questions in one call (array of N JSON objects). */
-export function buildBatchPrompt(input: GenerateQuestionInput, count: number): string {
-  const { level, topicPool, difficultyScalar, timeLimitSec, seed } = input;
-  const seedPart = seed ? `Use deterministic seed: ${seed}.` : "";
-  return `Generate exactly ${count} skill-based multiple choice quiz questions. Verifiable facts only, single correct answer per question, no ambiguity. Each question must be distinct.
+/** Prompt for generating N questions in one call: same category, difficulties startLevel..startLevel+count-1. */
+export function buildBatchPrompt(
+  category: string,
+  startLevel: number,
+  count: number,
+  seed?: string
+): string {
+  const seedPart = seed ? `Deterministic seed: ${seed}.` : "";
+  const levels = Array.from({ length: count }, (_, i) => startLevel + i);
+  return `${SYSTEM_PROMPT_TEMPLATE.replace("{{category}}", category).replace("{{difficulty}}", `one of ${levels.join(", ")} (assign each question a different level in order)`)}
 
-Topic pool: ${topicPool}
-Level: ${level}
-Difficulty scalar: ${difficultyScalar}
-Time limit for solving (seconds): ${timeLimitSec}
+Generate exactly ${count} questions. Same category for all. Difficulty progression: ${levels.join(", ")}. Each question must be distinct. No clichés; clever, not tricky.
 ${seedPart}
 
 Respond with ONLY a JSON array of ${count} objects, no markdown, no explanation:
-[{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":42,"confidence_score":0.91}, ...]
-- correct_index is 0-3 per question. difficulty and confidence_score 0-1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}].`;
+[{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":42,"confidence_score":0.91,"reasoning":"Why the correct answer is correct."}, ...]
+- correct_index 0-3 per question. difficulty and confidence_score 0-1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" per question.`;
 }
 
 function parseBatchPayload(text: string): AiQuestionPayload[] {
@@ -239,14 +256,24 @@ function parseBatchPayload(text: string): AiQuestionPayload[] {
   }
 }
 
+export type GenerateBatchInput = {
+  category: string;
+  startLevel: number;
+  count: number;
+  seed?: string;
+};
+
 /**
- * Generate a batch of questions in one LLM call. Tries Gemini first, then Mistral. Returns only valid payloads passing sanity.
+ * Generate a batch of questions in one LLM call. Same category, difficulties startLevel..startLevel+count-1.
+ * Returns only valid payloads passing sanity (confidence, time, no difficulty regression within batch).
  */
 export async function generateQuestionBatch(
-  input: GenerateQuestionInput,
+  input: GenerateBatchInput,
   size: number = BATCH_SIZE
 ): Promise<AiQuestionPayload[]> {
-  const prompt = buildBatchPrompt(input, size);
+  const { category, startLevel, count, seed } = input;
+  const actualCount = Math.min(size, Math.max(1, count));
+  const prompt = buildBatchPrompt(category, startLevel, actualCount, seed);
   const tryGemini = async (): Promise<string> => {
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not set");
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -288,8 +315,9 @@ export async function generateQuestionBatch(
   }
   const parsed = parseBatchPayload(text);
   const valid: AiQuestionPayload[] = [];
-  for (const p of parsed) {
-    if (!sanityCheck(p, input.previousDifficulty)) valid.push(p);
+  for (let i = 0; i < parsed.length; i++) {
+    const prev = i === 0 ? undefined : startLevel + i - 1;
+    if (!sanityCheck(parsed[i], prev)) valid.push(parsed[i]);
   }
   return valid;
 }

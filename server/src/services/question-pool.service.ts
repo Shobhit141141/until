@@ -1,9 +1,10 @@
 /**
- * In-memory pool of pre-generated questions. Refilled in batches of 10.
- * When a new run needs a question, we serve from pool; when pool is low we generate a batch.
+ * Optional in-memory pool of pre-generated questions (e.g. fallback). Not used by per-run batch flow.
+ * Refilled with a random category; kept for compatibility.
  */
 import type { AiQuestionPayload } from "../types/question.types.js";
 import * as aiService from "./ai.service.js";
+import { getRandomCategory } from "../config/categories.js";
 import { logger } from "../config/logger.js";
 
 const POOL_REFILL_THRESHOLD = 3;
@@ -19,20 +20,20 @@ function shouldRefill(): boolean {
 }
 
 /**
- * Refill pool with one batch (10 questions). Uses level 0 and general topic by default; questions can be used for any level.
+ * Refill pool with one batch. Uses random category and startLevel 0.
  */
 async function refillPool(): Promise<void> {
-  const input: aiService.GenerateQuestionInput = {
-    level: 0,
-    topicPool: "general",
-    difficultyScalar: 0.5,
-    timeLimitSec: 120,
+  const category = getRandomCategory();
+  const input: aiService.GenerateBatchInput = {
+    category,
+    startLevel: 0,
+    count: BATCH_SIZE,
     seed: `pool-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   };
   try {
     const batch = await aiService.generateQuestionBatch(input, BATCH_SIZE);
-    for (const p of batch) {
-      pool.push({ payload: p, level: input.level });
+    for (let i = 0; i < batch.length; i++) {
+      pool.push({ payload: batch[i], level: input.startLevel + i });
     }
     logger.info(`Question pool refilled: +${batch.length}, pool size=${pool.length}`);
   } catch (err) {

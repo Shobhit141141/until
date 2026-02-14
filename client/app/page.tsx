@@ -11,6 +11,9 @@ import {
   type TopUpInfo,
   type TopUpRequiredPayload,
   type CreditsHistoryResponse,
+  type CategoriesResponse,
+  type RunHistoryResponse,
+  type RunHistoryEntry,
   type UserMe,
   Challenge,
 } from "@/lib/api";
@@ -19,6 +22,8 @@ import { useWallet } from "@/contexts/WalletContext";
 const COST_STX_BY_LEVEL = [0.001, 0.002, 0.003, 0.005, 0.007, 0.01, 0.015, 0.02, 0.03, 0.05];
 const MIN_WITHDRAW_STX = 0.01;
 const MICRO_STX_PER_STX = 1_000_000;
+const PREDEFINED_TOP_UPS_STX = [0.05, 0.1, 0.25, 0.5, 1];
+const MIN_TOP_UP_STX = 0.001;
 
 type Step =
   | "ready"
@@ -57,6 +62,18 @@ export default function Home() {
   const [creditsHistory, setCreditsHistory] = useState<CreditsHistoryResponse["transactions"]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [pendingAfterTopUp, setPendingAfterTopUp] = useState<{ level: number; runId?: string } | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isGettingQuestion, setIsGettingQuestion] = useState(false);
+  const [isSubmittingAnswer, setIsSubmittingAnswer] = useState(false);
+  const [isStoppingRun, setIsStoppingRun] = useState(false);
+  const [topUpAmountStx, setTopUpAmountStx] = useState<number>(0.05);
+  const [customTopUpStx, setCustomTopUpStx] = useState("");
+  const [showTopUpPanel, setShowTopUpPanel] = useState(false);
+  const [runHistory, setRunHistory] = useState<RunHistoryEntry[]>([]);
+  const [showRunHistory, setShowRunHistory] = useState(false);
+  const [isLoadingRunHistory, setIsLoadingRunHistory] = useState(false);
+  const [topUpStepCustomStx, setTopUpStepCustomStx] = useState("");
 
   const costForLevel = (level: number) => COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.001;
 
@@ -76,6 +93,13 @@ export default function Home() {
   }, [wallet, step, refreshCreditsBalance]);
 
   useEffect(() => {
+    if (!wallet) return;
+    apiFetch<CategoriesResponse>("/categories")
+      .then((res) => res.data?.categories && setCategories(res.data.categories))
+      .catch(() => {});
+  }, [wallet]);
+
+  useEffect(() => {
     if (step !== "question" || questionStartedAt == null) return;
     const tick = () => setElapsedSec(Math.floor((Date.now() - questionStartedAt) / 1000));
     tick();
@@ -87,41 +111,48 @@ export default function Home() {
   const getNextQuestionWithCredits = async (level: number, currentRunId?: string | null) => {
     if (!wallet) return;
     setError(null);
-    const body: { walletAddress: string; useCredits: true; topicPool?: string; difficulty?: number; runId?: string } = {
+    setIsGettingQuestion(true);
+    const body: { walletAddress: string; useCredits: true; difficulty?: number; runId?: string; preferredCategory?: string } = {
       walletAddress: wallet,
       useCredits: true,
-      topicPool: "general",
     };
     if (currentRunId) body.runId = currentRunId;
-    else body.difficulty = level;
+    else {
+      body.difficulty = level;
+      if (selectedCategory) body.preferredCategory = selectedCategory;
+    }
 
-    const res = await apiFetch<QuestionResponse>("/next-question", { method: "POST", body: body as unknown as Record<string, unknown> });
+    try {
+      const res = await apiFetch<QuestionResponse>("/next-question", { method: "POST", body: body as unknown as Record<string, unknown> });
 
-    if (res.status === 402 && res.topUpRequired) {
-      setTopUpRequired(res.topUpRequired);
-      setPendingAfterTopUp({ level, runId: currentRunId ?? undefined });
-      setStep("topup");
-      if (res.error) setError(res.error);
-      return;
-    }
-    if (res.status === 402 && res.paymentRequired) {
-      setChallenge(res.paymentRequired);
-      setStep("pay");
-      return;
-    }
-    if (res.error) {
-      setError(res.error);
-      return;
-    }
-    if (res.data) {
-      setQuestion(res.data);
-      setQuestionStartedAt(Date.now());
-      setRunId(res.data.runId);
-      setDifficulty(res.data.level);
-      setStep("question");
-      setChallenge(null);
-      setTopUpRequired(null);
-      setPendingAfterTopUp(null);
+      if (res.status === 402 && res.topUpRequired) {
+        setTopUpRequired(res.topUpRequired);
+        setPendingAfterTopUp({ level, runId: currentRunId ?? undefined });
+        setStep("topup");
+        if (res.error) setError(res.error);
+        return;
+      }
+      if (res.status === 402 && res.paymentRequired) {
+        setChallenge(res.paymentRequired);
+        setStep("pay");
+        return;
+      }
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
+      if (res.data) {
+        setQuestion(res.data);
+        setQuestionStartedAt(Date.now());
+        setRunId(res.data.runId);
+        setDifficulty(res.data.level);
+        setStep("question");
+        setChallenge(null);
+        setTopUpRequired(null);
+        setPendingAfterTopUp(null);
+      }
+    } finally {
+      setIsGettingQuestion(false);
     }
   };
 
@@ -237,6 +268,7 @@ export default function Home() {
     if (!runId || selectedIndex === null) return;
     setStep("submitting");
     setError(null);
+    setIsSubmittingAnswer(true);
     const res = await apiFetch<SubmitAnswerCorrect | SubmitAnswerWrong>(
       "/run/submit-answer",
       {
@@ -247,6 +279,7 @@ export default function Home() {
     if (res.error) {
       setError(res.error);
       setStep("question");
+      setIsSubmittingAnswer(false);
       return;
     }
     if (res.data?.correct) {
@@ -259,6 +292,7 @@ export default function Home() {
       setStep("wrong");
       setRunId(null);
     }
+    setIsSubmittingAnswer(false);
   };
 
   const stopRun = async () => {
@@ -267,10 +301,12 @@ export default function Home() {
       return;
     }
     setError(null);
+    setIsStoppingRun(true);
     const res = await apiFetch<StopRunResponse>("/run/stop", {
       method: "POST",
       body: { runId, walletAddress: wallet },
     });
+    setIsStoppingRun(false);
     if (res.error) {
       setError(res.error);
       return;
@@ -355,13 +391,35 @@ export default function Home() {
     doTopUpWithWallet(topUpRequired.suggestedAmountStx, topUpRequired.recipient);
   };
 
+  const getEffectiveTopUpAmount = (): number => {
+    const custom = parseFloat(customTopUpStx);
+    if (Number.isFinite(custom) && custom >= MIN_TOP_UP_STX) return custom;
+    return topUpAmountStx;
+  };
+
   const handleStandaloneTopUp = async () => {
     const res = await apiFetch<TopUpInfo>("/credits/top-up-info");
     if (!res.data?.recipient) {
       setError(res.error ?? "Top-up not configured");
       return;
     }
-    await doTopUpWithWallet(res.data.suggestedAmountStx, res.data.recipient);
+    const amount = getEffectiveTopUpAmount();
+    if (amount < MIN_TOP_UP_STX) {
+      setError(`Minimum top-up is ${MIN_TOP_UP_STX} STX`);
+      return;
+    }
+    await doTopUpWithWallet(amount, res.data.recipient);
+    setShowTopUpPanel(false);
+  };
+
+  const loadRunHistory = () => {
+    if (!wallet) return;
+    setShowRunHistory(true);
+    setIsLoadingRunHistory(true);
+    apiFetch<RunHistoryResponse>(`/run/history?walletAddress=${encodeURIComponent(wallet)}&limit=20`)
+      .then((r) => r.data?.runs && setRunHistory(r.data.runs))
+      .catch(() => setRunHistory([]))
+      .finally(() => setIsLoadingRunHistory(false));
   };
 
   const handleWithdraw = async () => {
@@ -429,15 +487,48 @@ export default function Home() {
         <p className="font-medium text-zinc-800 dark:text-zinc-200">
           Credits: <span className="font-mono">{creditsStx.toFixed(4)}</span> STX
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           <button
             type="button"
-            onClick={handleStandaloneTopUp}
+            onClick={() => setShowTopUpPanel(!showTopUpPanel)}
             disabled={isToppingUp}
             className="rounded bg-foreground text-background px-3 py-1.5 text-sm font-medium disabled:opacity-50"
           >
             {isToppingUp ? "Topping up…" : "Top up credits"}
           </button>
+          {showTopUpPanel && (
+            <div className="flex flex-wrap gap-2 items-center border border-zinc-200 dark:border-zinc-700 rounded p-2 mt-1 w-full">
+              <span className="text-xs text-zinc-500 w-full">Predefined:</span>
+              {PREDEFINED_TOP_UPS_STX.map((amt) => (
+                <button
+                  key={amt}
+                  type="button"
+                  onClick={() => { setTopUpAmountStx(amt); setCustomTopUpStx(""); }}
+                  className={`rounded px-2 py-1 text-sm ${topUpAmountStx === amt && !customTopUpStx ? "bg-foreground text-background" : "border"}`}
+                >
+                  {amt} STX
+                </button>
+              ))}
+              <span className="text-xs text-zinc-500">Custom:</span>
+              <input
+                type="number"
+                min={MIN_TOP_UP_STX}
+                step="0.01"
+                placeholder="STX"
+                value={customTopUpStx}
+                onChange={(e) => setCustomTopUpStx(e.target.value)}
+                className="rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1 w-20 text-sm bg-background"
+              />
+              <button
+                type="button"
+                onClick={handleStandaloneTopUp}
+                disabled={isToppingUp}
+                className="rounded bg-foreground text-background px-2 py-1 text-sm disabled:opacity-50"
+              >
+                {isToppingUp ? "…" : `Send ${getEffectiveTopUpAmount().toFixed(3)} STX`}
+              </button>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <input
               type="number"
@@ -460,6 +551,9 @@ export default function Home() {
           <button type="button" onClick={loadCreditsHistory} className="rounded border px-3 py-1.5 text-sm">
             Transaction history
           </button>
+          <button type="button" onClick={loadRunHistory} className="rounded border px-3 py-1.5 text-sm">
+            Run history
+          </button>
         </div>
         {showHistory && creditsHistory.length > 0 && (
           <div className="mt-2 border-t border-zinc-200 dark:border-zinc-700 pt-2">
@@ -480,12 +574,35 @@ export default function Home() {
 
       {step === "ready" && (
         <div className="flex flex-col gap-3">
+          {categories.length > 0 && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Category (server-only)</label>
+              <select
+                value={selectedCategory ?? ""}
+                onChange={(e) => setSelectedCategory(e.target.value || null)}
+                className="rounded border border-zinc-300 dark:border-zinc-600 px-3 py-2 bg-background text-sm max-w-xs"
+              >
+                <option value="">Random</option>
+                {categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => getNextQuestionWithCredits(0)}
-            className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit"
+            disabled={isGettingQuestion}
+            className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit disabled:opacity-50 flex items-center gap-2"
           >
-            Get first question (use credits)
+            {isGettingQuestion ? (
+              <>
+                <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                Loading…
+              </>
+            ) : (
+              "Play game (use credits)"
+            )}
           </button>
           <p className="text-sm text-zinc-500 max-w-md">
             One top-up, then play from credits. Profit by chaining correct answers, then stop & finish to add profit to your balance.
@@ -495,12 +612,53 @@ export default function Home() {
 
       {step === "topup" && topUpRequired && (
         <div className="flex flex-col gap-3">
-          <p className="text-zinc-600">
-            Insufficient credits. Top up <strong>{topUpRequired.suggestedAmountStx} STX</strong> to continue.
+          <p className="text-zinc-600 dark:text-zinc-400">
+            Insufficient credits. Top up to continue.
             {topUpRequired.creditsStx != null && (
               <> You have {topUpRequired.creditsStx.toFixed(4)} STX.</>
             )}
           </p>
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm text-zinc-500">Predefined:</span>
+            {PREDEFINED_TOP_UPS_STX.map((amt) => (
+              <button
+                key={amt}
+                type="button"
+                onClick={() => doTopUpWithWallet(amt, topUpRequired.recipient)}
+                disabled={isToppingUp}
+                className="rounded border px-2 py-1 text-sm disabled:opacity-50 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              >
+                {amt} STX
+              </button>
+            ))}
+            <span className="text-sm text-zinc-500">Custom:</span>
+            <input
+              type="number"
+              min={MIN_TOP_UP_STX}
+              step="0.01"
+              placeholder="STX"
+              value={topUpStepCustomStx}
+              onChange={(e) => setTopUpStepCustomStx(e.target.value)}
+              className="rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1 w-20 text-sm bg-background"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const v = parseFloat(topUpStepCustomStx);
+                  if (Number.isFinite(v) && v >= MIN_TOP_UP_STX) doTopUpWithWallet(v, topUpRequired.recipient);
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const v = parseFloat(topUpStepCustomStx);
+                if (Number.isFinite(v) && v >= MIN_TOP_UP_STX) doTopUpWithWallet(v, topUpRequired.recipient);
+              }}
+              disabled={isToppingUp || !topUpStepCustomStx}
+              className="rounded bg-foreground text-background px-2 py-1 text-sm disabled:opacity-50"
+            >
+              {isToppingUp ? "…" : "Send custom"}
+            </button>
+          </div>
           <div className="flex gap-2">
             <button
               type="button"
@@ -585,24 +743,42 @@ export default function Home() {
             <button
               type="button"
               onClick={submitAnswer}
-              disabled={selectedIndex === null}
-              className="rounded bg-foreground text-background px-4 py-2 font-medium disabled:opacity-50"
+              disabled={selectedIndex === null || isSubmittingAnswer}
+              className="rounded bg-foreground text-background px-4 py-2 font-medium disabled:opacity-50 flex items-center gap-2"
             >
-              Submit answer
+              {isSubmittingAnswer ? (
+                <>
+                  <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                  Checking…
+                </>
+              ) : (
+                "Submit answer"
+              )}
             </button>
             <button
               type="button"
               onClick={stopRun}
-              className="rounded border px-4 py-2"
+              disabled={isStoppingRun}
+              className="rounded border px-4 py-2 disabled:opacity-50 flex items-center gap-2"
             >
-              Stop & finish
+              {isStoppingRun ? (
+                <>
+                  <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  Finishing…
+                </>
+              ) : (
+                "Stop & finish"
+              )}
             </button>
           </div>
         </div>
       )}
 
       {step === "submitting" && (
-        <p className="text-zinc-600">Checking answer…</p>
+        <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
+          <span className="inline-block w-5 h-5 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+          Checking answer…
+        </div>
       )}
 
       {step === "correct" && result && "correct" in result && result.correct && (
@@ -614,11 +790,19 @@ export default function Home() {
           <button
             type="button"
             onClick={() => getNextQuestionWithCredits(result.level, runId)}
-            className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit"
+            disabled={isGettingQuestion}
+            className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit disabled:opacity-50 flex items-center gap-2"
           >
-            Next question (−{costForLevel(result.level)} STX from credits)
+            {isGettingQuestion ? (
+              <>
+                <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                Loading next…
+              </>
+            ) : (
+              `Next question (−${costForLevel(result.level)} STX from credits)`
+            )}
           </button>
-          <button type="button" onClick={stopRun} className="rounded border px-4 py-2 w-fit">
+          <button type="button" onClick={stopRun} disabled={isStoppingRun} className="rounded border px-4 py-2 w-fit disabled:opacity-50">
             Stop & finish
           </button>
         </div>
@@ -627,6 +811,17 @@ export default function Home() {
       {step === "wrong" && result && "runEnded" in result && (
         <div className="flex flex-col gap-3">
           <p className="font-medium text-red-700 dark:text-red-400">Wrong. Run ended.</p>
+          {"correctOptionText" in result && result.correctOptionText && (
+            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+              Correct answer: <strong>{result.correctOptionText}</strong>
+            </p>
+          )}
+          {"reasoning" in result && result.reasoning && (
+            <div className="rounded border border-zinc-200 dark:border-zinc-700 p-3 bg-zinc-50 dark:bg-zinc-900/50">
+              <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">Why</p>
+              <p className="text-sm text-zinc-700 dark:text-zinc-300">{result.reasoning}</p>
+            </div>
+          )}
           {result.totalPoints != null && <p>Total points: {result.totalPoints}</p>}
           {result.profit != null && <p>Profit: {result.profit} STX</p>}
           {result.milestoneBonusStx != null && result.milestoneBonusStx > 0 && (
@@ -672,6 +867,57 @@ export default function Home() {
           </div>
         );
       })()}
+
+      {showRunHistory && (
+        <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold">Run history</h2>
+            <button type="button" onClick={() => setShowRunHistory(false)} className="text-sm underline">
+              Close
+            </button>
+          </div>
+          {isLoadingRunHistory ? (
+            <div className="flex items-center gap-2 text-zinc-500">
+              <span className="inline-block w-4 h-4 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+              Loading…
+            </div>
+          ) : runHistory.length === 0 ? (
+            <p className="text-sm text-zinc-500">No runs yet. Play a game to see history here.</p>
+          ) : (
+            <ul className="space-y-4">
+              {runHistory.map((run) => (
+                <li key={run.runId} className="border border-zinc-200 dark:border-zinc-700 rounded p-3 text-sm">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-zinc-600 dark:text-zinc-400 mb-2">
+                    <span>{new Date(run.createdAt).toLocaleString()}</span>
+                    <span>Score: <strong className="text-foreground">{run.score}</strong></span>
+                    <span>Spent: {run.spent.toFixed(4)} STX</span>
+                    <span>Earned: {run.earned.toFixed(4)} STX</span>
+                  </div>
+                  <details className="mt-2">
+                    <summary className="cursor-pointer font-medium text-zinc-700 dark:text-zinc-300">Questions</summary>
+                    <ul className="mt-2 space-y-3 pl-2 border-l-2 border-zinc-200 dark:border-zinc-700">
+                      {run.questions.map((q, i) => (
+                        <li key={i} className="pl-2">
+                          <p className="font-medium text-zinc-800 dark:text-zinc-200">{q.question}</p>
+                          <p className="text-zinc-600 dark:text-zinc-400 mt-0.5">
+                            Your answer: {q.options[q.selectedIndex] ?? "—"} · Points: {q.points}
+                            {q.correctOptionText != null && q.correctOptionText !== (q.options[q.selectedIndex] ?? "—") && (
+                              <> · Correct: <strong className="text-zinc-800 dark:text-zinc-200">{q.correctOptionText}</strong></>
+                            )}
+                          </p>
+                          {q.reasoning && (
+                            <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1 italic">Why: {q.reasoning}</p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {error && (
         <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>

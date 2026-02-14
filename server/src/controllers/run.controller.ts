@@ -1,6 +1,26 @@
 import type { Request, Response } from "express";
 import * as runService from "../services/run.service.js";
 
+/** GET /run/history?walletAddress=...&limit=20 — run history with per-question details. */
+export async function getHistory(req: Request, res: Response): Promise<void> {
+  const walletAddress = (req.query.walletAddress as string)?.trim();
+  if (!walletAddress) {
+    res.status(400).json({ error: "walletAddress query required" });
+    return;
+  }
+  const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
+  try {
+    const runs = await runService.getRunHistory(walletAddress, limit);
+    res.json({ runs });
+  } catch (err) {
+    if (err instanceof Error && err.message === "User not found") {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    throw err;
+  }
+}
+
 export async function endRun(req: Request, res: Response): Promise<void> {
   const { wallet, questionIds, score, spent, earned } = req.body as {
     wallet?: string;

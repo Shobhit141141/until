@@ -18,6 +18,8 @@ export type AiQuestionPayload = {
   difficulty: number;
   estimated_solve_time_sec: number;
   confidence_score: number;
+  /** Short explanation of why the correct answer is correct (shown after answer). */
+  reasoning?: string;
 };
 
 /** Fallback only; use tokenomics getCostMicroStx(difficulty) for 402. */
@@ -37,6 +39,12 @@ export type RunStateEntry = {
   estimatedSolveTimeSec: number;
   /** MongoDB Question ids for this run (audit trail). */
   questionIds: string[];
-};
+  /** Category for this run (same for all questions). */
+  category: string;
+  /** Per-question result: questionId, selectedIndex, points (for run history). */
+  questionResults: { questionId: string; selectedIndex: number; points: number }[];
+  /** Per delivered question: correctIndex, options, reasoning (for showing correct answer + reasoning on wrong / history). */
+  deliveredQuestionInfo: { questionId: string; correctIndex: number; options: string[]; reasoning?: string }[];
+}
 
 export const RUN_STATE_TTL_MS = 30 * 60 * 1000; // 30 min

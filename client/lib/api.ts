@@ -102,6 +102,8 @@ export type SubmitAnswerWrong = {
   profit?: number;
   milestoneBonusStx?: number;
   milestoneTier?: "70" | "100" | null;
+  correctOptionText?: string;
+  reasoning?: string;
 };
 export type StopRunResponse = {
   runId: string;
@@ -151,3 +153,26 @@ export type CreditTransactionEntry = {
 };
 
 export type CreditsHistoryResponse = { transactions: CreditTransactionEntry[] };
+
+export type CategoriesResponse = { categories: string[] };
+
+export type RunHistoryQuestion = {
+  question: string;
+  options: string[];
+  level?: number;
+  selectedIndex: number;
+  points: number;
+  correctOptionText?: string;
+  reasoning?: string;
+};
+
+export type RunHistoryEntry = {
+  runId: string;
+  createdAt: string;
+  score: number;
+  spent: number;
+  earned: number;
+  questions: RunHistoryQuestion[];
+};
+
+export type RunHistoryResponse = { runs: RunHistoryEntry[] };

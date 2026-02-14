@@ -15,6 +15,15 @@ const gameRunSchema = new mongoose.Schema(
     questions: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
     ],
+    questionDetails: [
+      {
+        questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question", required: true },
+        selectedIndex: { type: Number, required: true },
+        points: { type: Number, required: true },
+        correctIndex: { type: Number, required: false },
+        reasoning: { type: String, required: false },
+      },
+    ],
   },
   { timestamps: true }
 );

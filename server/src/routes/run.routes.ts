@@ -5,6 +5,7 @@ import * as runStopController from "../controllers/run-stop.controller.js";
 
 const router = Router();
 
+router.get("/history", runController.getHistory);
 router.post("/submit-answer", answerController.submitAnswer);
 router.post("/stop", runStopController.stopRun);
 router.post("/end", runController.endRun);

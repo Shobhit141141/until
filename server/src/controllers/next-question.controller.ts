@@ -4,6 +4,7 @@ import * as stacksService from "../services/stacks.service.js";
 import * as userService from "../services/user.service.js";
 import * as questionService from "../services/question.service.js";
 import * as runStateService from "../services/run-state.service.js";
+import * as runBatchService from "../services/run-batch.service.js";
 import * as creditsService from "../services/credits.service.js";
 import { getCostMicroStx, getDifficultyLabel, TOP_UP_SUGGESTED_STX } from "../config/tokenomics.js";
 import { STACKS_RECIPIENT_ADDRESS } from "../config/stacks.js";
@@ -32,17 +33,17 @@ export async function submitPaymentAndGetQuestion(
     txId?: string;
     nonce?: string;
     runId?: string;
-    topicPool?: string;
     difficulty?: number;
     useCredits?: boolean;
     walletAddress?: string;
+    preferredCategory?: string;
   };
   const txId = typeof raw.txId === "string" ? raw.txId.trim() : "";
   const nonce = typeof raw.nonce === "string" ? raw.nonce.trim() : "";
   const runId = typeof raw.runId === "string" ? raw.runId.trim() || undefined : undefined;
-  const topicPool = typeof raw.topicPool === "string" ? raw.topicPool : "general";
   const useCredits = raw.useCredits === true;
   const walletAddressBody = typeof raw.walletAddress === "string" ? raw.walletAddress.trim() : "";
+  const preferredCategory = typeof raw.preferredCategory === "string" ? raw.preferredCategory.trim() || undefined : undefined;
 
   logger.info(`POST /next-question txId=${txId ? `${txId.slice(0, 8)}...` : ""} nonceLen=${nonce.length} runId=${runId ?? "none"} useCredits=${useCredits}`);
 
@@ -89,12 +90,8 @@ export async function submitPaymentAndGetQuestion(
     let resolvedRunId: string;
     const seed = `credits-${level}-${walletAddressBody}-${Date.now()}`;
     try {
-      const { payload, questionId } = await questionService.getQuestionForRun(
-        level,
-        String(topicPool),
-        user._id,
-        seed
-      );
+      const result = await questionService.getQuestionForRun(runId, level, user._id, seed, preferredCategory);
+      const { payload, questionId, category: resultCategory, restBatch } = result;
       const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 60;
       if (runId) {
         const updated = runStateService.setQuestionForRun(
@@ -118,16 +115,23 @@ export async function submitPaymentAndGetQuestion(
           return;
         }
         runStateService.addQuestionIdToRun(runId, questionId);
+        runStateService.addDeliveredQuestionInfo(runId, questionId, payload.correct_index, payload.options, payload.reasoning);
         resolvedRunId = runId;
       } else {
+        const category = resultCategory ?? runBatchService.pickCategoryForNewRun();
         resolvedRunId = runStateService.createRun(
           walletAddressBody,
           level,
           payload.correct_index,
           costMicroStx,
-          estimatedSolveTimeSec
+          estimatedSolveTimeSec,
+          category
         );
         runStateService.addQuestionIdToRun(resolvedRunId, questionId);
+        runStateService.addDeliveredQuestionInfo(resolvedRunId, questionId, payload.correct_index, payload.options, payload.reasoning);
+        if (restBatch && restBatch.length > 0) {
+          runBatchService.setBatch(resolvedRunId, category, restBatch);
+        }
       }
       res.json({
         question: payload.question,
@@ -245,15 +249,15 @@ export async function submitPaymentAndGetQuestion(
   }
 
   try {
-    const { payload, questionId } = await questionService.getQuestionForRun(
+    const result = await questionService.getQuestionForRun(
+      resolvedRunId || undefined,
       level,
-      String(topicPool),
       user._id,
-      `level-${level}-${nonce}`
+      `level-${level}-${nonce}`,
+      preferredCategory
     );
-
+    const { payload, questionId, category: resultCategory, restBatch } = result;
     const priceMicroStx = entry.priceMicroStx;
-
     const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 60;
 
     if (resolvedRunId) {
@@ -269,15 +273,22 @@ export async function submitPaymentAndGetQuestion(
         return;
       }
       runStateService.addQuestionIdToRun(resolvedRunId, questionId);
+      runStateService.addDeliveredQuestionInfo(resolvedRunId, questionId, payload.correct_index, payload.options, payload.reasoning);
     } else {
+      const category = resultCategory ?? runBatchService.pickCategoryForNewRun();
       resolvedRunId = runStateService.createRun(
         walletAddress,
         level,
         payload.correct_index,
         priceMicroStx,
-        estimatedSolveTimeSec
+        estimatedSolveTimeSec,
+        category
       );
       runStateService.addQuestionIdToRun(resolvedRunId, questionId);
+      runStateService.addDeliveredQuestionInfo(resolvedRunId, questionId, payload.correct_index, payload.options, payload.reasoning);
+      if (restBatch && restBatch.length > 0) {
+        runBatchService.setBatch(resolvedRunId, category, restBatch);
+      }
     }
 
     // Never send correct_index to client

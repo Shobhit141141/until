@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import * as runStateService from "../services/run-state.service.js";
+import * as runBatchService from "../services/run-batch.service.js";
 import * as runService from "../services/run.service.js";
 import * as creditsService from "../services/credits.service.js";
 import {
@@ -25,6 +26,7 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
   }
 
   const run = runStateService.stopRun(runId);
+  runBatchService.clearRunBatch(runId);
   if (!run) {
     res.status(404).json({ error: "Run not found or expired" });
     return;
@@ -61,6 +63,8 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
   try {
     const result = await runService.endRun(walletAddress, {
       questionIds: run.questionIds ?? [],
+      questionResults: run.questionResults ?? [],
+      deliveredQuestionInfo: run.deliveredQuestionInfo ?? [],
       score: run.totalPoints,
       spent: totalSpentStx,
       earned: netEarnedStx,
