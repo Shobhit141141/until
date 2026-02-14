@@ -3,6 +3,7 @@ import * as challengeService from "../services/challenge.service.js";
 import * as stacksService from "../services/stacks.service.js";
 import * as userService from "../services/user.service.js";
 import * as questionService from "../services/question.service.js";
+import * as runStateService from "../services/run-state.service.js";
 import { logger } from "../config/logger.js";
 
 export function getNextQuestion(_req: Request, res: Response): void {
@@ -14,10 +15,10 @@ export async function submitPaymentAndGetQuestion(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { txId, nonce, level = 1, topicPool = "general" } = req.body as {
+  const { txId, nonce, runId, topicPool = "general" } = req.body as {
     txId?: string;
     nonce?: string;
-    level?: number;
+    runId?: string;
     topicPool?: string;
   };
 
@@ -50,13 +51,34 @@ export async function submitPaymentAndGetQuestion(
 
   challengeService.consumeChallenge(nonce);
   const user = await userService.findOrCreateUser(verification.senderAddress);
+  const walletAddress = verification.senderAddress;
+
+  let level: number;
+  let resolvedRunId: string;
+
+  if (runId) {
+    const run = runStateService.getRun(runId);
+    if (!run) {
+      res.status(400).json({ error: "Run not found or expired" });
+      return;
+    }
+    if (run.walletAddress !== walletAddress) {
+      res.status(403).json({ error: "Run does not belong to this wallet" });
+      return;
+    }
+    level = run.level;
+    resolvedRunId = runId;
+  } else {
+    level = 1;
+    resolvedRunId = ""; // set after we have correctIndex
+  }
 
   try {
-    const question = await questionService.generateQuestion(
+    const payload = await questionService.generateQuestion(
       {
-        level: Number(level) || 1,
+        level,
         topicPool: String(topicPool),
-        difficultyScalar: 0.5 + (Number(level) || 1) * 0.1,
+        difficultyScalar: 0.5 + level * 0.1,
         timeLimitSec: 120,
         seed: `level-${level}-${nonce}`,
       },
@@ -66,7 +88,38 @@ export async function submitPaymentAndGetQuestion(
         userId: user._id,
       }
     );
-    res.json(question);
+
+    const priceMicroStx = entry.priceMicroStx;
+
+    if (resolvedRunId) {
+      const updated = runStateService.setQuestionForRun(
+        resolvedRunId,
+        level,
+        payload.correct_index,
+        priceMicroStx
+      );
+      if (!updated) {
+        res.status(400).json({ error: "Run not found or expired" });
+        return;
+      }
+    } else {
+      resolvedRunId = runStateService.createRun(
+        walletAddress,
+        level,
+        payload.correct_index,
+        priceMicroStx
+      );
+    }
+
+    // Never send correct_index to client
+    res.json({
+      question: payload.question,
+      options: payload.options,
+      difficulty: payload.difficulty,
+      estimated_solve_time_sec: payload.estimated_solve_time_sec,
+      runId: resolvedRunId,
+      level,
+    });
   } catch (err) {
     logger.error(err instanceof Error ? err.message : String(err));
     res.status(502).json({

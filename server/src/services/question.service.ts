@@ -158,7 +158,6 @@ export async function generateQuestion(
         user: opts?.userId,
         question: payload.question,
         options: payload.options,
-        correct_index: payload.correct_index,
         difficulty: payload.difficulty,
         estimated_solve_time_sec: payload.estimated_solve_time_sec,
         confidence_score: payload.confidence_score,

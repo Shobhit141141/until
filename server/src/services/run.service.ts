@@ -38,10 +38,12 @@ export async function endRun(
     }
   ).exec();
 
-  await Question.updateMany(
-    { _id: { $in: questionObjectIds }, user: user._id },
-    { $set: { gameRun: run._id } }
-  ).exec();
+  if (questionObjectIds.length > 0) {
+    await Question.updateMany(
+      { _id: { $in: questionObjectIds }, user: user._id },
+      { $set: { gameRun: run._id } }
+    ).exec();
+  }
 
   return { runId: run._id.toString() };
 }

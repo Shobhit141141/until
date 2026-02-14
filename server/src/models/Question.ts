@@ -10,7 +10,6 @@ const questionSchema = new mongoose.Schema(
     },
     question: { type: String, required: true },
     options: { type: [String], required: true },
-    correct_index: { type: Number, required: true, min: 0, max: 3 },
     difficulty: { type: Number, required: true },
     estimated_solve_time_sec: { type: Number, required: true },
     confidence_score: { type: Number, required: true },
