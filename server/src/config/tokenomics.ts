@@ -17,14 +17,14 @@ export const DIFFICULTY_LEVELS = 10; // levels 1–10 (0-indexed 0..9)
 /** Scaling factor for money amounts. Default 100; 500–2000 for real USD. Env: SCALE_K. */
 export const SCALE_K = Math.max(1, Math.min(2000, Number(process.env.SCALE_K) || 100));
 
-/** Cost in STX per level (1–10), base table. Actual = base × (K/100). */
+/** Cost in STX per level (1–10), base table at K=100. Actual = base × (K/100). */
 export const COST_STX_BY_DIFFICULTY: readonly number[] = [
-  0.002, 0.004, 0.006, 0.008, 0.012, 0.018, 0.026, 0.036, 0.048, 0.062,
+  0.72, 1.44, 2.16, 2.88, 4.32, 6.48, 9.36, 12.96, 17.28, 22.32,
 ];
 
 /** Base reward in STX per level. 1:1 with cost so best-case (1.5×) → profit ≈ 0.5× cost. */
 export const BASE_REWARD_STX_BY_DIFFICULTY: readonly number[] = [
-  0.002, 0.004, 0.006, 0.008, 0.012, 0.018, 0.026, 0.036, 0.048, 0.062,
+  0.72, 1.44, 2.16, 2.88, 4.32, 6.48, 9.36, 12.96, 17.28, 22.32,
 ];
 
 /** Difficulty labels (Level 1–10). */
@@ -57,7 +57,7 @@ export const TOP_UP_SUGGESTED_STX = 0.05;
 export const MAX_QUESTIONS = 10;
 
 /** Fixed incentive pool for milestone bonuses (STX) at K=100. Scaled by K for actual payouts. */
-const BONUS_POOL_BASE_STX = Number(process.env.BONUS_POOL_STX) || 0.0125;
+const BONUS_POOL_BASE_STX = Number(process.env.BONUS_POOL_STX) || 4.5;
 
 const MICRO_STX_PER_STX = 1_000_000;
 

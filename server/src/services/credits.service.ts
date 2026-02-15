@@ -3,6 +3,7 @@ import { TopUp } from "../models/TopUp.js";
 import { CreditTransaction } from "../models/CreditTransaction.js";
 import type { CreditTransactionType } from "../models/CreditTransaction.js";
 import * as userService from "./user.service.js";
+import * as stacksService from "./stacks.service.js";
 import { MIN_WITHDRAW_STX, getMinWithdrawMicroStx } from "../config/tokenomics.js";
 
 const MICRO_STX_PER_STX = 1_000_000;
@@ -151,10 +152,10 @@ export async function applyTopUp(
 }
 
 export type WithdrawResult =
-  | { ok: true; creditsStx: number; withdrawnStx: number }
+  | { ok: true; creditsStx: number; withdrawnStx: number; txId?: string }
   | { ok: false; reason: string };
 
-/** Debit credits for withdrawal. Min 0.01 STX. Actual STX payout is out of scope (queue or manual). */
+/** Debit credits and send STX to the user's wallet via Stacks SDK (server-side). Refunds credits if broadcast fails. */
 export async function withdraw(
   walletAddress: string,
   amountStx: number
@@ -173,10 +174,35 @@ export async function withdraw(
   const balanceAfterMicroStx = Math.round(result.creditsStx * MICRO_STX_PER_STX);
   await recordTransaction(walletAddress, "withdraw", -Number(amountMicroStx), balanceAfterMicroStx);
 
+  const sendResult = await stacksService.sendStx(
+    walletAddress,
+    amountMicroStx,
+    "UNTIL withdrawal"
+  );
+
+  if (!sendResult.ok) {
+    await addCredits(walletAddress, amountMicroStx);
+    const balanceAfterRefund = await getBalance(walletAddress);
+    await recordTransaction(
+      walletAddress,
+      "refund",
+      Number(amountMicroStx),
+      balanceAfterRefund.creditsMicroStx
+    );
+    return { ok: false, reason: sendResult.reason };
+  }
+
+  await CreditTransaction.findOneAndUpdate(
+    { walletAddress, type: "withdraw", refTxId: { $exists: false } },
+    { $set: { refTxId: sendResult.txId } },
+    { sort: { createdAt: -1 }, new: true }
+  ).exec();
+
   return {
     ok: true,
     creditsStx: result.creditsStx,
     withdrawnStx: amountStx,
+    txId: sendResult.txId,
   };
 }
 

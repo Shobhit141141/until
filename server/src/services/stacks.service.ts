@@ -1,4 +1,10 @@
-import { STACKS_API_URL } from "../config/stacks.js";
+import { broadcastTransaction, makeSTXTokenTransfer } from "@stacks/transactions";
+import { createNetwork } from "@stacks/network";
+import {
+  STACKS_API_URL,
+  STACKS_NETWORK,
+  STACKS_SENDER_SECRET_KEY,
+} from "../config/stacks.js";
 import type {
   PaymentVerificationExpected,
   PaymentVerificationResult,
@@ -6,6 +12,60 @@ import type {
 } from "../types/stacks.types.js";
 
 const TX_PATH = "/extended/v1/tx";
+
+export type SendStxResult =
+  | { ok: true; txId: string }
+  | { ok: false; reason: string };
+
+function getStacksNetwork() {
+  return createNetwork({
+    network: STACKS_NETWORK,
+    client: { baseUrl: STACKS_API_URL },
+  });
+}
+
+/**
+ * Send STX from the platform wallet to a recipient (e.g. withdrawal).
+ * Uses @stacks/transactions server-side. Requires STACKS_SENDER_SECRET_KEY and sufficient balance.
+ */
+export async function sendStx(
+  recipientAddress: string,
+  amountMicroStx: bigint,
+  memo?: string
+): Promise<SendStxResult> {
+  if (!STACKS_SENDER_SECRET_KEY || !STACKS_SENDER_SECRET_KEY.trim()) {
+    return { ok: false, reason: "Withdrawals not configured: STACKS_SENDER_SECRET_KEY not set" };
+  }
+  if (amountMicroStx <= 0n) {
+    return { ok: false, reason: "Amount must be positive" };
+  }
+  const trimmed = recipientAddress?.trim();
+  if (!trimmed || !/^S[TP][0-9A-HJ-NP-Za-km-z]{39}$/.test(trimmed)) {
+    return { ok: false, reason: "Invalid recipient address" };
+  }
+
+  const network = getStacksNetwork();
+  const senderKey = STACKS_SENDER_SECRET_KEY.trim().replace(/^0x/, "");
+
+  try {
+    const transaction = await makeSTXTokenTransfer({
+      recipient: trimmed,
+      amount: amountMicroStx,
+      senderKey,
+      network,
+      memo: memo?.slice(0, 34) ?? undefined,
+    });
+    const response = await broadcastTransaction({ transaction, network });
+    const txId = typeof response.txid === "string" ? response.txid : (response as { txid?: string }).txid;
+    if (!txId) {
+      return { ok: false, reason: "Broadcast succeeded but no txid returned" };
+    }
+    return { ok: true, txId };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { ok: false, reason: msg };
+  }
+}
 
 function decodeMemo(memo: string | undefined): string {
   if (!memo || !memo.trim()) return "";

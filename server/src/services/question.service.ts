@@ -1,13 +1,41 @@
 import { createHash } from "crypto";
 import type { Types } from "mongoose";
 import { Question } from "../models/Question.js";
+import { getRedis } from "../config/redis.js";
 import { logger } from "../config/logger.js";
 import * as aiService from "./ai.service.js";
 import * as runBatchService from "./run-batch.service.js";
+import * as fallbackQuestions from "./fallback-questions.service.js";
 import { isValidCategory } from "../config/categories.js";
 import type { AiQuestionPayload } from "../types/question.types.js";
 
+const REDIS_USED_QUESTIONS_KEY = "until:used_questions";
+
 export type { GenerateQuestionInput } from "./ai.service.js";
+
+/** Stable hash for a question (content identity). Used to dedupe in Redis. */
+function questionContentHash(question: string, options: string[]): string {
+  const normalized = `${question.trim()}\n${[...options].sort().join("\n")}`;
+  return createHash("sha256").update(normalized).digest("hex");
+}
+
+/** Check if this question was already used in any run (Redis). No-op if Redis disabled. */
+export async function isQuestionUsedInRedis(payload: AiQuestionPayload): Promise<boolean> {
+  const redis = getRedis();
+  if (!redis) return false;
+  const hash = questionContentHash(payload.question, payload.options ?? []);
+  const used = await redis.sismember(REDIS_USED_QUESTIONS_KEY, hash);
+  return used === 1;
+}
+
+/** Mark question as used so it is never served again. No-op if Redis disabled. */
+export async function markQuestionAsUsedInRedis(payload: AiQuestionPayload): Promise<void> {
+  const redis = getRedis();
+  if (!redis) return;
+  const hash = questionContentHash(payload.question, payload.options ?? []);
+  await redis.sadd(REDIS_USED_QUESTIONS_KEY, hash);
+  logger.debug("Question marked used in Redis", { hash: hash.slice(0, 12) });
+}
 
 export type GetQuestionForRunResult = {
   payload: AiQuestionPayload;
@@ -125,7 +153,13 @@ export async function getQuestionForRun(
         }
       }
       if (!popped) {
-        throw lastErr ?? new Error("Question generation failed after retries");
+        const fallback = fallbackQuestions.getFallbackPayload(runCategory, level);
+        if (fallback) {
+          logger.info("Using fallback question after AI failure", { runId: runId.slice(0, 8), level });
+          popped = fallback;
+        } else {
+          throw lastErr ?? new Error("Question generation failed after retries and no fallback");
+        }
       }
     }
     let skipAttempts = 0;
@@ -149,6 +183,31 @@ export async function getQuestionForRun(
       try {
         const generated = await aiService.generateQuestionContent(input);
         if (!seenForUser.has(generated.question.trim())) {
+          popped = generated;
+          break;
+        }
+      } catch {
+        break;
+      }
+    }
+    // Skip if this question was already used in another run (Redis); get another so no question is repeated.
+    while (await isQuestionUsedInRedis(popped)) {
+      const next = runBatchService.popQuestion(runId);
+      if (next) {
+        popped = next;
+        continue;
+      }
+      const genSeed = `run-${runId}-${level}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const input: aiService.GenerateQuestionInput = {
+        level,
+        category: runCategory,
+        timeLimitSec: 120,
+        previousDifficulty: level > 0 ? level - 1 : undefined,
+        seed: genSeed,
+      };
+      try {
+        const generated = await aiService.generateQuestionContent(input);
+        if (!(await isQuestionUsedInRedis(generated))) {
           popped = generated;
           break;
         }
@@ -182,8 +241,11 @@ export async function getQuestionForRun(
         }
       }
     }
-    payload = filtered.length > 0 ? filtered[0]! : first;
-    restBatch = filtered.length > 1 ? filtered.slice(1) : filtered.length === 1 ? [] : rest;
+    // Pick first candidate not already used in Redis so no question is repeated.
+    let idx = 0;
+    while (idx < filtered.length && (await isQuestionUsedInRedis(filtered[idx]!))) idx++;
+    payload = filtered[idx] ?? first;
+    restBatch = filtered.length > idx + 1 ? filtered.slice(idx + 1) : filtered.length === 1 ? [] : rest;
   }
 
   const topicForDoc = runCategory ?? category;
@@ -198,6 +260,10 @@ export async function getQuestionForRun(
     topic: topicForDoc ?? "unknown",
   });
   logger.info("Question for run", { questionId: doc._id.toString(), level, category: topicForDoc });
+
+  // Mark as used in Redis so this question is never served again (no two questions repeated).
+  await markQuestionAsUsedInRedis(payload);
+
   return {
     payload,
     questionId: doc._id.toString(),

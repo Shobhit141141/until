@@ -49,9 +49,18 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
   const grossEarnedStx = pointsToGrossEarnedStx(result.totalPoints);
   const netEarnedStx = grossToNetEarnedStx(grossEarnedStx);
   const profit = computeProfit(netEarnedStx, totalSpentStx);
-  const profitMicroStx = Math.round(profit * MICRO_STX_PER_STX);
-  await runService.addProfitToCredits(result.walletAddress, profitMicroStx);
+
+  // Deferred settlement: apply full net result (earned − spent) to credits in one shot.
+  const netResultMicroStx = Math.round(profit * MICRO_STX_PER_STX);
+  await runService.addProfitToCredits(result.walletAddress, netResultMicroStx);
   const balanceAfterProfit = await creditsService.getBalance(result.walletAddress);
+  await creditsService.recordTransaction(
+    result.walletAddress,
+    "profit",
+    netResultMicroStx,
+    balanceAfterProfit.creditsMicroStx,
+    { refRunId: runId }
+  );
   logTransaction("profit (wrong)", result.walletAddress, profit, balanceAfterProfit.creditsStx, { runId });
 
   try {

@@ -9,8 +9,8 @@ import { MISTRAL_API_KEY, MISTRAL_MODEL } from "../config/mistral.js";
 import type { AiQuestionPayload } from "../types/question.types.js";
 
 const MIN_CONFIDENCE = 0.8;
-const MIN_SOLVE_TIME_SEC = 10;
-const MAX_SOLVE_TIME_SEC = 300;
+const MIN_SOLVE_TIME_SEC = 8;
+const MAX_SOLVE_TIME_SEC = 30;
 const MAX_RETRIES = 2;
 
 export type GenerateQuestionInput = {
@@ -37,9 +37,11 @@ CONSTRAINTS:
 - Stay strictly within the chosen category.
 - Do not reference previous questions.
 
+TIME (HARD): Every question MUST be solvable in 30 seconds or less. estimated_solve_time_sec MUST be in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. No exceptions.
+
 OUTPUT STRICT JSON ONLY:
-{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":42,"confidence_score":0.91,"reasoning":"Short explanation of why the correct answer is correct."}
-- correct_index is 0–3. difficulty and confidence_score 0–1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" (1-3 sentences) explaining why the correct answer is correct.`;
+{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":15,"confidence_score":0.91,"reasoning":"Short explanation of why the correct answer is correct."}
+- correct_index is 0–3. difficulty and confidence_score 0–1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" (1-3 sentences).`;
 
 /** Exported so question service can hash the same prompt used for the LLM call. */
 export function buildPrompt(input: GenerateQuestionInput): string {
@@ -238,8 +240,10 @@ export function buildBatchPrompt(
 Generate exactly ${count} questions. Same category for all. Difficulty progression: ${levels.join(", ")}. Each question must be distinct. No clichés; clever, not tricky.
 ${seedPart}
 
+TIME (HARD): Every question MUST be solvable in 30 seconds or less. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}].
+
 Respond with ONLY a JSON array of ${count} objects, no markdown, no explanation:
-[{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":42,"confidence_score":0.91,"reasoning":"Why the correct answer is correct."}, ...]
+[{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":15,"confidence_score":0.91,"reasoning":"Why the correct answer is correct."}, ...]
 - correct_index 0-3 per question. difficulty and confidence_score 0-1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" per question.`;
 }
 

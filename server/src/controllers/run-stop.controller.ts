@@ -61,19 +61,18 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
   const netEarnedStx = grossToNetEarnedStx(grossEarnedStx);
   const profit = computeProfit(netEarnedStx, totalSpentStx);
 
-  if (profit > 0) {
-    const profitMicroStx = Math.round(profit * MICRO_STX_PER_STX);
-    await runService.addProfitToCredits(walletAddress, profitMicroStx);
-    const balance = await creditsService.getBalance(walletAddress);
-    await creditsService.recordTransaction(
-      walletAddress,
-      "profit",
-      profitMicroStx,
-      balance.creditsMicroStx,
-      { refRunId: runId }
-    );
-    logTransaction("profit", walletAddress, profit, balance.creditsStx, { runId });
-  }
+  // Deferred settlement: apply full net result (earned − spent) to credits in one shot.
+  const netResultMicroStx = Math.round(profit * MICRO_STX_PER_STX);
+  await runService.addProfitToCredits(walletAddress, netResultMicroStx);
+  const balance = await creditsService.getBalance(walletAddress);
+  await creditsService.recordTransaction(
+    walletAddress,
+    "profit",
+    netResultMicroStx,
+    balance.creditsMicroStx,
+    { refRunId: runId }
+  );
+  logTransaction("profit", walletAddress, profit, balance.creditsStx, { runId });
 
   const { bonusStx: milestoneBonusStx, milestoneTier } = await runService.computeAndAddMilestoneBonus(
     walletAddress,

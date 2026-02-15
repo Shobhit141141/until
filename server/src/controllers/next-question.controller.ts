@@ -47,9 +47,10 @@ export async function submitPaymentAndGetQuestion(
 
   logger.info(`POST /next-question txId=${txId ? `${txId.slice(0, 8)}...` : ""} nonceLen=${nonce.length} runId=${runId ?? "none"} useCredits=${useCredits}`);
 
-  // Credits path: deduct from balance, no on-chain payment
+  // Credits path: deferred settlement — no deduction until run end. Check balance covers full run cost so far + this question.
   if (useCredits && walletAddressBody) {
     let level: number;
+    let totalRequiredMicroStx: number;
     if (runId) {
       const run = runStateService.getRun(runId);
       if (!run) {
@@ -61,38 +62,33 @@ export async function submitPaymentAndGetQuestion(
         return;
       }
       level = run.level;
+      const costMicroStx = getCostMicroStx(level);
+      totalRequiredMicroStx = Number(run.spentMicroStx) + Number(costMicroStx);
     } else {
       level = Math.max(0, Math.min(9, Number(raw.difficulty) ?? 0));
+      const costMicroStx = getCostMicroStx(level);
+      totalRequiredMicroStx = Number(costMicroStx);
     }
-    const costMicroStx = getCostMicroStx(level);
-    const deducted = await userService.deductCreditsIfSufficient(walletAddressBody, Number(costMicroStx));
-    if (!deducted) {
-      const current = await userService.getCreditsMicroStx(walletAddressBody);
+    const balanceMicroStx = await userService.getCreditsMicroStx(walletAddressBody);
+    if (balanceMicroStx < totalRequiredMicroStx) {
       res.status(402).json({
         error: "Insufficient credits",
         topUp: true,
         suggestedAmountStx: TOP_UP_SUGGESTED_STX,
         recipient: (STACKS_RECIPIENT_ADDRESS || "").trim(),
-        creditsStx: current / 1_000_000,
-        requiredStx: Number(costMicroStx) / 1_000_000,
+        creditsStx: balanceMicroStx / 1_000_000,
+        requiredStx: totalRequiredMicroStx / 1_000_000,
       });
       return;
     }
-    const balanceAfter = await userService.getCreditsMicroStx(walletAddressBody);
-    await creditsService.recordTransaction(
-      walletAddressBody,
-      "deduct",
-      -Number(costMicroStx),
-      balanceAfter,
-      runId ? { refRunId: runId } : undefined
-    );
+    const costMicroStx = getCostMicroStx(level);
     const user = await userService.findOrCreateUser(walletAddressBody);
     let resolvedRunId: string;
     const seed = `credits-${level}-${walletAddressBody}-${Date.now()}`;
     try {
       const result = await questionService.getQuestionForRun(runId, level, user._id, seed, preferredCategory);
       const { payload, questionId, category: resultCategory, restBatch } = result;
-      const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 60;
+      const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 30;
       if (runId) {
         const updated = runStateService.setQuestionForRun(
           runId,
@@ -102,15 +98,6 @@ export async function submitPaymentAndGetQuestion(
           estimatedSolveTimeSec
         );
         if (!updated) {
-          await userService.addCredits(walletAddressBody, Number(costMicroStx));
-          const refundBalance = await userService.getCreditsMicroStx(walletAddressBody);
-          await creditsService.recordTransaction(
-            walletAddressBody,
-            "refund",
-            Number(costMicroStx),
-            refundBalance,
-            runId ? { refRunId: runId } : undefined
-          );
           res.status(400).json({ error: "Run not found or expired" });
           return;
         }
@@ -133,7 +120,7 @@ export async function submitPaymentAndGetQuestion(
           runBatchService.setBatch(resolvedRunId, category, restBatch);
         }
       }
-      res.json({
+      const json: Record<string, unknown> = {
         question: payload.question,
         options: payload.options,
         difficulty: payload.difficulty,
@@ -141,17 +128,12 @@ export async function submitPaymentAndGetQuestion(
         estimated_solve_time_sec: payload.estimated_solve_time_sec,
         runId: resolvedRunId,
         level,
-      });
+      };
+      if (process.env.NODE_ENV === "development") {
+        json.correctIndex = payload.correct_index;
+      }
+      res.json(json);
     } catch (err) {
-      await userService.addCredits(walletAddressBody, Number(costMicroStx));
-      const refundBalance = await userService.getCreditsMicroStx(walletAddressBody);
-      await creditsService.recordTransaction(
-        walletAddressBody,
-        "refund",
-        Number(costMicroStx),
-        refundBalance,
-        undefined
-      );
       const errMsg = err instanceof Error ? err.message : String(err);
       logger.error(errMsg);
       const isRateLimit =
@@ -159,8 +141,8 @@ export async function submitPaymentAndGetQuestion(
         (errMsg.includes("429") || errMsg.includes("quota") || errMsg.includes("rate limit"));
       res.status(502).json({
         error: isRateLimit
-          ? "AI rate limit reached. Credits refunded. Try again in a few minutes."
-          : "Question generation failed; credits refunded",
+          ? "AI rate limit reached. Try again in a few minutes."
+          : "Question generation failed",
       });
     }
     return;
@@ -258,7 +240,7 @@ export async function submitPaymentAndGetQuestion(
     );
     const { payload, questionId, category: resultCategory, restBatch } = result;
     const priceMicroStx = entry.priceMicroStx;
-    const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 60;
+    const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 30;
 
     if (resolvedRunId) {
       const updated = runStateService.setQuestionForRun(
@@ -291,8 +273,7 @@ export async function submitPaymentAndGetQuestion(
       }
     }
 
-    // Never send correct_index to client
-    res.json({
+    const json: Record<string, unknown> = {
       question: payload.question,
       options: payload.options,
       difficulty: payload.difficulty,
@@ -300,7 +281,11 @@ export async function submitPaymentAndGetQuestion(
       estimated_solve_time_sec: payload.estimated_solve_time_sec,
       runId: resolvedRunId,
       level,
-    });
+    };
+    if (process.env.NODE_ENV === "development") {
+      json.correctIndex = payload.correct_index;
+    }
+    res.json(json);
   } catch (err) {
     logger.error(err instanceof Error ? err.message : String(err));
     res.status(502).json({

@@ -118,6 +118,9 @@ export async function withdraw(req: Request, res: Response): Promise<void> {
   res.json({
     creditsStx: result.creditsStx,
     withdrawnStx: result.withdrawnStx,
-    message: `Converted ${result.withdrawnStx} STX credits. Payout is processed by the platform (min 0.01 STX).`,
+    txId: result.txId,
+    message: result.txId
+      ? `Sent ${result.withdrawnStx} STX to your wallet. Tx: ${result.txId}`
+      : `Withdrew ${result.withdrawnStx} STX credits.`,
   });
 }

@@ -83,6 +83,8 @@ export type QuestionResponse = {
   estimated_solve_time_sec: number;
   runId: string;
   level: number;
+  /** Only present in dev (NODE_ENV=development). Do not use in production. */
+  correctIndex?: number;
 };
 export type SubmitAnswerCorrect = {
   correct: true;
@@ -164,6 +166,21 @@ export type CategoryMetadata = {
 export type CategoriesResponse = {
   categories: string[];
   metadata?: Record<string, CategoryMetadata>;
+};
+
+export type SampleQuestion = {
+  question: string;
+  options: string[];
+  correctIndex: number;
+};
+
+export type SampleSet = {
+  title: string;
+  questions: SampleQuestion[];
+};
+
+export type CategorySamplesResponse = {
+  sets: SampleSet[];
 };
 
 export type RunHistoryQuestion = {

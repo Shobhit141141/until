@@ -5,6 +5,7 @@
 import type { AiQuestionPayload } from "../types/question.types.js";
 import * as runStateService from "./run-state.service.js";
 import * as aiService from "./ai.service.js";
+import * as fallbackQuestions from "./fallback-questions.service.js";
 import { getRandomCategory } from "../config/categories.js";
 import { logger } from "../config/logger.js";
 
@@ -93,7 +94,15 @@ export function refillRunBatchIfNeeded(runId: string): void {
       logger.info("Run batch refilled", { runId: runId.slice(0, 8), added: questions.length });
     })
     .catch((err) => {
-      logger.error("Run batch refill failed", { runId: runId.slice(0, 8), err: String(err) });
+      logger.warn("Run batch refill failed, trying fallback", { runId: runId.slice(0, 8), err: String(err) });
+      const questions = fallbackQuestions.getFallbackBatch(category, startLevel, BATCH_SIZE);
+      if (questions.length > 0) {
+        const entry = runBatchStore.get(runId);
+        if (entry) {
+          entry.questions.push(...questions);
+          logger.info("Run batch refilled from fallback", { runId: runId.slice(0, 8), added: questions.length });
+        }
+      }
     });
 }
 
@@ -107,17 +116,24 @@ export function pickCategoryForNewRun(): string {
 /**
  * Generate initial batch for a new run: same category, difficulties 0..BATCH_SIZE-1.
  * Returns { first, rest } so caller can use first and store rest.
+ * If AI fails, uses static fallback questions (last resort).
  */
 export async function createInitialBatch(category: string): Promise<{
   first: AiQuestionPayload;
   rest: AiQuestionPayload[];
 }> {
   const seed = `init-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  const batch = await aiService.generateQuestionBatch(
-    { category, startLevel: 0, count: BATCH_SIZE, seed },
-    BATCH_SIZE
-  );
-  if (batch.length === 0) throw new Error("Initial batch generated no valid questions");
+  let batch: AiQuestionPayload[];
+  try {
+    batch = await aiService.generateQuestionBatch(
+      { category, startLevel: 0, count: BATCH_SIZE, seed },
+      BATCH_SIZE
+    );
+  } catch (err) {
+    logger.warn("AI batch failed, using fallback questions", { category, err: String(err) });
+    batch = fallbackQuestions.getFallbackBatch(category, 0, BATCH_SIZE);
+  }
+  if (batch.length === 0) throw new Error("Initial batch generated no valid questions and no fallback");
   const [first, ...rest] = batch;
   return { first: first!, rest };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { request } from "@stacks/connect";
 import {
   apiFetch,
@@ -19,7 +20,7 @@ import {
 } from "@/lib/api";
 import { useWallet } from "@/contexts/WalletContext";
 
-const COST_STX_BY_LEVEL = [0.002, 0.004, 0.006, 0.008, 0.012, 0.018, 0.026, 0.036, 0.048, 0.062];
+const COST_STX_BY_LEVEL = [0.72, 1.44, 2.16, 2.88, 4.32, 6.48, 9.36, 12.96, 17.28, 22.32];
 const MIN_LEVEL_BEFORE_STOP = 4;
 const MIN_WITHDRAW_STX = 0.01;
 const MICRO_STX_PER_STX = 1_000_000;
@@ -75,9 +76,10 @@ export default function Home() {
   const [showRunHistory, setShowRunHistory] = useState(false);
   const [isLoadingRunHistory, setIsLoadingRunHistory] = useState(false);
   const [topUpStepCustomStx, setTopUpStepCustomStx] = useState("");
+  const [withdrawSuccess, setWithdrawSuccess] = useState<string | null>(null);
   const [completedLevelsInRun, setCompletedLevelsInRun] = useState(0);
 
-  const costForLevel = (level: number) => COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.002;
+  const costForLevel = (level: number) => COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.72;
 
   const refreshCreditsBalance = useCallback(() => {
     if (!wallet) return;
@@ -444,7 +446,7 @@ export default function Home() {
     }
     setError(null);
     setIsWithdrawing(true);
-    const res = await apiFetch<{ creditsStx: number; withdrawnStx: number }>("/credits/withdraw", {
+    const res = await apiFetch<{ creditsStx: number; withdrawnStx: number; txId?: string; message?: string }>("/credits/withdraw", {
       method: "POST",
       body: { walletAddress: wallet, amountStx: amount },
     });
@@ -455,6 +457,14 @@ export default function Home() {
     }
     setWithdrawAmount("");
     refreshCreditsBalance();
+    setWithdrawSuccess(res.data?.message ?? `Sent ${res.data?.withdrawnStx} STX to your wallet.`);
+    if (res.data?.txId) {
+      const base = process.env.NEXT_PUBLIC_STACKS_EXPLORER_URL ?? "https://explorer.hiro.so";
+      const isTestnet = base.includes("testnet");
+      const path = isTestnet ? `/txid/STACKS_TESTNET/${res.data.txId}` : `/txid/${res.data.txId}`;
+      setWithdrawSuccess(`${res.data.message ?? `Sent ${res.data.withdrawnStx} STX.`} View on explorer: ${base.replace(/\/$/, "")}${path}`);
+    }
+    window.setTimeout(() => setWithdrawSuccess(null), 12000);
   };
 
   const loadCreditsHistory = () => {
@@ -586,16 +596,24 @@ export default function Home() {
           {categories.length > 0 && (
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Category (server-only)</label>
-              <select
-                value={selectedCategory ?? ""}
-                onChange={(e) => setSelectedCategory(e.target.value || null)}
-                className="rounded border border-zinc-300 dark:border-zinc-600 px-3 py-2 bg-background text-sm max-w-xs"
-              >
-                <option value="">Random</option>
-                {categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={selectedCategory ?? ""}
+                  onChange={(e) => setSelectedCategory(e.target.value || null)}
+                  className="rounded border border-zinc-300 dark:border-zinc-600 px-3 py-2 bg-background text-sm max-w-xs"
+                >
+                  <option value="">Random</option>
+                  {categories.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+                <Link
+                  href="/categories"
+                  className="text-sm text-zinc-500 hover:text-foreground underline"
+                >
+                  Browse categories
+                </Link>
+              </div>
             </div>
           )}
           <button
@@ -731,6 +749,9 @@ export default function Home() {
             )}
           </p>
           <p className="text-lg font-medium">{question.question}</p>
+          {process.env.NODE_ENV === "development" && question.correctIndex !== undefined && (
+            <p className="text-xs text-amber-600 dark:text-amber-400 font-mono">[DEV] Correct answer shown below</p>
+          )}
           <ul className="flex flex-col gap-2">
             {question.options.map((opt, i) => (
               <li key={i}>
@@ -741,9 +762,12 @@ export default function Home() {
                     selectedIndex === i
                       ? "border-foreground bg-zinc-100 dark:bg-zinc-800"
                       : "hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                  }`}
+                  } ${process.env.NODE_ENV === "development" && question.correctIndex === i ? "ring-1 ring-amber-500/50" : ""}`}
                 >
-                  {opt}
+                  <span>{opt}</span>
+                  {process.env.NODE_ENV === "development" && question.correctIndex === i && (
+                    <span className="ml-2 text-xs font-medium text-amber-600 dark:text-amber-400">✓ Correct</span>
+                  )}
                 </button>
               </li>
             ))}
@@ -850,7 +874,7 @@ export default function Home() {
                 <ul className="list-none space-y-1 text-zinc-600 dark:text-zinc-400">
                   <li>• Total earned: <strong className="text-foreground">{(r.totalPoints ?? 0).toFixed(4)}</strong> STX (from {r.completedLevels} correct; each = base reward × time multiplier)</li>
                   <li>• Spent (questions paid): <strong className="text-foreground">{spentStx.toFixed(4)}</strong> STX</li>
-                  <li>• Profit: earned − spent = <strong className="text-foreground">{(r.profit ?? 0).toFixed(4)}</strong> STX (added to your credits)</li>
+                  <li>• Settlement: earned − spent = <strong className="text-foreground">{(r.profit ?? 0).toFixed(4)}</strong> STX applied to your credits {(r.profit ?? 0) > 0 ? "(win)" : (r.profit ?? 0) < 0 ? "(loss)" : "(break-even)"}</li>
                   {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && (
                     <li>• Milestone bonus ({r.milestoneTier === "100" ? "100%" : "70%"}): <strong className="text-foreground">{r.milestoneBonusStx.toFixed(4)}</strong> STX</li>
                   )}
@@ -879,7 +903,7 @@ export default function Home() {
               <ul className="list-none space-y-1 text-zinc-600 dark:text-zinc-400">
                 <li>• Total earned: <strong className="text-foreground">{typeof r.totalPoints === "number" ? r.totalPoints.toFixed(4) : r.totalPoints}</strong> STX (from {r.completedLevels} correct; each = base reward × time multiplier)</li>
                 <li>• Spent (questions paid): <strong className="text-foreground">{r.spent.toFixed(4)}</strong> STX</li>
-                <li>• Profit: earned − spent = <strong className="text-foreground">{r.profit.toFixed(4)}</strong> STX (added to your credits)</li>
+                <li>• Settlement: earned − spent = <strong className="text-foreground">{r.profit.toFixed(4)}</strong> STX applied to your credits {r.profit > 0 ? "(win)" : r.profit < 0 ? "(loss)" : "(break-even)"}</li>
                 {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && (
                   <li>• Milestone bonus ({r.milestoneTier === "100" ? "100%" : "70%"}): <strong className="text-foreground">{r.milestoneBonusStx.toFixed(4)}</strong> STX</li>
                 )}
@@ -947,6 +971,25 @@ export default function Home() {
         </div>
       )}
 
+      {withdrawSuccess && (
+        <p className="text-green-700 dark:text-green-400 text-sm">
+          {withdrawSuccess.includes("View on explorer:") ? (
+            <>
+              {withdrawSuccess.split("View on explorer:")[0]}
+              <a
+                href={withdrawSuccess.split("View on explorer:")[1]?.trim() ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline ml-1"
+              >
+                View on explorer
+              </a>
+            </>
+          ) : (
+            withdrawSuccess
+          )}
+        </p>
+      )}
       {error && (
         <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
       )}
