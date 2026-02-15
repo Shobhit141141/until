@@ -32,7 +32,8 @@ export function createRun(
   correctIndex: number,
   spentMicroStx: bigint,
   estimatedSolveTimeSec: number,
-  category: string
+  category: string,
+  isPractice?: boolean
 ): string {
   schedulePrune();
   const runId = randomUUID();
@@ -44,7 +45,7 @@ export function createRun(
     expiresAt,
     walletAddress,
     completedLevels: 0,
-    spentMicroStx,
+    spentMicroStx: isPractice ? 0n : spentMicroStx,
     totalPoints: 0,
     questionDeliveredAt: now,
     estimatedSolveTimeSec,
@@ -52,6 +53,7 @@ export function createRun(
     category,
     questionResults: [],
     deliveredQuestionInfo: [],
+    isPractice: isPractice === true,
   });
   return runId;
 }
@@ -80,7 +82,7 @@ export function setQuestionForRun(
   entry.level = level;
   entry.correctIndex = correctIndex;
   entry.expiresAt = new Date(Date.now() + RUN_STATE_TTL_MS);
-  entry.spentMicroStx += spentMicroStx;
+  if (!entry.isPractice) entry.spentMicroStx += spentMicroStx;
   entry.questionDeliveredAt = now;
   entry.estimatedSolveTimeSec = estimatedSolveTimeSec;
   store.set(runId, entry);
@@ -91,7 +93,7 @@ export type QuestionResultEntry = { questionId: string; selectedIndex: number; p
 
 export type SubmitResult =
   | { ok: true; correct: true; level: number; completedLevels: number; totalPoints: number }
-  | { ok: true; correct: false; runEnded: true; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number; questionIds: string[]; questionResults: QuestionResultEntry[]; deliveredQuestionInfo: DeliveredQuestionInfo[]; correctOptionText?: string; reasoning?: string }
+  | { ok: true; correct: false; runEnded: true; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number; questionIds: string[]; questionResults: QuestionResultEntry[]; deliveredQuestionInfo: DeliveredQuestionInfo[]; correctOptionText?: string; reasoning?: string; isPractice?: boolean }
   | { ok: false; reason: string };
 
 /** Verify answer server-side. Earned = baseRewardStx × timeMultiplier. Timeout = wrong (run ends). */
@@ -127,7 +129,7 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
   }
 
   // Wrong answer or timeout: run ends; earned so far kept, current level cost lost
-  const { walletAddress, completedLevels, spentMicroStx, totalPoints, questionIds, questionResults, deliveredQuestionInfo } = entry;
+  const { walletAddress, completedLevels, spentMicroStx, totalPoints, questionIds, questionResults, deliveredQuestionInfo, isPractice } = entry;
   const lastDelivered = (deliveredQuestionInfo ?? [])[(deliveredQuestionInfo ?? []).length - 1];
   const correctOptionText = lastDelivered?.options?.[entry.correctIndex];
   const reasoning = lastDelivered?.reasoning;
@@ -145,6 +147,7 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
     deliveredQuestionInfo: deliveredQuestionInfo ?? [],
     correctOptionText,
     reasoning,
+    isPractice,
   };
 }
 
@@ -175,8 +178,8 @@ export function addDeliveredQuestionInfo(
   return true;
 }
 
-/** User stopped. Returns run summary (questionIds, questionResults, deliveredQuestionInfo) for settlement and history. */
-export function stopRun(runId: string): {
+/** Return type of stopRun (run summary for settlement and history). */
+export type StopRunResult = {
   walletAddress: string;
   completedLevels: number;
   spentMicroStx: bigint;
@@ -184,14 +187,18 @@ export function stopRun(runId: string): {
   questionIds: string[];
   questionResults: QuestionResultEntry[];
   deliveredQuestionInfo: DeliveredQuestionInfo[];
-} | null {
+  isPractice?: boolean;
+};
+
+/** User stopped. Returns run summary (questionIds, questionResults, deliveredQuestionInfo) for settlement and history. */
+export function stopRun(runId: string): StopRunResult | null {
   const entry = store.get(runId);
   if (!entry) return null;
   if (new Date() > entry.expiresAt) {
     store.delete(runId);
     return null;
   }
-  const result = {
+  const result: StopRunResult = {
     walletAddress: entry.walletAddress,
     completedLevels: entry.completedLevels,
     spentMicroStx: entry.spentMicroStx,
@@ -199,6 +206,7 @@ export function stopRun(runId: string): {
     questionIds: entry.questionIds ?? [],
     questionResults: entry.questionResults ?? [],
     deliveredQuestionInfo: entry.deliveredQuestionInfo ?? [],
+    isPractice: entry.isPractice,
   };
   store.delete(runId);
   return result;

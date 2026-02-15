@@ -45,6 +45,8 @@ export type RunStateEntry = {
   questionResults: { questionId: string; selectedIndex: number; points: number }[];
   /** Per delivered question: correctIndex, options, reasoning (for showing correct answer + reasoning on wrong / history). */
   deliveredQuestionInfo: { questionId: string; correctIndex: number; options: string[]; reasoning?: string }[];
+  /** When true, no tokenomics: no cost, no settlement, no credits. */
+  isPractice?: boolean;
 }
 
 export const RUN_STATE_TTL_MS = 30 * 60 * 1000; // 30 min

@@ -78,6 +78,7 @@ export default function Home() {
   const [topUpStepCustomStx, setTopUpStepCustomStx] = useState("");
   const [withdrawSuccess, setWithdrawSuccess] = useState<string | null>(null);
   const [completedLevelsInRun, setCompletedLevelsInRun] = useState(0);
+  const [isPracticeRun, setIsPracticeRun] = useState(false);
 
   const costForLevel = (level: number) => COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.72;
 
@@ -155,6 +156,43 @@ export default function Home() {
         setChallenge(null);
         setTopUpRequired(null);
         setPendingAfterTopUp(null);
+        setIsPracticeRun(false);
+      }
+    } finally {
+      setIsGettingQuestion(false);
+    }
+  };
+
+  /** Practice mode: no tokenomics, no payment, no credits. Same gameplay. */
+  const getNextQuestionWithPractice = async (level: number, currentRunId?: string | null) => {
+    if (!wallet) return;
+    setError(null);
+    setIsGettingQuestion(true);
+    const body: { walletAddress: string; practice: true; difficulty?: number; runId?: string; preferredCategory?: string } = {
+      walletAddress: wallet,
+      practice: true,
+    };
+    if (currentRunId) body.runId = currentRunId;
+    else {
+      body.difficulty = level;
+      if (selectedCategory) body.preferredCategory = selectedCategory;
+    }
+    try {
+      const res = await apiFetch<QuestionResponse>("/next-question", { method: "POST", body: body as unknown as Record<string, unknown> });
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
+      if (res.data) {
+        setQuestion(res.data);
+        setQuestionStartedAt(Date.now());
+        if (!currentRunId) setCompletedLevelsInRun(0);
+        setRunId(res.data.runId);
+        setDifficulty(res.data.level);
+        setStep("question");
+        setChallenge(null);
+        setTopUpRequired(null);
+        setIsPracticeRun(!!res.data.practice);
       }
     } finally {
       setIsGettingQuestion(false);
@@ -300,6 +338,7 @@ export default function Home() {
       setStep("wrong");
       setRunId(null);
       setCompletedLevelsInRun(0);
+      setIsPracticeRun(false);
     }
     setIsSubmittingAnswer(false);
   };
@@ -326,6 +365,7 @@ export default function Home() {
       setRunId(null);
       setQuestion(null);
       setCompletedLevelsInRun(0);
+      setIsPracticeRun(false);
     }
   };
 
@@ -339,6 +379,7 @@ export default function Home() {
     setSelectedIndex(null);
     setError(null);
     setCompletedLevelsInRun(0);
+    setIsPracticeRun(false);
   };
 
   const cancelPay = () => {
@@ -616,23 +657,33 @@ export default function Home() {
               </div>
             </div>
           )}
-          <button
-            type="button"
-            onClick={() => getNextQuestionWithCredits(0)}
-            disabled={isGettingQuestion}
-            className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit disabled:opacity-50 flex items-center gap-2"
-          >
-            {isGettingQuestion ? (
-              <>
-                <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
-                Loading…
-              </>
-            ) : (
-              "Play game (use credits)"
-            )}
-          </button>
+          <div className="flex flex-wrap gap-2 items-center">
+            <button
+              type="button"
+              onClick={() => getNextQuestionWithCredits(0)}
+              disabled={isGettingQuestion}
+              className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit disabled:opacity-50 flex items-center gap-2"
+            >
+              {isGettingQuestion ? (
+                <>
+                  <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                  Loading…
+                </>
+              ) : (
+                "Play game (use credits)"
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => getNextQuestionWithPractice(0)}
+              disabled={isGettingQuestion}
+              className="rounded border border-zinc-400 dark:border-zinc-500 px-4 py-2 font-medium w-fit disabled:opacity-50"
+            >
+              Practice (no cost)
+            </button>
+          </div>
           <p className="text-sm text-zinc-500 max-w-md">
-            One top-up, then play from credits. Profit by chaining correct answers, then stop & finish to add profit to your balance.
+            One top-up, then play from credits. Or practice with no tokenomics. Profit by chaining correct answers, then stop & finish to add profit to your balance.
           </p>
         </div>
       )}
@@ -791,8 +842,8 @@ export default function Home() {
             <button
               type="button"
               onClick={stopRun}
-              disabled={isStoppingRun || completedLevelsInRun < MIN_LEVEL_BEFORE_STOP}
-              title={completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Complete level ${MIN_LEVEL_BEFORE_STOP} to unlock Stop` : undefined}
+              disabled={isStoppingRun || (!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP)}
+              title={!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Complete level ${MIN_LEVEL_BEFORE_STOP} to unlock Stop` : undefined}
               className="rounded border px-4 py-2 disabled:opacity-50 flex items-center gap-2"
             >
               {isStoppingRun ? (
@@ -800,7 +851,7 @@ export default function Home() {
                   <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   Finishing…
                 </>
-              ) : completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? (
+              ) : !isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? (
                 `Stop & finish (level ${MIN_LEVEL_BEFORE_STOP}+)`
               ) : (
                 "Stop & finish"
@@ -821,11 +872,11 @@ export default function Home() {
         <div className="flex flex-col gap-3">
           <p className="font-medium text-green-700 dark:text-green-400">
             Correct. Level {result.level}, {result.completedLevels} completed.
-            {result.totalPoints != null && typeof result.totalPoints === "number" && ` ${result.totalPoints.toFixed(4)} STX earned so far.`}
+            {!isPracticeRun && result.totalPoints != null && typeof result.totalPoints === "number" && ` ${result.totalPoints.toFixed(4)} STX earned so far.`}
           </p>
           <button
             type="button"
-            onClick={() => getNextQuestionWithCredits(result.level, runId)}
+            onClick={() => isPracticeRun ? getNextQuestionWithPractice(result.level, runId) : getNextQuestionWithCredits(result.level, runId)}
             disabled={isGettingQuestion}
             className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit disabled:opacity-50 flex items-center gap-2"
           >
@@ -834,6 +885,8 @@ export default function Home() {
                 <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
                 Loading next…
               </>
+            ) : isPracticeRun ? (
+              "Next question (practice)"
             ) : (
               `Next question (−${costForLevel(result.level)} STX from credits)`
             )}
@@ -841,22 +894,23 @@ export default function Home() {
           <button
             type="button"
             onClick={stopRun}
-            disabled={isStoppingRun || completedLevelsInRun < MIN_LEVEL_BEFORE_STOP}
-            title={completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Complete level ${MIN_LEVEL_BEFORE_STOP} to unlock Stop` : undefined}
+            disabled={isStoppingRun || (!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP)}
+            title={!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Complete level ${MIN_LEVEL_BEFORE_STOP} to unlock Stop` : undefined}
             className="rounded border px-4 py-2 w-fit disabled:opacity-50"
           >
-            {completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Stop & finish (level ${MIN_LEVEL_BEFORE_STOP}+)` : "Stop & finish"}
+            {!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Stop & finish (level ${MIN_LEVEL_BEFORE_STOP}+)` : "Stop & finish"}
           </button>
         </div>
       )}
 
       {step === "wrong" && result && "runEnded" in result && (() => {
-        const r = result as SubmitAnswerWrong;
-        const hasBreakdown = r.grossEarnedStx != null && r.netEarnedStx != null && r.profit != null && (r.spent != null || r.spentMicroStx);
+        const r = result as SubmitAnswerWrong & { practice?: boolean };
+        const isPractice = r.practice === true;
+        const hasBreakdown = !isPractice && r.grossEarnedStx != null && r.netEarnedStx != null && r.profit != null && (r.spent != null || r.spentMicroStx);
         const spentStx = r.spent ?? (r.spentMicroStx ? Number(r.spentMicroStx) / MICRO_STX_PER_STX : 0);
         return (
           <div className="flex flex-col gap-4">
-            <p className="font-medium text-red-700 dark:text-red-400">Wrong. Run ended.</p>
+            <p className="font-medium text-red-700 dark:text-red-400">Wrong. Run ended.{isPractice && " (Practice — no cost.)"}</p>
             {"correctOptionText" in r && r.correctOptionText && (
               <p className="text-sm text-zinc-700 dark:text-zinc-300">
                 Correct answer: <strong>{r.correctOptionText}</strong>
@@ -888,16 +942,18 @@ export default function Home() {
         );
       })()}
 
-      {step === "stopped" && result && "totalPoints" in result && "grossEarnedStx" in result && "spent" in result && (() => {
-        const r = result as StopRunResponse;
+      {step === "stopped" && result && "totalPoints" in result && (() => {
+        const r = result as StopRunResponse & { practice?: boolean };
+        const isPractice = r.practice === true;
         return (
           <div className="flex flex-col gap-4">
-            <p className="font-medium">Run finished.</p>
-            {r.creditsStx != null && (
+            <p className="font-medium">Run finished.{isPractice && " (Practice — no cost.)"}</p>
+            {!isPractice && r.creditsStx != null && (
               <p className="text-sm text-zinc-600 dark:text-zinc-400">
                 Your credits balance: <strong className="font-mono text-foreground">{r.creditsStx.toFixed(4)}</strong> STX
               </p>
             )}
+            {!isPractice && "grossEarnedStx" in r && "spent" in r && (
             <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-2 text-sm">
               <p className="font-medium text-zinc-700 dark:text-zinc-300">How profit was decided</p>
               <ul className="list-none space-y-1 text-zinc-600 dark:text-zinc-400">
@@ -909,10 +965,13 @@ export default function Home() {
                 )}
               </ul>
             </div>
+            )}
+            {!isPractice && "grossEarnedStx" in r && "spent" in r && (
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
               Summary: {r.completedLevels} correct → {r.netEarnedStx.toFixed(4)} STX earned. Spent {r.spent.toFixed(4)} STX. Profit: {r.profit.toFixed(4)} STX.
               {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && ` Milestone bonus: ${r.milestoneBonusStx.toFixed(4)} STX.`}
             </p>
+            )}
             <button type="button" onClick={startOver} className="rounded border px-4 py-2 w-fit">
               Play again
             </button>

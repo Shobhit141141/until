@@ -35,6 +35,7 @@ export async function submitPaymentAndGetQuestion(
     runId?: string;
     difficulty?: number;
     useCredits?: boolean;
+    practice?: boolean;
     walletAddress?: string;
     preferredCategory?: string;
   };
@@ -42,10 +43,94 @@ export async function submitPaymentAndGetQuestion(
   const nonce = typeof raw.nonce === "string" ? raw.nonce.trim() : "";
   const runId = typeof raw.runId === "string" ? raw.runId.trim() || undefined : undefined;
   const useCredits = raw.useCredits === true;
+  const practice = raw.practice === true;
   const walletAddressBody = typeof raw.walletAddress === "string" ? raw.walletAddress.trim() : "";
   const preferredCategory = typeof raw.preferredCategory === "string" ? raw.preferredCategory.trim() || undefined : undefined;
 
-  logger.info(`POST /next-question txId=${txId ? `${txId.slice(0, 8)}...` : ""} nonceLen=${nonce.length} runId=${runId ?? "none"} useCredits=${useCredits}`);
+  logger.info(`POST /next-question txId=${txId ? `${txId.slice(0, 8)}...` : ""} nonceLen=${nonce.length} runId=${runId ?? "none"} useCredits=${useCredits} practice=${practice}`);
+
+  // Practice mode: no tokenomics — no payment, no credits, no settlement. Same gameplay, zero cost.
+  if (practice && walletAddressBody) {
+    let level: number;
+    if (runId) {
+      const run = runStateService.getRun(runId);
+      if (!run) {
+        res.status(400).json({ error: "Run not found or expired" });
+        return;
+      }
+      if (run.walletAddress !== walletAddressBody) {
+        res.status(403).json({ error: "Run does not belong to this wallet" });
+        return;
+      }
+      if (!run.isPractice) {
+        res.status(400).json({ error: "This run is a paid run; use practice runId only with practice: true" });
+        return;
+      }
+      level = run.level;
+    } else {
+      level = Math.max(0, Math.min(9, Number(raw.difficulty) ?? 0));
+    }
+    const user = await userService.findOrCreateUser(walletAddressBody);
+    let resolvedRunId: string;
+    const seed = `practice-${level}-${walletAddressBody}-${Date.now()}`;
+    try {
+      const result = await questionService.getQuestionForRun(runId, level, user._id, seed, preferredCategory);
+      const { payload, questionId, category: resultCategory, restBatch } = result;
+      const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 30;
+      const costMicroStx = 0n;
+      if (runId) {
+        const updated = runStateService.setQuestionForRun(
+          runId,
+          level,
+          payload.correct_index,
+          costMicroStx,
+          estimatedSolveTimeSec
+        );
+        if (!updated) {
+          res.status(400).json({ error: "Run not found or expired" });
+          return;
+        }
+        runStateService.addQuestionIdToRun(runId, questionId);
+        runStateService.addDeliveredQuestionInfo(runId, questionId, payload.correct_index, payload.options, payload.reasoning);
+        resolvedRunId = runId;
+      } else {
+        const category = resultCategory ?? runBatchService.pickCategoryForNewRun();
+        resolvedRunId = runStateService.createRun(
+          walletAddressBody,
+          level,
+          payload.correct_index,
+          costMicroStx,
+          estimatedSolveTimeSec,
+          category,
+          true
+        );
+        runStateService.addQuestionIdToRun(resolvedRunId, questionId);
+        runStateService.addDeliveredQuestionInfo(resolvedRunId, questionId, payload.correct_index, payload.options, payload.reasoning);
+        if (restBatch && restBatch.length > 0) {
+          runBatchService.setBatch(resolvedRunId, category, restBatch);
+        }
+      }
+      const json: Record<string, unknown> = {
+        question: payload.question,
+        options: payload.options,
+        difficulty: payload.difficulty,
+        difficultyLabel: getDifficultyLabel(level),
+        estimated_solve_time_sec: payload.estimated_solve_time_sec,
+        runId: resolvedRunId,
+        level,
+        practice: true,
+      };
+      if (process.env.NODE_ENV === "development") {
+        json.correctIndex = payload.correct_index;
+      }
+      res.json(json);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      logger.error(errMsg);
+      res.status(502).json({ error: "Question generation failed" });
+    }
+    return;
+  }
 
   // Credits path: deferred settlement — no deduction until run end. Check balance covers full run cost so far + this question.
   if (useCredits && walletAddressBody) {
@@ -59,6 +144,10 @@ export async function submitPaymentAndGetQuestion(
       }
       if (run.walletAddress !== walletAddressBody) {
         res.status(403).json({ error: "Run does not belong to this wallet" });
+        return;
+      }
+      if (run.isPractice) {
+        res.status(400).json({ error: "This run is a practice run; use credits with a paid run" });
         return;
       }
       level = run.level;

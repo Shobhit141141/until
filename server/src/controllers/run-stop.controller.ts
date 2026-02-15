@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import * as runStateService from "../services/run-state.service.js";
+import type { StopRunResult } from "../services/run-state.service.js";
 import * as runBatchService from "../services/run-batch.service.js";
 import * as runService from "../services/run.service.js";
 import * as creditsService from "../services/credits.service.js";
@@ -36,7 +37,7 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
     res.status(403).json({ error: "Run does not belong to this wallet" });
     return;
   }
-  if (existing.completedLevels < MIN_LEVEL_BEFORE_STOP) {
+  if (!existing.isPractice && existing.completedLevels < MIN_LEVEL_BEFORE_STOP) {
     res.status(400).json({
       error: "Must complete at least 4 levels before stopping",
       completedLevels: existing.completedLevels,
@@ -45,7 +46,7 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  const run = runStateService.stopRun(runId);
+  const run: StopRunResult | null = runStateService.stopRun(runId);
   runBatchService.clearRunBatch(runId);
   if (!run) {
     res.status(404).json({ error: "Run not found or expired" });
@@ -53,6 +54,24 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
   }
   if (run.walletAddress !== walletAddress) {
     res.status(403).json({ error: "Run does not belong to this wallet" });
+    return;
+  }
+
+  // Practice run: no settlement, no credits, no milestone. Allow stop anytime.
+  if (run.isPractice) {
+    res.status(201).json({
+      runId,
+      totalPoints: run.totalPoints,
+      completedLevels: run.completedLevels,
+      spent: 0,
+      grossEarnedStx: 0,
+      netEarnedStx: 0,
+      profit: 0,
+      milestoneBonusStx: 0,
+      milestoneTier: null,
+      creditsStx: 0,
+      practice: true,
+    });
     return;
   }
 

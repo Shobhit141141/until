@@ -85,6 +85,8 @@ export type QuestionResponse = {
   level: number;
   /** Only present in dev (NODE_ENV=development). Do not use in production. */
   correctIndex?: number;
+  /** Present when this run is practice mode (no tokenomics). */
+  practice?: boolean;
 };
 export type SubmitAnswerCorrect = {
   correct: true;

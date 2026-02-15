@@ -43,14 +43,36 @@ export async function submitAnswer(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  // Wrong answer: run ended. Clear run batch and settle.
+  // Wrong answer: run ended. Clear run batch.
   runBatchService.clearRunBatch(runId);
+
+  // Practice run: no settlement, no credits, no GameRun persist.
+  if (result.isPractice) {
+    res.json({
+      correct: false,
+      runEnded: true,
+      completedLevels: result.completedLevels,
+      totalPoints: result.totalPoints,
+      spent: 0,
+      spentMicroStx: "0",
+      runId,
+      grossEarnedStx: 0,
+      netEarnedStx: 0,
+      profit: 0,
+      milestoneBonusStx: 0,
+      milestoneTier: null,
+      correctOptionText: result.correctOptionText,
+      reasoning: result.reasoning,
+      practice: true,
+    });
+    return;
+  }
+
+  // Deferred settlement: apply full net result (earned − spent) to credits in one shot.
   const totalSpentStx = Number(result.spentMicroStx) / MICRO_STX_PER_STX;
   const grossEarnedStx = pointsToGrossEarnedStx(result.totalPoints);
   const netEarnedStx = grossToNetEarnedStx(grossEarnedStx);
   const profit = computeProfit(netEarnedStx, totalSpentStx);
-
-  // Deferred settlement: apply full net result (earned − spent) to credits in one shot.
   const netResultMicroStx = Math.round(profit * MICRO_STX_PER_STX);
   await runService.addProfitToCredits(result.walletAddress, netResultMicroStx);
   const balanceAfterProfit = await creditsService.getBalance(result.walletAddress);
