@@ -7,8 +7,9 @@ import * as aiService from "./ai.service.js";
 import { getRandomCategory } from "../config/categories.js";
 import { logger } from "../config/logger.js";
 
-const POOL_REFILL_THRESHOLD = 3;
-const BATCH_SIZE = 10;
+const POOL_REFILL_THRESHOLD = 5;
+/** Match run-batch: 20–25 questions of increasing difficulty. */
+const BATCH_SIZE = 25;
 
 type PoolEntry = { payload: AiQuestionPayload; level: number };
 

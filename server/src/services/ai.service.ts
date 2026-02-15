@@ -223,7 +223,8 @@ async function generateQuestionContentMistral(
   return payload;
 }
 
-const BATCH_SIZE = 10;
+/** Batch size for multi-question generation: 20–25 questions, same category, increasing difficulty. */
+const BATCH_SIZE = 25;
 
 /** Prompt for generating N questions in one call: same category, difficulties startLevel..startLevel+count-1. */
 export function buildBatchPrompt(

@@ -9,8 +9,9 @@ import * as fallbackQuestions from "./fallback-questions.service.js";
 import { getRandomCategory } from "../config/categories.js";
 import { logger } from "../config/logger.js";
 
-const BATCH_SIZE = 8;
-const REFILL_THRESHOLD = 2;
+/** Initial and refill batch: 20–25 questions of increasing difficulty, same category. */
+const BATCH_SIZE = 25;
+const REFILL_THRESHOLD = 6;
 
 type RunBatchEntry = {
   category: string;
@@ -114,7 +115,7 @@ export function pickCategoryForNewRun(): string {
 }
 
 /**
- * Generate initial batch for a new run: same category, difficulties 0..BATCH_SIZE-1.
+ * Generate initial batch for a new run: same category, BATCH_SIZE questions of increasing difficulty (0, 1, …, BATCH_SIZE-1).
  * Returns { first, rest } so caller can use first and store rest.
  * If AI fails, uses static fallback questions (last resort).
  */
