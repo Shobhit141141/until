@@ -99,6 +99,10 @@ export async function topUp(req: Request, res: Response): Promise<void> {
       res.status(200).json({ alreadyApplied: true });
       return;
     }
+    if (!("creditsStx" in result)) {
+      res.status(500).json({ error: "Failed to apply top-up" });
+      return;
+    }
     const amountStx = Number(verification.amountMicroStx) / MICRO_STX_PER_STX;
     logTransaction("top_up", verification.senderAddress, amountStx, result.creditsStx, { txId });
     res.status(200).json({

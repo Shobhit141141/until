@@ -43,9 +43,10 @@ type RawQuestion = {
 };
 
 function rawToPayload(raw: RawQuestion): AiQuestionPayload {
-  const options = raw.options?.length >= 4
-    ? (raw.options.slice(0, 4) as [string, string, string, string])
-    : (["A", "B", "C", "D"] as const);
+  const options: [string, string, string, string] =
+    raw.options?.length >= 4
+      ? (raw.options.slice(0, 4) as [string, string, string, string])
+      : ["A", "B", "C", "D"];
   return {
     question: raw.question,
     options,
