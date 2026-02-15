@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { apiFetch, type UserMe, type CheckUsernameResponse } from "@/lib/api";
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import toast from "react-hot-toast";
 

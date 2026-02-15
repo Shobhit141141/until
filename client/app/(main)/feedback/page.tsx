@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
-import { Button, GoHomeLink } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
+import { GoHomeLink } from "@/components/ui/GoHomeLink";
 import toast from "react-hot-toast";
 
 export default function FeedbackPage() {

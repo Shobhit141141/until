@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import { Button, Money, Timer } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
+import { Money } from "@/components/ui/Money";
+import { Timer } from "@/components/ui/Timer";
 import type { QuestionResponse } from "@/lib/api";
 import { getCostStx, QUESTION_TIME_CAP_SEC } from "@/lib/tokenomics";
 

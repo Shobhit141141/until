@@ -18,7 +18,7 @@ import {
   Challenge,
 } from "@/lib/api";
 import { useWallet } from "@/contexts/WalletContext";
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
 import {
   HomeScreen,
   QuizLoader,
@@ -31,7 +31,7 @@ import {
   CreditsScreen,
   ProfileModal,
 } from "@/components/screens";
-import { Modal } from "@/components/ui";
+import { Modal } from "@/components/ui/Modal";
 import { QUESTION_TIME_CAP_SEC } from "@/lib/tokenomics";
 import toast from "react-hot-toast";
 

@@ -25,7 +25,9 @@ import {
   type CheckUsernameResponse,
 } from "@/lib/api";
 import { useWallet } from "@/contexts/WalletContext";
-import { Button, Money, GoHomeLink } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
+import { Money } from "@/components/ui/Money";
+import { GoHomeLink } from "@/components/ui/GoHomeLink";
 
 const MICRO_STX_PER_STX = 1_000_000;
 const USERNAME_DEBOUNCE_MS = 400;

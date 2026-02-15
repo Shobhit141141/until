@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Money } from "@/components/ui";
+import { Money } from "@/components/ui/Money";
 import { FaQuestion } from "react-icons/fa";
 
 const STAT_COLORS = [

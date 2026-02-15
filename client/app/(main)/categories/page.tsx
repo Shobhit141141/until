@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { apiFetch, type CategoriesResponse, type CategoryMetadata } from "@/lib/api";
-import { GoHomeLink } from "@/components/ui";
+import { GoHomeLink } from "@/components/ui/GoHomeLink";
 
 function categoryToSlug(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-");

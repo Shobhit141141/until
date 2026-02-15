@@ -9,7 +9,7 @@ import {
   type CategorySamplesResponse,
   type SampleQuestion,
 } from "@/lib/api";
-import { GoHomeLink } from "@/components/ui";
+import { GoHomeLink } from "@/components/ui/GoHomeLink";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"];
 

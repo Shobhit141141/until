@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Money } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
+import { Money } from "@/components/ui/Money";
 import { getBaseRewardStx, getTimeMultiplier } from "@/lib/tokenomics";
 
 export type LevelBreakdownEntry = {

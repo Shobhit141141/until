@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Money } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
+import { Money } from "@/components/ui/Money";
 
 interface ReadyScreenProps {
   creditsStx: number;

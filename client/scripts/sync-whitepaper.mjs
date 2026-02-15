@@ -19,8 +19,8 @@ async function main() {
   try {
     content = await readFile(SOURCE, "utf-8");
   } catch (err) {
-    console.error("sync-whitepaper: could not read", SOURCE, err.message);
-    process.exit(1);
+    console.warn("sync-whitepaper: source not found, using placeholder:", SOURCE, err.message);
+    content = "# Whitepaper\n\nContent will be synced from `docs/WHITEPAPER.md` when available.\n";
   }
 
   // Fix image paths for web (docs use ../client/public/... for GitHub)

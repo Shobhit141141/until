@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Money } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
+import { Money } from "@/components/ui/Money";
 import type { CreditTransactionEntry } from "@/lib/api";
 
 const MICRO_STX_PER_STX = 1_000_000;

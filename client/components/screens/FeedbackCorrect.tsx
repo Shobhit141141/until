@@ -1,6 +1,6 @@
 "use client";
 
-import { Money } from "@/components/ui";
+import { Money } from "@/components/ui/Money";
 
 /** Correct: one line, green, earned amount. */
 export function FeedbackCorrect({ earnedStx }: { earnedStx?: number }) {

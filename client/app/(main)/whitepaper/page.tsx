@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { MarkdownContent } from "@/components/whitepaper/MarkdownContent";
-import { GoHomeLink } from "@/components/ui";
+import { GoHomeLink } from "@/components/ui/GoHomeLink";
 
 const PDF_FILENAME = "whitepaper.pdf";
 

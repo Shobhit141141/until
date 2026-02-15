@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Money } from "@/components/ui";
+import { Button } from "@/components/ui/Button";
+import { Money } from "@/components/ui/Money";
 import { getCostStx } from "@/lib/tokenomics";
 
 const MIN_LEVEL_BEFORE_STOP = 4;

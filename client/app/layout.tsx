@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./Providers";
-import { ShellLayout } from "@/components/layout/ShellLayout";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -68,9 +66,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={montserrat.variable}>
       <body className={`${montserrat.className} h-screen overflow-hidden`}>
-        <Providers>
-          <ShellLayout>{children}</ShellLayout>
-        </Providers>
+        {children}
       </body>
     </html>
   );
