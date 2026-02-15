@@ -1,5 +1,6 @@
 export { ReadyScreen } from "./ReadyScreen";
 export { HomeScreen } from "./HomeScreen";
+export { QuizLoader } from "./QuizLoader";
 export { TopUpScreen } from "./TopUpScreen";
 export { QuestionScreen } from "./QuestionScreen";
 export { FeedbackCorrect } from "./FeedbackCorrect";

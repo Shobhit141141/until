@@ -1,0 +1,142 @@
+[
+  {
+    "level": 0,
+    "question": "You enter a room with a match. There is a candle, a gas stove, and a kerosene lamp. Which do you light first?",
+    "options": [
+      "The candle",
+      "The stove",
+      "The match",
+      "The lamp"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "confidence_score": 0.99,
+    "reason": "You must light the match itself before you can light any other object."
+  },
+  {
+    "level": 1,
+    "question": "You drive a bus. 4 people get on, 2 get off. Next stop, 3 get on, 1 gets off. Who is the driver?",
+    "options": [
+      "The first passenger",
+      "The ticket collector",
+      "You",
+      "Unknown"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "confidence_score": 0.99,
+    "reason": "The first sentence states: 'You drive a bus'."
+  },
+  {
+    "level": 2,
+    "question": "A red house is made of red bricks. A blue house is made of blue bricks. What is a green house made of?",
+    "options": [
+      "Green bricks",
+      "Glass",
+      "Wood",
+      "Grass"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "confidence_score": 0.98,
+    "reason": "A greenhouse is used for plants and is made of glass."
+  },
+  {
+    "level": 3,
+    "question": "A snail is at the bottom of a 20-foot well. Each day, it climbs up 3 feet, but at night it slips back 2 feet. How many days will it take to reach the top?",
+    "options": [
+      "20 days",
+      "17 days",
+      "18 days",
+      "19 days"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.45,
+    "confidence_score": 0.95,
+    "reason": "Net gain 1ft/day. Reaches 17ft on Day 17. On Day 18, it climbs 3ft, hitting 20ft (top) before slipping back. Answer is 18."
+  },
+  {
+    "level": 4,
+    "question": "You have 8 balls. One is slightly heavier. You have a balance scale. What is the minimum weighings to find the heavy one?",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "confidence_score": 0.95,
+    "reason": "Weigh 3 vs 3. If equal, heavy is in remaining 2 (1 more weigh). If unequal, take heavy group of 3: weigh 1 vs 1. If equal, remaining is heavy. Total 2 weighings."
+  },
+  {
+    "level": 5,
+    "question": "Train A leaves New York for LA at 60mph. Train B leaves LA for New York at 80mph. When they meet, which is closer to New York?",
+    "options": [
+      "Train A",
+      "Train B",
+      "Same distance",
+      "Cannot determine"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.65,
+    "confidence_score": 0.98,
+    "reason": "When they meet, they are at the exact same location. Thus, same distance from NY."
+  },
+  {
+    "level": 6,
+    "question": "The ages of a father and son add up to 66. The father's age is the son's age reversed. How old are they?",
+    "options": [
+      "51 and 15",
+      "42 and 24",
+      "60 and 6",
+      "All of the above"
+    ],
+    "correct_index": 3,
+    "difficulty": 0.75,
+    "confidence_score": 0.95,
+    "reason": "51+15=66. 42+24=66. 60+06=66. All fit the criteria."
+  },
+  {
+    "level": 7,
+    "question": "You have 12 balls. 1 is heavy or light (unknown). 3 weighings to find it. Step 1: 4 vs 4. They balance. Where is the odd ball?",
+    "options": [
+      "In the group of 8",
+      "In the remaining 4",
+      "It is lost",
+      "Impossible"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "confidence_score": 0.95,
+    "reason": "If 4 vs 4 balances, the odd ball must be in the un-weighed group of 4."
+  },
+  {
+    "level": 8,
+    "question": "Five machines take 5 minutes to make 5 widgets. How long does it take 100 machines to make 100 widgets?",
+    "options": [
+      "100 mins",
+      "5 mins",
+      "1 min",
+      "20 mins"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "confidence_score": 0.98,
+    "reason": "Repeated logic from earlier levels but checking consistency. Rate is 1 widget/machine/5mins. 100 machines work in parallel."
+  },
+  {
+    "level": 9,
+    "question": "There are two doors. One leads to gold, one to death. Two guards: one tells truth, one lies. You can ask ONE yes/no question to ONE guard. Question?",
+    "options": [
+      "Is the left door safe?",
+      "Does 2+2=4?",
+      "Which door would the OTHER guard say leads to death?",
+      "Are you the liar?"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.98,
+    "confidence_score": 0.95,
+    "reason": "If you ask what the *other* would say, the Truth-teller tells the Liar's lie (Death). The Liar lies about the Truther's truth (Death). Both point to the same wrong door. You choose the other."
+  }
+]

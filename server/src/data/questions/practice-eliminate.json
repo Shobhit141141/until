@@ -1,0 +1,142 @@
+[
+  {
+    "level": 0,
+    "question": "Exactly one of these is true: (A) It is Monday. (B) It is Tuesday. (C) Today is not Monday. If (A) is false, which must be true?",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "Cannot tell"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "confidence_score": 0.99,
+    "reason": "If A is false, it is not Monday. Then (C) 'Today is not Monday' is true. Only one is true, so C is that one."
+  },
+  {
+    "level": 1,
+    "question": "Exactly one statement is true: (A) X is 2. (B) X is 4. (C) X is not 2. (D) X is 6. If (A) is false, which can be true?",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "confidence_score": 0.99,
+    "reason": "If A is false, X is not 2. Then (C) 'X is not 2' is true. So C is the one that can be true."
+  },
+  {
+    "level": 2,
+    "question": "Exactly one of these is true: (1) Key is in room A. (2) Key is in room B. (3) Key is not in room A. If the key is in room B, which statement is true?",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "More than one"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "confidence_score": 0.99,
+    "reason": "If key is in B, (2) is true and (1),(3) are false. Exactly one true, so (2) is that one."
+  },
+  {
+    "level": 3,
+    "question": "Constraint: A > B. B > C. Who is smallest?",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "Cannot tell"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "confidence_score": 0.99,
+    "reason": "Transitive property: A > B > C. C is the smallest."
+  },
+  {
+    "level": 4,
+    "question": "Three positions: left, middle, right. P is left of Q. R is right of Q. Who is in the middle?",
+    "options": [
+      "P",
+      "Q",
+      "R",
+      "Cannot tell"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "confidence_score": 0.99,
+    "reason": "Order is P, Q, R. So Q is in the middle."
+  },
+  {
+    "level": 5,
+    "question": "Binary Logic: 1011 (11). Eliminate the number that is NOT a power of 2.",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "confidence_score": 0.99,
+    "reason": "Powers of 2: 1 (2^0), 2 (2^1), 4 (2^2). 3 is not."
+  },
+  {
+    "level": 6,
+    "question": "Logic Gate: Output is 1. Gate is AND. Input A is 1. What is Input B?",
+    "options": [
+      "0",
+      "1",
+      "Unknown",
+      "Null"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "confidence_score": 0.99,
+    "reason": "For AND to be 1, both inputs must be 1."
+  },
+  {
+    "level": 7,
+    "question": "Constraint: A is not B. B is C. C is D. Is A equal to D?",
+    "options": [
+      "Yes",
+      "No",
+      "Maybe",
+      "Only if B=0"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "confidence_score": 0.99,
+    "reason": "B=C=D. Since A != B, then A != D."
+  },
+  {
+    "level": 8,
+    "question": "3 prisoners. 2 Red Hats, 3 Blue Hats. P1 sees R, R. What is P1?",
+    "options": [
+      "Red",
+      "Blue",
+      "Unknown",
+      "Green"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "confidence_score": 0.95,
+    "reason": "If 2 Red exist total, and P1 sees 2 Red, P1 *must* be Blue (since only 2 Reds exist). Logic deduction."
+  },
+  {
+    "level": 9,
+    "question": "Knights/Knaves: A says 'At least one of us is a Knave'. A is?",
+    "options": [
+      "Knight",
+      "Knave",
+      "Impossible",
+      "Either"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "confidence_score": 0.99,
+    "reason": "If A is Knave, statement 'At least 1 Knave' is True (since A is Knave). Knave telling Truth = Impossible. So A must be Knight (telling truth implies B is Knave)."
+  }
+]

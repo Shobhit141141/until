@@ -1,0 +1,142 @@
+[
+  {
+    "level": 0,
+    "question": "If you drop a rock and a feather at the same time on the moon (no air), which hits the ground first?",
+    "options": [
+      "The rock",
+      "The feather",
+      "They hit at the same time",
+      "Neither falls"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "confidence_score": 0.99,
+    "reason": "Without air resistance, gravity pulls all objects at the same rate regardless of mass."
+  },
+  {
+    "level": 1,
+    "question": "Why does a helium balloon float in air?",
+    "options": [
+      "Helium is lighter than air",
+      "Helium is invisible",
+      "The rubber is light",
+      "Gravity ignores helium"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.2,
+    "confidence_score": 0.99,
+    "reason": "Helium is less dense than the surrounding air, creating an upward buoyant force."
+  },
+  {
+    "level": 2,
+    "question": "Why does a sealed bag of chips puff up on an airplane?",
+    "options": [
+      "Chips ferment",
+      "Air pressure drops",
+      "Cabin is hot",
+      "Chips expand"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "confidence_score": 0.99,
+    "reason": "The air inside the bag is at ground pressure; the cabin pressure is lower, so the bag pushes out."
+  },
+  {
+    "level": 3,
+    "question": "Why does a shower curtain blow inward when the water runs?",
+    "options": [
+      "Heat rises",
+      "Lower pressure inside",
+      "Water magnetism",
+      "Steam is heavy"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "confidence_score": 0.95,
+    "reason": "Fast moving water/air creates lower pressure inside the shower (Bernoulli principle)."
+  },
+  {
+    "level": 4,
+    "question": "If you hold a balloon in a car and brake, which way does the balloon move?",
+    "options": [
+      "Forward",
+      "Backward",
+      "Stays still",
+      "Down"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "confidence_score": 0.95,
+    "reason": "The heavier air inside the car rushes forward (inertia), pushing the lighter balloon backward."
+  },
+  {
+    "level": 5,
+    "question": "Why does shaking a soda can make it explode?",
+    "options": [
+      "Increases pressure",
+      "Dissolves gas",
+      "Nucleates bubbles on walls",
+      "Heats it up"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "confidence_score": 0.95,
+    "reason": "Shaking mixes gas into liquid and attaches bubbles to the sides, which expand rapidly when opened."
+  },
+  {
+    "level": 6,
+    "question": "Why do mirrors flip left-right but not up-down?",
+    "options": [
+      "Gravity",
+      "Eye placement",
+      "They actually flip front-back",
+      "Mirrors have axis"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.75,
+    "confidence_score": 0.95,
+    "reason": "Mirrors reflect along the Z-axis (depth); your brain interprets this as a rotation."
+  },
+  {
+    "level": 7,
+    "question": "Why does water stay in a bucket swung overhead?",
+    "options": [
+      "Centrifugal force/Inertia",
+      "Gravity stops",
+      "Vacuum",
+      "Surface tension"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "confidence_score": 0.99,
+    "reason": "Inertia wants the water to travel straight; the bucket forces it curve, pinning it to the bottom."
+  },
+  {
+    "level": 8,
+    "question": "Why does a raw egg spin differently than a hard-boiled egg?",
+    "options": [
+      "Weight diff",
+      "Liquid inertia",
+      "Shell texture",
+      "Center of gravity"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "confidence_score": 0.99,
+    "reason": "The liquid inside a raw egg resists spinning (inertia), acting as a brake; solid eggs spin as one unit."
+  },
+  {
+    "level": 9,
+    "question": "Why does a bike wheel resist turning when spinning fast?",
+    "options": [
+      "Gyroscopic precession",
+      "Wind resistance",
+      "Friction",
+      "Weight increase"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "confidence_score": 0.95,
+    "reason": "Angular momentum makes the spinning wheel resist changing its orientation."
+  }
+]

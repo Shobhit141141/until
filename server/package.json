@@ -8,6 +8,7 @@
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "simulate": "tsx scripts/simulate-outcomes.ts",
+    "build:master-questions": "tsx scripts/build-master-questions.ts",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -23,6 +24,7 @@
     "ioredis": "^5.9.3",
     "mongoose": "^8.8.0",
     "morgan": "^1.10.1",
+    "nodemailer": "^8.0.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {
@@ -31,6 +33,7 @@
     "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.10",
     "@types/node": "^22.10.0",
+    "@types/nodemailer": "^7.0.10",
     "dotenv": "^17.3.1",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",

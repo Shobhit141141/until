@@ -1,0 +1,1097 @@
+[
+  {
+    "level": 0,
+    "question": "You enter a room with a match. There is a candle, a gas stove, and a kerosene lamp. Which do you light first?",
+    "options": ["The candle", "The stove", "The match", "The lamp"],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "You must light the match itself before you can light any other object."
+  },
+  {
+    "level": 0,
+    "question": "A doctor gives you 3 pills and tells you to take one every half hour. How many minutes will the pills last?",
+    "options": ["60 minutes", "90 minutes", "30 minutes", "120 minutes"],
+    "correct_index": 0,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.98,
+    "reason": "Take 1st (0m), Take 2nd (30m), Take 3rd (60m). The duration from first to last is 60 minutes."
+  },
+  {
+    "level": 0,
+    "question": "It takes 10 minutes to boil 1 egg. How long does it take to boil 5 eggs together in the same pot?",
+    "options": ["50 minutes", "10 minutes", "25 minutes", "5 minutes"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Cooking time is parallel, not sequential. They boil simultaneously."
+  },
+  {
+    "level": 0,
+    "question": "You are running a race and you pass the person in second place. What place are you in now?",
+    "options": ["First", "Second", "Third", "Last"],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 9,
+    "confidence_score": 0.99,
+    "reason": "If you pass the person in 2nd, you take their spot. You are now 2nd."
+  },
+  {
+    "level": 0,
+    "question": "A farmer has 17 sheep. All but 9 run away. How many sheep does the farmer have left?",
+    "options": ["8", "9", "17", "0"],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.97,
+    "reason": "'All but 9' means 9 remain."
+  },
+  {
+    "level": 0,
+    "question": "If you turn a right-handed glove inside out, which hand will it fit?",
+    "options": ["Right hand", "Left hand", "Neither", "Both"],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Inverting the glove mirrors its shape, making it fit the left hand."
+  },
+  {
+    "level": 0,
+    "question": "The day before yesterday was three days after Saturday. What day is it today?",
+    "options": ["Wednesday", "Thursday", "Friday", "Tuesday"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.98,
+    "reason": "Sat + 3 = Tuesday. Day before yesterday was Tuesday. Yesterday = Wednesday. Today = Thursday."
+  },
+  {
+    "level": 0,
+    "question": "Some months have 31 days, others have 30 days. How many have 28 days?",
+    "options": ["1", "6", "12", "0"],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 9,
+    "confidence_score": 0.99,
+    "reason": "All 12 months have *at least* 28 days."
+  },
+  {
+    "level": 0,
+    "question": "A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much is the ball?",
+    "options": ["$0.10", "$0.05", "$0.01", "$0.50"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.98,
+    "reason": "Ball + (Ball + 1.00) = 1.10 -> 2*Ball = 0.10 -> Ball = 0.05."
+  },
+  {
+    "level": 0,
+    "question": "Which is heavier: A pound of lead or a pound of feathers?",
+    "options": ["Lead", "Feathers", "Equal", "Depends on gravity"],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Both are exactly one pound."
+  },
+  {
+    "level": 1,
+    "question": "You drive a bus. 4 people get on, 2 get off. Next stop, 3 get on, 1 gets off. Who is the driver?",
+    "options": [
+      "The first passenger",
+      "The ticket collector",
+      "You",
+      "Unknown"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "The first sentence states: 'You drive a bus'."
+  },
+  {
+    "level": 1,
+    "question": "If it takes 5 machines 5 minutes to make 5 widgets, how long does it take 100 machines to make 100 widgets?",
+    "options": ["100 minutes", "5 minutes", "20 minutes", "1 minute"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.98,
+    "reason": "Each machine takes 5 minutes to make 1 widget. With 100 machines working in parallel, it still takes 5 minutes."
+  },
+  {
+    "level": 1,
+    "question": "A man looks at a photo and says, 'Brothers and sisters I have none, but that man's father is my father's son.' Who is in the photo?",
+    "options": ["His son", "Himself", "His father", "His nephew"],
+    "correct_index": 0,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "'My father's son' (with no siblings) is 'Me'. So: 'That man's father is Me'. The photo is of his son."
+  },
+  {
+    "level": 1,
+    "question": "In a race, you overtake the last person. What position are you in?",
+    "options": ["Last", "Second to last", "First", "Impossible"],
+    "correct_index": 3,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "You cannot overtake the last person, because there is no one behind them for you to have been."
+  },
+  {
+    "level": 1,
+    "question": "Divide 30 by half and add 10. What is the answer?",
+    "options": ["25", "40", "70", "50"],
+    "correct_index": 2,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.98,
+    "reason": "Dividing by half (0.5) is multiplying by 2. 30 / 0.5 = 60. 60 + 10 = 70."
+  },
+  {
+    "level": 1,
+    "question": "You have two coins totaling 30 cents. One of them is not a nickel. What are the coins?",
+    "options": [
+      "Quarter and Nickel",
+      "Two Dimes",
+      "Dime and Nickel",
+      "Impossible"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "One is not a nickel (the Quarter), but the *other* one is a nickel. 25 + 5 = 30."
+  },
+  {
+    "level": 1,
+    "question": "A clerk at a butcher shop is six feet tall and wears size 11 shoes. What does he weigh?",
+    "options": ["200 lbs", "Meat", "Lead", "Scales"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "He is a butcher, so he weighs meat."
+  },
+  {
+    "level": 1,
+    "question": "How many times can you subtract 10 from 100?",
+    "options": ["10", "9", "1", "Infinite"],
+    "correct_index": 2,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.98,
+    "reason": "Only once. After that, you are subtracting from 90."
+  },
+  {
+    "level": 1,
+    "question": "Jimmy's mother had 4 children: April, May, June, and...?",
+    "options": ["July", "August", "Jimmy", "September"],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "The prompt starts with 'Jimmy's mother'. Jimmy is the fourth child."
+  },
+  {
+    "level": 1,
+    "question": "If a plane crashes on the border of the US and Canada, where do they bury the survivors?",
+    "options": ["US", "Canada", "No Man's Land", "Nowhere"],
+    "correct_index": 3,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "You don't bury survivors."
+  },
+  {
+    "level": 2,
+    "question": "A red house is made of red bricks. A blue house is made of blue bricks. What is a green house made of?",
+    "options": ["Green bricks", "Glass", "Wood", "Grass"],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.98,
+    "reason": "A greenhouse is used for plants and is made of glass."
+  },
+  {
+    "level": 2,
+    "question": "Before Mt. Everest was discovered, what was the highest mountain in the world?",
+    "options": ["Mt. Kilimanjaro", "Mt. Everest", "K2", "The Alps"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "It was still the highest, even if it hadn't been discovered yet."
+  },
+  {
+    "level": 2,
+    "question": "How much dirt is there in a hole that measures 2ft x 3ft x 4ft?",
+    "options": ["24 cubic ft", "12 cubic ft", "None", "6 cubic ft"],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "A hole is defined by the absence of dirt. There is no dirt in a hole."
+  },
+  {
+    "level": 2,
+    "question": "What happens if you throw a white stone into the Red Sea?",
+    "options": ["It turns red", "It floats", "It sinks", "It dissolves"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.98,
+    "reason": "Stones sink in water, regardless of the sea's name."
+  },
+  {
+    "level": 2,
+    "question": "Two fathers and two sons go fishing. They each catch one fish. Total fish caught is 3. How?",
+    "options": [
+      "One fish escaped",
+      "They miscounted",
+      "Grandfather, Father, Son",
+      "Impossible"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.98,
+    "reason": "There are only 3 people: A grandfather (father), a father (son and father), and a son."
+  },
+  {
+    "level": 2,
+    "question": "If you are in a dark room with a candle, a wood stove and a gas lamp. You only have one match, so what do you light first?",
+    "options": ["The Match", "The Candle", "The Stove", "The Lamp"],
+    "correct_index": 0,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "This is a recall of logic; you must light the match to start the fire."
+  },
+  {
+    "level": 2,
+    "question": "What goes up but never comes down?",
+    "options": ["Rain", "Age", "A ball", "Heat"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.98,
+    "reason": "Age only increases."
+  },
+  {
+    "level": 2,
+    "question": "A 10-foot rope ladder hangs over the side of a boat with the bottom rung on the surface of the water. The rungs are one foot apart, and the tide goes up at the rate of 6 inches per hour. How long will it be until three rungs are covered?",
+    "options": ["2 hours", "4 hours", "6 hours", "Never"],
+    "correct_index": 3,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.97,
+    "reason": "The boat rises with the tide. The ladder stays in the same position relative to the water."
+  },
+  {
+    "level": 2,
+    "question": "Which month has 28 days?",
+    "options": ["February", "December", "All of them", "None"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Every month has at least 28 days."
+  },
+  {
+    "level": 2,
+    "question": "Imagine you are in a sinking rowboat surrounded by sharks. How do you survive?",
+    "options": [
+      "Swim fast",
+      "Fight the sharks",
+      "Stop imagining",
+      "Call for help"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.95,
+    "reason": "The scenario is defined as 'Imagine'. To exit, stop imagining."
+  },
+  {
+    "level": 3,
+    "question": "A snail is at the bottom of a 20-foot well. Each day, it climbs up 3 feet, but at night it slips back 2 feet. How many days will it take to reach the top?",
+    "options": ["20 days", "17 days", "18 days", "19 days"],
+    "correct_index": 2,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Net gain 1ft/day. Reaches 17ft on Day 17. On Day 18, it climbs 3ft, hitting 20ft (top) before slipping back. Answer is 18."
+  },
+  {
+    "level": 3,
+    "question": "If 3 cats can kill 3 rats in 3 minutes, how long will it take 100 cats to kill 100 rats?",
+    "options": ["100 minutes", "3 minutes", "33 minutes", "1 minute"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.98,
+    "reason": "Each cat kills one rat in 3 minutes. Parallel processing means the time stays 3 minutes."
+  },
+  {
+    "level": 3,
+    "question": "You have two hourglasses: a 4-minute one and a 7-minute one. You need to measure exactly 9 minutes. What is the minimum steps?",
+    "options": [
+      "Flip 4+4+1",
+      "Flip 7+2",
+      "Start both, flip 4 at end",
+      "Flip 7 twice"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.92,
+    "reason": "Start both. When 4 ends, flip it. When 7 ends, flip it (4 has 1 min left). When 4 ends (8 mins total), 7 has 1 min passed. Flip 7 over (1 min sand remains). 8 + 1 = 9."
+  },
+  {
+    "level": 3,
+    "question": "A man is looking at a picture. He says 'I have no siblings, but that man's father is my father's son.' Who is in the picture?",
+    "options": ["Himself", "His son", "His father", "His grandson"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "'My father's son' is me. 'That man's father is ME'. Thus, that man is my son."
+  },
+  {
+    "level": 3,
+    "question": "You place a coin in an empty bottle and insert a cork. How can you get the coin out without removing the cork or breaking the bottle?",
+    "options": [
+      "Melt the glass",
+      "Push the cork in",
+      "Use a magnet",
+      "Impossible"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.98,
+    "reason": "Pushing the cork *into* the bottle opens the neck."
+  },
+  {
+    "level": 3,
+    "question": "Which tire doesn't move when a car turns right?",
+    "options": ["Front Right", "Back Right", "Spare Tire", "Front Left"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "The spare tire is usually in the trunk."
+  },
+  {
+    "level": 3,
+    "question": "A cowboy rides into town on Friday, stays three days, and leaves on Friday. How?",
+    "options": [
+      "Time travel",
+      "His horse is named Friday",
+      "It was a leap year",
+      "He stayed a week"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Friday is the name of the horse."
+  },
+  {
+    "level": 3,
+    "question": "You have a barrel of water. What can you add to it to make it lighter?",
+    "options": ["Ice", "Salt", "Holes", "Helium"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.98,
+    "reason": "Adding holes removes material, making it lighter."
+  },
+  {
+    "level": 3,
+    "question": "If you are in a race and you pass the person in last place, what place are you in?",
+    "options": ["Last", "Second to last", "First", "Impossible"],
+    "correct_index": 3,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.98,
+    "reason": "Logic check: You cannot be *behind* the last person."
+  },
+  {
+    "level": 3,
+    "question": "I am an odd number. Take away a letter and I become even. What number am I?",
+    "options": ["Seven", "Nine", "One", "Eleven"],
+    "correct_index": 0,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "S-E-V-E-N. Remove 'S', it becomes 'EVEN'."
+  },
+  {
+    "level": 4,
+    "question": "You have 8 balls. One is slightly heavier. You have a balance scale. What is the minimum weighings to find the heavy one?",
+    "options": ["1", "2", "3", "4"],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Weigh 3 vs 3. If equal, heavy is in remaining 2 (1 more weigh). If unequal, take heavy group of 3: weigh 1 vs 1. If equal, remaining is heavy. Total 2 weighings."
+  },
+  {
+    "level": 4,
+    "question": "A lily pad doubles in size every day. It covers the pond in 48 days. On what day does it cover half the pond?",
+    "options": ["24", "47", "46", "12"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.98,
+    "reason": "If it doubles daily, the day *before* it is full (48), it was half full (47)."
+  },
+  {
+    "level": 4,
+    "question": "You are driving a bus. At the first stop 2 people get on. At the second stop 5 people get on and 1 gets off. At the third stop 2 people get off. What color are the bus driver's eyes?",
+    "options": ["Blue", "Brown", "Your eye color", "Green"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "The first sentence is 'You are driving a bus'."
+  },
+  {
+    "level": 4,
+    "question": "If five people can build five houses in five days, how long does it take ten people to build ten houses?",
+    "options": ["10 days", "5 days", "2.5 days", "1 day"],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.97,
+    "reason": "The rate is 1 person = 1 house per 5 days. 10 people = 10 houses in 5 days."
+  },
+  {
+    "level": 4,
+    "question": "A plane crashes on the border of US and Canada. Where do they bury the survivors?",
+    "options": ["US", "Canada", "Both", "Neither"],
+    "correct_index": 3,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Survivors are alive; you do not bury them."
+  },
+  {
+    "level": 4,
+    "question": "If you write all numbers from 1 to 100, how many times do you write the digit 9?",
+    "options": ["10", "11", "19", "20"],
+    "correct_index": 3,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "9, 19, 29...89 (9 times). 90, 91...99 (10 times). Note 99 has two 9s. Total: 9 (units) + 10 (tens) + 1 (extra in 99) = 20."
+  },
+  {
+    "level": 4,
+    "question": "Mary's father has 5 daughters: Nana, Nene, Nini, Nono. What is the name of the fifth daughter?",
+    "options": ["Nunu", "Mary", "Nina", "Nana"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "'Mary's father'. Mary is the daughter."
+  },
+  {
+    "level": 4,
+    "question": "How can you drop a raw egg onto a concrete floor without cracking it?",
+    "options": [
+      "Boil it first",
+      "Drop it 1 inch",
+      "Concrete floors are hard to crack",
+      "Wrap in bubble wrap"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "The question asks about cracking the *floor*, not the egg. 'Cracking IT' (the floor)."
+  },
+  {
+    "level": 4,
+    "question": "Which is correct to say: 'The yolk of the egg is white' or 'The yolk of the egg are white'?",
+    "options": ["Is white", "Are white", "Neither", "Both"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.98,
+    "reason": "Egg yolks are yellow, not white."
+  },
+  {
+    "level": 4,
+    "question": "A man pushes his car to a hotel and tells the owner he's bankrupt. Why?",
+    "options": [
+      "Engine failure",
+      "He lost a bet",
+      "Playing Monopoly",
+      "Robbery"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Classic lateral thinking: He is playing Monopoly."
+  },
+  {
+    "level": 5,
+    "question": "Train A leaves New York for LA at 60mph. Train B leaves LA for New York at 80mph. When they meet, which is closer to New York?",
+    "options": ["Train A", "Train B", "Same distance", "Cannot determine"],
+    "correct_index": 2,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.98,
+    "reason": "When they meet, they are at the exact same location. Thus, same distance from NY."
+  },
+  {
+    "level": 5,
+    "question": "A bat and a ball cost $1.10. The bat costs $1 more than the ball. How much does the ball cost?",
+    "options": ["$0.10", "$0.05", "$1.05", "$0.01"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.98,
+    "reason": "x + (x+1) = 1.10. 2x = 0.10. x = 0.05."
+  },
+  {
+    "level": 5,
+    "question": "If it takes 1 minute to make a cut, how long to cut a 10-meter log into 10 equal pieces?",
+    "options": ["10 minutes", "9 minutes", "11 minutes", "5 minutes"],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.98,
+    "reason": "To get 10 pieces, you only need 9 cuts. 9 * 1 min = 9 mins."
+  },
+  {
+    "level": 5,
+    "question": "You are at a fork. One road leads to death, one to freedom. Two guards: one always lies, one always tells truth. You can ask 1 question to 1 guard. What do you ask?",
+    "options": [
+      "Which road is safe?",
+      "Which road would the other guard say is safe?",
+      "Is the left road safe?",
+      "Are you the liar?"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Ask 'What would the other guard say?'. Both will point to the Death road (Liar lies about Truth's answer; Truth tells Liar's lie). You take the opposite."
+  },
+  {
+    "level": 5,
+    "question": "There are 3 crates: Apples, Oranges, and Mixed. All are labeled incorrectly. You pick one fruit from 'Mixed'. It is an Apple. Which crate is 'Oranges'?",
+    "options": [
+      "The one labeled Apples",
+      "The one labeled Oranges",
+      "The one labeled Mixed",
+      "Cannot tell"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "Label 'Mixed' is wrong -> it is Apples (since you pulled Apple). 'Apples' label is wrong -> cannot be Mixed (must be Oranges). 'Oranges' label -> Mixed."
+  },
+  {
+    "level": 5,
+    "question": "How many cubic feet of earth are in a hole 3 feet deep, 2 feet wide, and 6 feet long?",
+    "options": ["36", "18", "0", "12"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "It's a hole. There is no earth in it."
+  },
+  {
+    "level": 5,
+    "question": "You see a boat filled with people. It has not sunk, but when you look again you don’t see a single person on the boat. Why?",
+    "options": ["They jumped", "It sank", "They are all married", "Magic"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Wordplay: 'Single' means unmarried. They are all married."
+  },
+  {
+    "level": 5,
+    "question": "A man is condemned to death. He has to choose between three rooms. Room 1: Raging fires. Room 2: Assassins with loaded guns. Room 3: Lions that haven't eaten in 3 years. Which is safest?",
+    "options": ["Room 1", "Room 2", "Room 3", "None"],
+    "correct_index": 2,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.98,
+    "reason": "Lions that haven't eaten in 3 years are dead."
+  },
+  {
+    "level": 5,
+    "question": "What is next in the sequence: J, F, M, A, M, J, __?",
+    "options": ["J", "A", "S", "O"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Months: January, February, March... July comes next (J)."
+  },
+  {
+    "level": 5,
+    "question": "Forward I am heavy, but backward I am not. What am I?",
+    "options": ["A Ton", "A Rock", "A Log", "Lead"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Wordplay: 'TON' spelled backwards is 'NOT'."
+  },
+  {
+    "level": 6,
+    "question": "The ages of a father and son add up to 66. The father's age is the son's age reversed. How old are they?",
+    "options": ["51 and 15", "42 and 24", "60 and 6", "All of the above"],
+    "correct_index": 3,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "51+15=66. 42+24=66. 60+06=66. All fit the criteria."
+  },
+  {
+    "level": 6,
+    "question": "A man buys a horse for $60. He sells it for $70. He then buys it back for $80. And sells it again for $90. How much profit did he make?",
+    "options": ["$10", "$20", "$30", "$0"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.98,
+    "reason": "-60 + 70 = +10. -80 + 90 = +10. Total profit = $20."
+  },
+  {
+    "level": 6,
+    "question": "You have a 3-gallon jug and a 5-gallon jug. You need exactly 4 gallons. How?",
+    "options": [
+      "Fill 5, pour to 3",
+      "Fill 3, pour to 5",
+      "Fill 5, pour to 3, empty 3, pour rest of 5 to 3, fill 5, pour to 3",
+      "Impossible"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 28,
+    "confidence_score": 0.95,
+    "reason": "Standard water jug riddle steps to isolate 4 gallons."
+  },
+  {
+    "level": 6,
+    "question": "What 5-letter word becomes shorter when you add two letters to it?",
+    "options": ["Short", "Small", "Brief", "Little"],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Short + 'er' = Shorter."
+  },
+  {
+    "level": 6,
+    "question": "A spy is in a room with 3 switches. Outside are 3 bulbs (off). He can flip switches as he likes but enter the bulb room only once. How does he map them?",
+    "options": [
+      "Turn on 1",
+      "Turn on 1, wait, off, turn on 2",
+      "Turn on all",
+      "Guess"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Switch 1 ON for 5 mins (heats bulb), then OFF. Switch 2 ON. Enter. Hot/Dark = 1. Lit = 2. Cold/Dark = 3."
+  },
+  {
+    "level": 6,
+    "question": "If 9999 = 4, 8888 = 8, 1816 = 3, 1212 = 0, what is 1919?",
+    "options": ["4", "2", "3", "0"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.92,
+    "reason": "Count the closed loops in the digits. 9 has 1 loop. 1919 has two 9s = 2 loops."
+  },
+  {
+    "level": 6,
+    "question": "How can you take 1 from 19 and leave 20?",
+    "options": ["Add 1", "Roman Numerals", "Subtract 1", "Multiply by 2"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "XIX (19). Remove I -> XX (20)."
+  },
+  {
+    "level": 6,
+    "question": "Look at this series: 2, 1, (1/2), (1/4)... What number should come next?",
+    "options": ["(1/3)", "(1/8)", "(2/8)", "(1/16)"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Each number is divided by 2. (1/4) / 2 = 1/8."
+  },
+  {
+    "level": 6,
+    "question": "There is a basket containing 5 apples. You have 5 friends. You give each friend one apple, yet one apple remains in the basket. How?",
+    "options": [
+      "You kept one",
+      "One friend got the basket",
+      "Miscount",
+      "Magic"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "You give the last friend the apple *inside* the basket."
+  },
+  {
+    "level": 6,
+    "question": "Identify the next number: 8, 5, 4, 9, 1, 7, 6, 3, 2, ...?",
+    "options": ["0", "10", "5", "8"],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.9,
+    "reason": "Alphabetical order: Eight, Five, Four, Nine, One, Seven, Six, Three, Two... Zero."
+  },
+  {
+    "level": 7,
+    "question": "You have 12 balls. 1 is heavy or light (unknown). 3 weighings to find it. Step 1: 4 vs 4. They balance. Where is the odd ball?",
+    "options": [
+      "In the group of 8",
+      "In the remaining 4",
+      "It is lost",
+      "Impossible"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "If 4 vs 4 balances, the odd ball must be in the un-weighed group of 4."
+  },
+  {
+    "level": 7,
+    "question": "A clock strikes 6 times in 5 seconds. How long does it take to strike 12 times?",
+    "options": ["10 seconds", "11 seconds", "12 seconds", "9 seconds"],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "6 strikes = 5 intervals. 5 intervals / 5s = 1s per interval. 12 strikes = 11 intervals. 11 * 1s = 11 seconds."
+  },
+  {
+    "level": 7,
+    "question": "Two people born at the same moment, in the same city, to the same mother, are not twins. How?",
+    "options": [
+      "They are triplets",
+      "Different fathers",
+      "Adoption",
+      "Time zones"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "They are part of a set of triplets (or quadruplets)."
+  },
+  {
+    "level": 7,
+    "question": "You are 8000 feet up. You jump out without a parachute and land safely. How?",
+    "options": [
+      "Heavy snow",
+      "Plane was on the ground",
+      "Water landing",
+      "Superman"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "The plane was sitting on the runway at an airport that is 8000ft elevation (e.g., Colorado)."
+  },
+  {
+    "level": 7,
+    "question": "If you write down all the numbers from 300 to 400, how many times do you write the number 3?",
+    "options": ["100", "110", "120", "119"],
+    "correct_index": 3,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.92,
+    "reason": "Hundreds place: 300-399 (100 times). Tens: 330-339 (10 times). Units: 303, 313... (10 times). Total 120? No, 333 counts thrice. List: 100 (hundreds) + 10 (tens) + 10 (ones). Correct sum is 120."
+  },
+  {
+    "level": 7,
+    "question": "Mary is 16 years old. She is 4 times older than her brother. How old will she be when she is twice as old as her brother?",
+    "options": ["20", "24", "28", "32"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Brother is 16/4 = 4. Gap is 12 years. She is twice as old when Age = 2 * (Age - 12). A = 2A - 24. A = 24."
+  },
+  {
+    "level": 7,
+    "question": "A bacteria colony doubles every minute. The jar is full at 12:00. When was it half full?",
+    "options": ["11:30", "11:59", "6:00", "11:55"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Doubling every minute means 1 minute prior it was half."
+  },
+  {
+    "level": 7,
+    "question": "What comes next: 1, 11, 21, 1211, 111221, ...?",
+    "options": ["312211", "122111", "111122", "112211"],
+    "correct_index": 0,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "Look-and-say sequence. 111221 is read as 'three 1s, two 2s, one 1' -> 312211."
+  },
+  {
+    "level": 7,
+    "question": "You have a 5x5x5 cube painted blue. You cut it into 125 1x1x1 cubes. How many have exactly one face painted?",
+    "options": ["54", "96", "27", "8"],
+    "correct_index": 0,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 30,
+    "confidence_score": 0.9,
+    "reason": "Center of each face (3x3 grid) has 1 side painted. 6 faces * 9 centers = 54."
+  },
+  {
+    "level": 7,
+    "question": "Tom is taller than Peter. Bill is shorter than Tom. Who is the shortest?",
+    "options": ["Bill", "Peter", "Tom", "Cannot determine"],
+    "correct_index": 3,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Tom > Peter and Tom > Bill. We don't know the relationship between Peter and Bill."
+  },
+  {
+    "level": 8,
+    "question": "Five machines take 5 minutes to make 5 widgets. How long does it take 100 machines to make 100 widgets?",
+    "options": ["100 mins", "5 mins", "1 min", "20 mins"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.98,
+    "reason": "Repeated logic from earlier levels but checking consistency. Rate is 1 widget/machine/5mins. 100 machines work in parallel."
+  },
+  {
+    "level": 8,
+    "question": "A digital clock shows times where digits sum to 6 (e.g., 06:00). What is the earliest valid time after 10:00?",
+    "options": ["10:05", "10:14", "10:23", "10:32"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "1+0+0+5 = 6. This is valid and comes before 10:14."
+  },
+  {
+    "level": 8,
+    "question": "40% of people have brown eyes. 70% have black hair. What is the minimum % of people with BOTH?",
+    "options": ["10%", "30%", "40%", "0%"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Max overlap is 40%. Min overlap: (40+70) - 100 = 10%."
+  },
+  {
+    "level": 8,
+    "question": "You travel 100 miles at 50mph, then 100 miles at 100mph. What is your average speed?",
+    "options": ["75 mph", "66.6 mph", "80 mph", "60 mph"],
+    "correct_index": 1,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "Time 1 = 2hrs. Time 2 = 1hr. Total distance 200m / Total time 3hrs = 66.66mph. NOT the average of 50 and 100."
+  },
+  {
+    "level": 8,
+    "question": "If yesterday was tomorrow, today would be Friday. What day is it?",
+    "options": ["Friday", "Sunday", "Wednesday", "Saturday"],
+    "correct_index": 1,
+    "difficulty": 0.92,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.9,
+    "reason": "Sub 'Sunday': Yesterday (Sat) was Tomorrow -> True day is Friday. Wait. If 'Yesterday' (in the hypothetical) was tomorrow (Sat), then Today is Friday. Sunday works. (Sunday's yesterday is Sat. If Sat was Tomorrow, Today is Friday). This is complex mapping."
+  },
+  {
+    "level": 8,
+    "question": "A pencil and eraser cost $1.10. Pencil is $1 more than eraser. Eraser cost?",
+    "options": ["0.05", "0.10", "1.00", "0.01"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Algebraic trap. P + E = 1.10. P = E + 1. 2E + 1 = 1.10. 2E = 0.10. E = 0.05."
+  },
+  {
+    "level": 8,
+    "question": "Which fits the pattern? 1=4, 2=16, 3=64, 4=?",
+    "options": ["128", "256", "100", "500"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Pattern is 4^n. 4^1=4, 4^2=16, 4^3=64, 4^4=256."
+  },
+  {
+    "level": 8,
+    "question": "In a town, 5% of people leave phones at home. Of those, 20% miss a call. Probability of leaving phone AND missing call?",
+    "options": ["1%", "25%", "10%", "5%"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.98,
+    "reason": "0.05 * 0.20 = 0.01 (1%)."
+  },
+  {
+    "level": 8,
+    "question": "Day 1: 1 coin. Day 2: 3 coins. Day 3: 6 coins. Day 4: 10 coins. Day 5?",
+    "options": ["15", "14", "13", "12"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Increments are +2, +3, +4. Next is +5. 10+5=15. (Triangular numbers)."
+  },
+  {
+    "level": 8,
+    "question": "Car A laps Car B every 10 mins. Car A takes 1 min per lap. How fast is Car B (mins per lap)?",
+    "options": ["1.11 mins", "0.9 mins", "1.10 mins", "1.2 mins"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 30,
+    "confidence_score": 0.9,
+    "reason": "In 10 mins, A does 10 laps. A is 1 lap ahead. So B did 9 laps in 10 mins. 10/9 = 1.11 mins/lap."
+  },
+  {
+    "level": 9,
+    "question": "There are two doors. One leads to gold, one to death. Two guards: one tells truth, one lies. You can ask ONE yes/no question to ONE guard. Question?",
+    "options": [
+      "Is the left door safe?",
+      "Does 2+2=4?",
+      "Which door would the OTHER guard say leads to death?",
+      "Are you the liar?"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.98,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "If you ask what the *other* would say, the Truth-teller tells the Liar's lie (Death). The Liar lies about the Truther's truth (Death). Both point to the same wrong door. You choose the other."
+  },
+  {
+    "level": 9,
+    "question": "A rope over a pulley has a monkey on one side and a weight on the other. They balance perfectly. The monkey climbs up. What happens to the weight?",
+    "options": ["Moves up", "Moves down", "Stays put", "Oscillates"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.92,
+    "reason": "Physics trap. To climb, monkey exerts downward force, increasing tension. Tension lifts the weight. They move up together."
+  },
+  {
+    "level": 9,
+    "question": "Three boxes: 'Gold', 'Empty', 'Bomb'. Inscription on Gold box: 'The gold is not here'. Inscription on Empty: 'The gold is not here'. Inscription on Bomb: 'The gold is in the Empty box'. Only one statement is true. Where is the gold?",
+    "options": ["Gold Box", "Empty Box", "Bomb Box", "None"],
+    "correct_index": 0,
+    "difficulty": 0.98,
+    "estimated_solve_time_sec": 30,
+    "confidence_score": 0.9,
+    "reason": "Test Gold Box holds Gold: 1(F), 2(T), 3(F). Works (1 true). Test Empty holds Gold: 1(T), 2(F), 3(T). Fails (2 trues). Test Bomb holds Gold: 1(T), 2(T), 3(F). Fails. Gold is in Gold Box."
+  },
+  {
+    "level": 9,
+    "question": "A counterfeit coin is lighter. You have 27 coins. Minimum weighings to guarantee finding it?",
+    "options": ["3", "4", "5", "6"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.98,
+    "reason": "Powers of 3. 27 -> 9v9 (leaves 9). 9 -> 3v3 (leaves 3). 3 -> 1v1 (leaves 1). Total 3 weighings."
+  },
+  {
+    "level": 9,
+    "question": "Train speeds: A=60mph, B=40mph. Bird flies 100mph back and forth between them. Trains are 100 miles apart. How far does bird fly before crash?",
+    "options": ["100 miles", "200 miles", "150 miles", "Infinite"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Trains crash in 1 hour (Closing speed 100mph, distance 100m). Bird flies for 1 hour at 100mph. Distance = 100 miles. Don't integrate!"
+  },
+  {
+    "level": 9,
+    "question": "You have 1000 bottles of wine. 1 is poisoned (death in 24h). You have 10 test subjects. Can you find the bottle in 24h?",
+    "options": ["Yes", "No", "Need more people", "Need more time"],
+    "correct_index": 0,
+    "difficulty": 0.99,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "Binary search. 2^10 = 1024. Label bottles in binary. Feed subjects based on bit position. Pattern of death reveals the bottle index."
+  },
+  {
+    "level": 9,
+    "question": "Three men check into a hotel. Pay $30. Clerk realizes cost is $25. Gives bellboy $5. Bellboy keeps $2, gives $1 back to each man. Men paid $27. Bellboy kept $2. Total $29. Where is the missing dollar?",
+    "options": ["Bellboy has it", "Clerk has it", "No missing dollar", "Taxes"],
+    "correct_index": 2,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.98,
+    "reason": "Bad math framing. Men paid $27. Hotel has $25, Bellboy has $2. 25+2=27. There is no missing dollar."
+  },
+  {
+    "level": 9,
+    "question": "Next in sequence: 10, 11, 12, 13, 14, 20, 22, 101, ... (Base changes)?",
+    "options": ["100", "1000", "1010", "10 (Base 3)"],
+    "correct_index": 3,
+    "difficulty": 0.99,
+    "estimated_solve_time_sec": 30,
+    "confidence_score": 0.9,
+    "reason": "10 (base 10) = 10. 11 (base 9) = 10. 12 (base 8) = 10... 101 (base 3) = 10. Next is Base 2. 1010 (binary) = 10."
+  },
+  {
+    "level": 9,
+    "question": "If a hen and a half lay an egg and a half in a day and a half, how many eggs do half a dozen hens lay in half a dozen days?",
+    "options": ["24", "12", "6", "36"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "Rate: 1.5 hens, 1.5 days, 1.5 eggs -> 1 hen, 1.5 days, 1 egg. -> 1 hen, 1 day, 2/3 egg. 6 hens, 6 days: 6 * 6 * (2/3) = 24."
+  },
+  {
+    "level": 9,
+    "question": "You have a 5-liter jug and a 3-liter jug and unlimited water. How can you measure exactly 4 liters using just these jugs?",
+    "options": [
+      "Fill 5L, pour into 3L, empty 3L, repeat to get 4L in 5L",
+      "Fill 3L twice, pour into 5L to make 6L then subtract",
+      "You cannot measure exactly 4L",
+      "Fill both, pour together, then refill 3L"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 18,
+    "confidence_score": 0.93,
+    "reason": "Fill 5L, pour into 3L until full (left with 2L in 5L). Empty 3L, pour remaining 2L from 5L into 3L. Fill 5L again, pour into 3L until full (which already has 2L; add 1L more). You now have exactly 4L in 5L jug."
+  }
+]

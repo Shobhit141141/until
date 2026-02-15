@@ -1,18 +1,15 @@
 "use client";
 
-import { Button, Card, Money, Timer } from "@/components/ui";
+import { useRef } from "react";
+import { Button, Money, Timer } from "@/components/ui";
 import type { QuestionResponse } from "@/lib/api";
+import { getCostStx, QUESTION_TIME_CAP_SEC } from "@/lib/tokenomics";
 
-const COST_STX_BY_LEVEL = [0.72, 1.44, 2.16, 2.88, 4.32, 6.48, 9.36, 12.96, 17.28, 22.32];
 const MIN_LEVEL_BEFORE_STOP = 4;
+const OPTION_LABELS = ["A", "B", "C", "D"];
 
-function costForLevel(level: number) {
-  return COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.72;
-}
-
-/** Best-case reward = base (same as cost) × 1.5 time multiplier */
 function bestCaseRewardStx(level: number) {
-  return costForLevel(level) * 1.5;
+  return getCostStx(level) * 1.5;
 }
 
 interface QuestionScreenProps {
@@ -24,7 +21,8 @@ interface QuestionScreenProps {
   isSubmitting: boolean;
   isStopping: boolean;
   onSelectOption: (index: number) => void;
-  onSubmit: () => void;
+  /** Called with the selected index at submit click time (avoids stale closure). */
+  onSubmit: (selectedIndex: number) => void;
   onStop: () => void;
 }
 
@@ -41,76 +39,108 @@ export function QuestionScreen({
   onSubmit,
   onStop,
 }: QuestionScreenProps) {
-  const allowedSec = question.estimated_solve_time_sec ?? 30;
-  const costStx = costForLevel(level);
+  /** Synced on every option click so we pass the actual selection at Submit click time. */
+  const selectedIndexRef = useRef<number | null>(null);
+
+  /** All questions capped at 30s. Never use question.estimated_solve_time_sec. */
+  const allowedSec = QUESTION_TIME_CAP_SEC;
+  const costStx = getCostStx(level);
   const bestCaseStx = bestCaseRewardStx(level);
   const canStop = completedLevelsInRun >= MIN_LEVEL_BEFORE_STOP && !question.practice;
 
+  const handleOptionClick = (i: number) => {
+    selectedIndexRef.current = i;
+    onSelectOption(i);
+  };
+
+  const handleSubmit = () => {
+    const index = selectedIndexRef.current ?? selectedIndex;
+    if (index !== null) onSubmit(index);
+  };
+
   return (
     <section className="flex flex-col gap-6 max-w-xl mx-auto">
-      {/* 1. Level (small) */}
-      <p className="text-sm text-[var(--ui-neutral-muted)] font-medium">
-        Level {level + 1}
-      </p>
-
-      {/* 2. Timer (clear, not flashing) */}
+      {/* 1. Level + time limit */}
       <div className="flex items-center justify-between">
-        <Timer elapsedSec={elapsedSec} allowedSec={allowedSec} />
-        {question.estimated_solve_time_sec != null && (
-          <span className="text-sm text-[var(--ui-neutral-muted)]">
-            Par {question.estimated_solve_time_sec}s
-          </span>
-        )}
+        <p className="text-sm font-medium text-gray-600">
+          Level {level + 1}
+        </p>
+        <span className="text-sm text-gray-500">
+          Answer in 30s
+        </span>
       </div>
 
-      {/* 3. Question (large, centered) */}
-      <p className="text-xl font-bold text-[var(--ui-neutral-text)] text-center leading-snug">
+      {/* 2. Timer with progress bar (30s cap) */}
+      <Timer elapsedSec={elapsedSec} allowedSec={allowedSec} />
+
+      {/* 3. Question */}
+      <p className="text-xl font-bold text-gray-900 text-center leading-snug">
         {question.question}
       </p>
 
-      {/* 4. Options (big, evenly spaced) — lock on tap, no second guessing */}
+      {/* Dev only: API sends correctIndex only in NODE_ENV=development */}
+      {typeof question.correctIndex === "number" &&
+        question.correctIndex >= 0 &&
+        question.correctIndex < (question.options?.length ?? 0) && (
+          <p className="text-center text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 font-mono" aria-hidden>
+            Dev: correct = {OPTION_LABELS[question.correctIndex]} — {question.options[question.correctIndex]}
+          </p>
+        )}
+
+      {/* 4. Options — A/B/C/D labels, selection effect */}
       <ul className="flex flex-col gap-3">
-        {question.options.map((opt, i) => (
-          <li key={i}>
-            <button
-              type="button"
-              onClick={() => onSelectOption(i)}
-              disabled={isSubmitting}
-              className={`w-full text-left rounded-[var(--ui-radius)] border-[length:var(--ui-border-width)] px-4 py-3 text-base transition-colors disabled:opacity-70 ${
-                selectedIndex === i
-                  ? "border-[var(--ui-accent)] bg-[var(--ui-accent)]/10 text-[var(--ui-neutral-text)]"
-                  : "border-[var(--ui-border)] bg-[var(--ui-neutral-bg)] text-[var(--ui-neutral-text)] hover:border-[var(--ui-accent)]/50"
-              }`}
-              style={{ borderStyle: "solid" }}
-            >
-              {opt}
-            </button>
-          </li>
-        ))}
+        {question.options.map((opt, i) => {
+          const isSelected = selectedIndex === i;
+          return (
+            <li key={i}>
+              <button
+                type="button"
+                onClick={() => handleOptionClick(i)}
+                disabled={isSubmitting}
+                className={`w-full text-left rounded-xl border-2 px-4 py-3 text-base transition-all duration-200 disabled:opacity-70 flex items-center gap-3 ${
+                  isSelected
+                    ? "border-gray-800 bg-amber-50 text-gray-900 shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] ring-2 ring-amber-400 ring-offset-2 scale-[1.02]"
+                    : "border-gray-300 bg-white text-gray-900 hover:border-gray-500 hover:shadow-[2px_2px_0_0_rgba(0,0,0,0.08)]"
+                }`}
+              >
+                <span
+                  className={`shrink-0 w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm ${
+                    isSelected ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {OPTION_LABELS[i] ?? String(i + 1)}
+                </span>
+                <span className="flex-1">{opt}</span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
-      {/* 5. Economic footer: cost + best-case reward */}
-      <Card className="mt-2">
+      {/* 5. Economic footer */}
+      <div className="rounded-xl border-2 border-gray-800 bg-gray-50 p-4 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
           <div>
-            <span className="text-[var(--ui-neutral-muted)]">This question: </span>
+            <span className="text-gray-600">This question: </span>
             <Money stx={costStx} />
           </div>
           <div>
-            <span className="text-[var(--ui-neutral-muted)]">Best-case: </span>
+            <span className="text-gray-600">Best-case: </span>
             <Money stx={bestCaseStx} />
           </div>
         </div>
-      </Card>
+      </div>
 
       <div className="flex flex-col gap-2">
         <Button
-          onClick={onSubmit}
-          disabled={selectedIndex === null || isSubmitting}
+          onClick={handleSubmit}
+          disabled={selectedIndex === null || isSubmitting || elapsedSec >= allowedSec}
           variant="primary"
           className="w-full py-3"
         >
-          {isSubmitting ? (
+          {elapsedSec >= allowedSec ? (
+            "Time's up — ending…"
+          ) : isSubmitting ? (
             <span className="inline-flex items-center gap-2">
               <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               Checking…

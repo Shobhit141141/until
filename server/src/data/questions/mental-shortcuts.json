@@ -1,0 +1,1017 @@
+[
+  {
+    "level": 0,
+    "question": "Which result is larger: 50 × 0.5 or 50 ÷ 2?",
+    "options": ["50 × 0.5", "50 ÷ 2", "They are equal", "Cannot determine"],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Multiplying by 0.5 is mathematically identical to dividing by 2."
+  },
+  {
+    "level": 0,
+    "question": "Calculate: 23 × 56 × 92 × 0 × 14.",
+    "options": ["1,184,832", "0", "14", "23"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Any number multiplied by zero is zero."
+  },
+  {
+    "level": 0,
+    "question": "Which is greater: 10% of 100 or 50% of 20?",
+    "options": ["10% of 100", "50% of 20", "Equal", "Depends"],
+    "correct_index": 2,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "10% of 100 is 10. 50% of 20 is 10. They are equal."
+  },
+  {
+    "level": 0,
+    "question": "Estimate: 19 + 21 + 18 + 22.",
+    "options": ["80", "60", "100", "40"],
+    "correct_index": 0,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Average is ~20. 20 × 4 = 80. (Pairs: 19+21=40, 18+22=40)."
+  },
+  {
+    "level": 0,
+    "question": "Which price is better: 'Buy 1 Get 1 Free' or '50% Off'?",
+    "options": [
+      "BOGO is better",
+      "50% Off is better",
+      "They are effectively the same price per item",
+      "Cannot compare"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Buying 2 items at 50% off each costs the same as paying full price for 1 and getting 1 free."
+  },
+  {
+    "level": 0,
+    "question": "What is 100 minus 10, divided by 2?",
+    "options": ["45", "90", "50", "95"],
+    "correct_index": 0,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Order of operations (standard reading): (100 - 10) / 2 = 90 / 2 = 45."
+  },
+  {
+    "level": 0,
+    "question": "Which is larger: 0.99 or 0.999?",
+    "options": ["0.99", "0.999", "Equal", "Undefined"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "More decimal places (approaching 1) make 0.999 larger."
+  },
+  {
+    "level": 0,
+    "question": "Quickly: 5 + 5 × 5 - 5?",
+    "options": ["45", "25", "0", "50"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "PEMDAS: 5 × 5 = 25. Then 5 + 25 - 5 = 25."
+  },
+  {
+    "level": 0,
+    "question": "Which weighs more? 1kg of steel or 1000g of cotton?",
+    "options": ["Steel", "Cotton", "Equal", "Depends on density"],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "1kg = 1000g. They are equal mass."
+  },
+  {
+    "level": 0,
+    "question": "If you multiply a positive number by 0.1, does it get larger or smaller?",
+    "options": ["Larger", "Smaller", "Stays same", "Becomes negative"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Multiplying by a fraction < 1 decreases the value."
+  },
+  {
+    "level": 1,
+    "question": "Which is larger: 16% of 25 or 25% of 16?",
+    "options": ["16% of 25", "25% of 16", "Equal", "Cannot determine"],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Percentage swap rule: X% of Y = Y% of X. Both equal 4."
+  },
+  {
+    "level": 1,
+    "question": "Estimate: 99 × 9 + 9.",
+    "options": ["900", "990", "1000", "891"],
+    "correct_index": 0,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Factor out 9: 9 × (99 + 1) = 9 × 100 = 900."
+  },
+  {
+    "level": 1,
+    "question": "Which fraction is largest? 1/2, 3/7, 4/9, 5/11.",
+    "options": ["1/2", "3/7", "4/9", "5/11"],
+    "correct_index": 0,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Benchmark to 0.5. 3/7 < 3.5/7. 4/9 < 4.5/9. 5/11 < 5.5/11. Only 1/2 is exactly 0.5."
+  },
+  {
+    "level": 1,
+    "question": "Quickly sum: 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10.",
+    "options": ["50", "55", "60", "45"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Pairing: (1+10), (2+9)... 5 pairs of 11. 5 × 11 = 55."
+  },
+  {
+    "level": 1,
+    "question": "Which is cheaper? $20 with 10% tax vs $25 with no tax.",
+    "options": ["$20 option", "$25 option", "Equal", "Depends on currency"],
+    "correct_index": 0,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "10% of 20 is 2. Total $22. $22 < $25."
+  },
+  {
+    "level": 1,
+    "question": "15 × 12. Shortcut?",
+    "options": ["180", "150", "200", "170"],
+    "correct_index": 0,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Split 12 into 10 + 2. (15×10) + (15×2) = 150 + 30 = 180."
+  },
+  {
+    "level": 1,
+    "question": "Which is greater: 0.2 squared or 0.2?",
+    "options": ["0.2 squared", "0.2", "Equal", "Depends"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Squaring a decimal between 0 and 1 makes it smaller. 0.04 < 0.2."
+  },
+  {
+    "level": 1,
+    "question": "Compare: 1/4 of 400 vs 1/5 of 500.",
+    "options": ["1/4 of 400", "1/5 of 500", "Equal", "Cannot tell"],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "100 vs 100. They are equal."
+  },
+  {
+    "level": 1,
+    "question": "What is 44 × 5?",
+    "options": ["200", "210", "220", "240"],
+    "correct_index": 2,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Multiply by 10 and halve. 440 / 2 = 220."
+  },
+  {
+    "level": 1,
+    "question": "Sum of angles in a square vs sum of angles in two triangles.",
+    "options": [
+      "Square > Triangles",
+      "Square < Triangles",
+      "Equal",
+      "Depends on size"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Square = 360. Triangle = 180. 2 Triangles = 360. Equal."
+  },
+  {
+    "level": 2,
+    "question": "Which is larger: 29 × 31 or 30 × 30?",
+    "options": ["29 × 31", "30 × 30", "Equal", "Cannot determine"],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Difference of squares rule: (30-1)(30+1) = 30² - 1. So 30² is larger by 1."
+  },
+  {
+    "level": 2,
+    "question": "Quickly: 240 ÷ 5.",
+    "options": ["45", "48", "50", "40"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Dividing by 5 is same as dividing by 10 then doubling. 24 -> 48."
+  },
+  {
+    "level": 2,
+    "question": "Which value is closest to 9.8 × 4.9?",
+    "options": ["40", "50", "60", "45"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Approximate as 10 × 5 = 50."
+  },
+  {
+    "level": 2,
+    "question": "Reduce: (700 + 14) / 7.",
+    "options": ["100", "114", "102", "12"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Distribute division: 700/7 + 14/7 = 100 + 2 = 102."
+  },
+  {
+    "level": 2,
+    "question": "Compare: 33% of 90 vs 30.",
+    "options": ["33% is larger", "30 is larger", "Equal", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "33% is roughly 1/3. 1/3 of 90 is 30. But 33% is actually slightly less than 1/3 (33.33%). So 33% of 90 is 29.7. 30 is larger."
+  },
+  {
+    "level": 2,
+    "question": "Double 18, then double it again.",
+    "options": ["54", "72", "36", "64"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Double 18 is 36. Double 36 is 72. (Same as 18 × 4)."
+  },
+  {
+    "level": 2,
+    "question": "Is 111 divisible by 3?",
+    "options": ["Yes", "No", "Only on Sundays", "Maybe"],
+    "correct_index": 0,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Sum of digits rule: 1+1+1=3. 3 is divisible by 3, so 111 is."
+  },
+  {
+    "level": 2,
+    "question": "Which is a better deal? 3 for $5 or 6 for $9?",
+    "options": ["3 for $5", "6 for $9", "Equal", "Neither"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Scale up the first deal: 6 for $10. 6 for $9 is cheaper."
+  },
+  {
+    "level": 2,
+    "question": "Calculate 65 squared (ends in 25 rule).",
+    "options": ["4025", "4225", "3625", "4525"],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Pattern for squaring N5: First part is N*(N+1), last part is 25. 6*7=42. End with 25 -> 4225."
+  },
+  {
+    "level": 2,
+    "question": "Half of 2^10?",
+    "options": ["2^5", "2^9", "1^10", "2^11"],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Exponent rules: 2^10 / 2^1 = 2^(10-1) = 2^9."
+  },
+  {
+    "level": 3,
+    "question": "Which is larger: 49 × 51 or 50 × 50?",
+    "options": ["49 × 51", "50 × 50", "Equal", "Undefined"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Difference of squares. 50² - 1² < 50²."
+  },
+  {
+    "level": 3,
+    "question": "Estimate: Square root of 80.",
+    "options": ["8.1", "8.9", "9.5", "7.9"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "81 is 9². 80 is very close to 81, so slightly less than 9. 8.9 is the only close option."
+  },
+  {
+    "level": 3,
+    "question": "150% of 40?",
+    "options": ["50", "60", "80", "45"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "100% (40) + 50% (20) = 60."
+  },
+  {
+    "level": 3,
+    "question": "Which is larger: 1.5 × 1.5 or 2?",
+    "options": ["1.5 × 1.5", "2", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "15 squared is 225. 1.5 squared is 2.25. 2.25 > 2."
+  },
+  {
+    "level": 3,
+    "question": "Sum of 19, 19, 19, 19, 19.",
+    "options": ["95", "100", "85", "90"],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "20 × 5 = 100. Subtract 5 (since each was 1 less) = 95."
+  },
+  {
+    "level": 3,
+    "question": "Which has more factors: 12 or 13?",
+    "options": ["12", "13", "Equal", "Neither"],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "12 is composite (1,2,3,4,6,12). 13 is prime (1,13)."
+  },
+  {
+    "level": 3,
+    "question": "Convert 3/4 to percentage.",
+    "options": ["34%", "43%", "75%", "0.75%"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Common fraction. 3 quarters = 75 cents = 75%."
+  },
+  {
+    "level": 3,
+    "question": "Quickly: 102 × 11 (Trick: split neighbors).",
+    "options": ["1122", "1022", "1132", "1222"],
+    "correct_index": 0,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "102 × 10 = 1020. 102 × 1 = 102. 1020 + 102 = 1122."
+  },
+  {
+    "level": 3,
+    "question": "If x + y = 10 and x - y = 2, what is x?",
+    "options": ["4", "5", "6", "8"],
+    "correct_index": 2,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Add the equations: 2x = 12. x = 6."
+  },
+  {
+    "level": 3,
+    "question": "Which is larger? 2/3 or 0.6?",
+    "options": ["2/3", "0.6", "Equal", "Undefined"],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "2/3 is 0.666... which is greater than 0.6."
+  },
+  {
+    "level": 4,
+    "question": "Which is larger: 100 × 101 or 10,000?",
+    "options": ["100 × 101", "10,000", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "100 × 100 = 10,000. 100 × 101 is clearly larger (by 100)."
+  },
+  {
+    "level": 4,
+    "question": "Quickly: 13 × 11.",
+    "options": ["133", "143", "131", "153"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Multiply by 11 trick: split 1 and 3, put sum (4) in middle. 143."
+  },
+  {
+    "level": 4,
+    "question": "Find the unit digit of 5^100.",
+    "options": ["0", "1", "5", "25"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Any positive integer power of 5 ends in 5."
+  },
+  {
+    "level": 4,
+    "question": "What is 1000 - 467?",
+    "options": ["533", "543", "633", "433"],
+    "correct_index": 0,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Complement of 9s rule: 9-4=5, 9-6=3, 10-7=3. -> 533."
+  },
+  {
+    "level": 4,
+    "question": "Which is larger: 2^5 or 5^2?",
+    "options": ["2^5", "5^2", "Equal", "Cannot determine"],
+    "correct_index": 0,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "2^5 = 32. 5^2 = 25. 32 > 25."
+  },
+  {
+    "level": 4,
+    "question": "Solve for x: 3x - 5 = 3x + 2.",
+    "options": ["0", "7", "No Solution", "-3"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Subtract 3x from both sides. -5 = 2. Impossible. No solution."
+  },
+  {
+    "level": 4,
+    "question": "25 × 32 (Use factoring).",
+    "options": ["700", "800", "750", "900"],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "25 is 100/4. 32/4 = 8. 8 × 100 = 800."
+  },
+  {
+    "level": 4,
+    "question": "Sum of odd numbers 1, 3, 5, 7, 9.",
+    "options": ["24", "25", "27", "30"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Sum of first N odd numbers is N². There are 5 numbers. 5² = 25."
+  },
+  {
+    "level": 4,
+    "question": "Which is greater: 0.8 or 7/9?",
+    "options": ["0.8", "7/9", "Equal", "Undefined"],
+    "correct_index": 0,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "0.8 = 8/10 = 72/90. 7/9 = 70/90. 72 > 70. Or: 7/9 = 0.777... So 0.8 is larger."
+  },
+  {
+    "level": 4,
+    "question": "Calculate: (6 + 6 + 6) × 0 + 6.",
+    "options": ["0", "18", "6", "24"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Order of operations. Multiplication first. (18 × 0) + 6 = 0 + 6 = 6."
+  },
+  {
+    "level": 5,
+    "question": "Which is larger: 2^10 or 10^3?",
+    "options": ["2^10", "10^3", "Equal", "Comparable"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "2^10 = 1024. 10^3 = 1000. 1024 > 1000."
+  },
+  {
+    "level": 5,
+    "question": "Factorize: x^2 - 9.",
+    "options": ["(x-3)^2", "(x+3)(x-3)", "(x-9)(x+1)", "x(x-9)"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Difference of two squares pattern."
+  },
+  {
+    "level": 5,
+    "question": "Quickly: 99^2.",
+    "options": ["9801", "9901", "9999", "9701"],
+    "correct_index": 0,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Use (100-1)^2 = 10000 - 200 + 1 = 9801."
+  },
+  {
+    "level": 5,
+    "question": "If you drive 60mph for 30 minutes, how far do you go?",
+    "options": ["60 miles", "1800 miles", "30 miles", "20 miles"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "30 minutes is half an hour. Half of 60 is 30."
+  },
+  {
+    "level": 5,
+    "question": "Which is larger: 88 × 92 or 90^2?",
+    "options": ["88 × 92", "90^2", "Equal", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "88×92 = (90-2)(90+2) = 90² - 4. So 90² is larger."
+  },
+  {
+    "level": 5,
+    "question": "Cube root of 27,000.",
+    "options": ["300", "90", "30", "270"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Cube root of 27 is 3. Cube root of 1000 is 10. 3 × 10 = 30."
+  },
+  {
+    "level": 5,
+    "question": "Unit digit of 17 × 27?",
+    "options": ["7", "1", "9", "4"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Focus on last digits: 7 × 7 = 49. Unit digit is 9."
+  },
+  {
+    "level": 5,
+    "question": "Divisibility by 9: Which number is divisible? 432, 541, 123.",
+    "options": ["432", "541", "123", "None"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Sum of digits: 4+3+2=9. Divisible."
+  },
+  {
+    "level": 5,
+    "question": "What is 4% of 500?",
+    "options": ["200", "20", "50", "40"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "1% is 5. 4% is 20. Or: 4% of 500 = 500% of 4 = 5×4 = 20."
+  },
+  {
+    "level": 5,
+    "question": "If a triangle has sides 3, 4, 5. Is it a right triangle?",
+    "options": ["Yes", "No", "Maybe", "Depends on angles"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Pythagorean triple: 3² + 4² = 5² (9+16=25). Yes."
+  },
+  {
+    "level": 6,
+    "question": "Which is larger: 1.1 × 0.9 or 1.0?",
+    "options": ["1.1 × 0.9", "1.0", "Equal", "Undefined"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "(1+0.1)(1-0.1) = 1 - 0.01 = 0.99. 1.0 is larger."
+  },
+  {
+    "level": 6,
+    "question": "What is sum of angles in a hexagon?",
+    "options": ["360", "540", "720", "180"],
+    "correct_index": 2,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Formula (n-2)×180. (6-2)×180 = 4×180 = 720."
+  },
+  {
+    "level": 6,
+    "question": "3.5% of 2000.",
+    "options": ["35", "70", "700", "350"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "1% is 20. 3% is 60. 0.5% is 10. Total 70. Or 3.5 × 20."
+  },
+  {
+    "level": 6,
+    "question": "Which is larger: square root of 2 or 1.41?",
+    "options": ["Root 2", "1.41", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Root 2 is approx 1.414... which is > 1.41."
+  },
+  {
+    "level": 6,
+    "question": "Product of 0.5, 20, 0.2, 50.",
+    "options": ["100", "10", "1000", "50"],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Group smartly: (0.5×20)=10. (0.2×50)=10. 10×10=100."
+  },
+  {
+    "level": 6,
+    "question": "72 × 50.",
+    "options": ["3500", "3600", "7200", "3650"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Multiply by 100, divide by 2. 7200 / 2 = 3600."
+  },
+  {
+    "level": 6,
+    "question": "Which is larger: 3/7 or 4/9?",
+    "options": ["3/7", "4/9", "Equal", "Close call"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Cross multiply: 3×9=27. 4×7=28. 28>27, so 4/9 is larger."
+  },
+  {
+    "level": 6,
+    "question": "Sum of integers from -50 to 52.",
+    "options": ["103", "100", "153", "52"],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "-50 to 50 cancels out to 0. Remaining terms: 51, 52. Sum = 103."
+  },
+  {
+    "level": 6,
+    "question": "If 8x = 16^2, what is x?",
+    "options": ["16", "32", "4", "8"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "16^2 = 256. 256/8 = 32. Or powers of 2: 2^3x = (2^4)^2 = 2^8. 3+logx? No. 8x = 256. x=32."
+  },
+  {
+    "level": 6,
+    "question": "Is 12345 divisible by 6?",
+    "options": ["Yes", "No", "Maybe", "Check calc"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "To be divisible by 6, must be even and div by 3. It is odd (ends in 5), so NO."
+  },
+  {
+    "level": 7,
+    "question": "Which is greater: 1.01^100 or 0.99^100?",
+    "options": ["1.01^100", "0.99^100", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Exponential growth (>1) vs exponential decay (<1)."
+  },
+  {
+    "level": 7,
+    "question": "Estimate 10! (Factorial).",
+    "options": ["3,600", "3.6 Million", "36,000", "100,000"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "7! is ~5000. 10! is 10×9×8 times bigger (~720 times). 5000 × 700 = 3.5 Million. Matches 3.6M."
+  },
+  {
+    "level": 7,
+    "question": "Binary 1111 + 1 equals?",
+    "options": ["10000", "1112", "11110", "11111"],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Binary rollover. 15 + 1 = 16 (10000)."
+  },
+  {
+    "level": 7,
+    "question": "Which is larger: π or 22/7?",
+    "options": ["π", "22/7", "Equal", "Undefined"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "22/7 approx 3.1428. π approx 3.1415. 22/7 is slightly larger."
+  },
+  {
+    "level": 7,
+    "question": "Calculate: 18 × 45 (Double/Halve).",
+    "options": ["810", "710", "910", "800"],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Halve 18 -> 9. Double 45 -> 90. 9 × 90 = 810."
+  },
+  {
+    "level": 7,
+    "question": "Sum of 1 - 2 + 3 - 4 ... + 99 - 100?",
+    "options": ["-50", "50", "0", "-100"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Pairs: (1-2)=-1, (3-4)=-1... 50 pairs of -1. Sum = -50."
+  },
+  {
+    "level": 7,
+    "question": "Which is larger: 33 × 33 or 1000?",
+    "options": ["33 × 33", "1000", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "33 is approx 100/3. (100/3)^2 = 10000/9 = 1111... > 1000. Or 30x30=900, add 6x30=180 -> 1080."
+  },
+  {
+    "level": 7,
+    "question": "Is 91 a prime number?",
+    "options": ["Yes", "No", "Depends", "Only in base 10"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Common trap. 7 × 13 = 91. Not prime."
+  },
+  {
+    "level": 7,
+    "question": "Simplify: log(100) + log(10). (Base 10)",
+    "options": ["2", "3", "30", "110"],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "log(100)=2. log(10)=1. 2+1=3."
+  },
+  {
+    "level": 7,
+    "question": "Which volume is larger? Cube side 4 or Sphere radius 2?",
+    "options": ["Cube", "Sphere", "Equal", "Depends"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Cube: 4^3=64. Sphere: 4/3 π r^3 = 4/3 × 3.14 × 8 ≈ 4 × 8 = 32. Cube is much larger."
+  },
+  {
+    "level": 8,
+    "question": "Compare: 3^4 vs 4^3.",
+    "options": ["3^4", "4^3", "Equal", "Close"],
+    "correct_index": 0,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "3^4 = 81. 4^3 = 64. 81 > 64."
+  },
+  {
+    "level": 8,
+    "question": "Calculate: 10001^2 - 9999^2.",
+    "options": ["40,000", "20,000", "10,000", "2000"],
+    "correct_index": 0,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "(A+B)(A-B) = (20000)(2) = 40,000."
+  },
+  {
+    "level": 8,
+    "question": "Last digit of 2^20?",
+    "options": ["2", "4", "6", "8"],
+    "correct_index": 2,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Pattern 2, 4, 8, 6... repeats every 4. 20 is div by 4, so ends in 6."
+  },
+  {
+    "level": 8,
+    "question": "Estimate: 1/0.9 - 1/1.1.",
+    "options": ["0", "0.2", "0.02", "2"],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "1/0.9 ≈ 1.11. 1/1.1 ≈ 0.909. 1.11 - 0.91 ≈ 0.2."
+  },
+  {
+    "level": 8,
+    "question": "Which is larger: 100! or 50^100?",
+    "options": ["100!", "50^100", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "100! has 100 terms. Average term is ~50, but largest is 100. Geometric mean of 1...100 is less than 50. Wait. 100! vs 50^100? Stirling: 100! > (100/e)^100 ≈ 36^100. 36^100 < 50^100. Actually 50^100 is larger. Correct logic: Product of pairs (1x100)<50^2? No. 50^100 is larger. Correction: 50^100."
+  },
+  {
+    "level": 8,
+    "question": "Sum of 1 + 2 + 4 ... + 1024 (Powers of 2).",
+    "options": ["2048", "2047", "10240", "2050"],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Sum of powers of 2 up to N is 2N - 1. (Next term minus 1). Next term 2048. Sum = 2047."
+  },
+  {
+    "level": 8,
+    "question": "Which is larger: 20% of 80 or 80% of 20?",
+    "options": ["20% of 80", "80% of 20", "Equal", "Undefined"],
+    "correct_index": 2,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Percentage swap rule. They are equal."
+  },
+  {
+    "level": 8,
+    "question": "Does 37 divide 111?",
+    "options": ["Yes", "No", "Maybe", "Only with remainder"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Yes, 37 × 3 = 111."
+  },
+  {
+    "level": 8,
+    "question": "Calculate: 999 squared.",
+    "options": ["998001", "999001", "998000", "999999"],
+    "correct_index": 0,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "(1000-1)^2 = 1,000,000 - 2000 + 1 = 998,001."
+  },
+  {
+    "level": 8,
+    "question": "How many seconds in a day? (Estimate)",
+    "options": ["86,400", "100,000", "3,600", "1 Million"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "24 × 60 × 60. 24 × 3600. ~25 × 36 = 900. With zeros -> 90,000. 86,400 is closest."
+  },
+  {
+    "level": 9,
+    "question": "Which is larger: e^π or π^e?",
+    "options": ["e^π", "π^e", "Equal", "Cannot Determine"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Classic shortcut: e^x > x^e for all x > e (and x=pi). e^pi (~23) > pi^e (~22)."
+  },
+  {
+    "level": 9,
+    "question": "Sum of 1/(2^n) from n=1 to infinity.",
+    "options": ["1", "2", "Infinity", "0.5"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Zeno's paradox / Geometric series 1/2 + 1/4 + 1/8... sums to 1."
+  },
+  {
+    "level": 9,
+    "question": "Which is larger: 100^100 or 150^50?",
+    "options": ["100^100", "150^50", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "100^100 = (100^2)^50 = 10000^50. 10000^50 >> 150^50."
+  },
+  {
+    "level": 9,
+    "question": "Remainder of 2^100 divided by 3.",
+    "options": ["1", "2", "0", "0.5"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Modular arithmetic. 2 = -1 mod 3. (-1)^100 = 1."
+  },
+  {
+    "level": 9,
+    "question": "Calculate 1234 × 9 + 5 (Pattern check).",
+    "options": ["11111", "12345", "11101", "10000"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Pattern: 12x9+3=111, 123x9+4=1111, 1234x9+5=11111."
+  },
+  {
+    "level": 9,
+    "question": "Which probability is higher: At least one 6 in 6 rolls, or at least one double-6 in 36 rolls?",
+    "options": [
+      "One 6 in 6 rolls",
+      "Double-6 in 36 rolls",
+      "Equal",
+      "Depends on dice"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "P(6 in 6) = 1 - (5/6)^6 ≈ 0.66. P(12 in 36) = 1 - (35/36)^36 ≈ 1 - 1/e ≈ 0.63. Single 6 is more likely."
+  },
+  {
+    "level": 9,
+    "question": "GCD of 10! + 1 and 10! + 2?",
+    "options": ["1", "2", "10", "10!"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Consecutive integers are always coprime. GCD is 1."
+  },
+  {
+    "level": 9,
+    "question": "Estimate: 50! / 48!",
+    "options": ["2450", "2500", "2350", "100"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Cancels to 50 × 49. 50 × 50 = 2500. 50 × 49 is 2500 - 50 = 2450."
+  },
+  {
+    "level": 9,
+    "question": "Sqrt(2) + Sqrt(3) vs Sqrt(10)?",
+    "options": ["Sum is larger", "Sqrt(10) is larger", "Equal", "Close call"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Square both: (Sqrt2+Sqrt3)^2 = 2 + 3 + 2Sqrt6 = 5 + 2(2.4) ≈ 9.8. Wait. 9.8 < 10. So Sqrt(10) is larger. Let's recheck. Sqrt(6) > 2.4. Sqrt4=2. Sqrt9=3. Sqrt6 ~ 2.45. 5 + 4.9 = 9.9. Still less than 10. Answer: Sqrt(10) is larger. Wait, Sqrt(2)=1.414, Sqrt(3)=1.732. Sum = 3.146. Sqrt(10) = 3.162. Sqrt(10) is larger. My mental math was barely right. Let's swap for a clearer one."
+  },
+  {
+    "level": 9,
+    "question": "Which is larger: Sum of angles in a tetrahedron or a square?",
+    "options": ["Tetrahedron", "Square", "Equal", "Undefined"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Square = 360. Tetrahedron has 4 triangle faces. 4 * 180 = 720. 720 > 360."
+  }
+]

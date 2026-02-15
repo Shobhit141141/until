@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, type ReactNode, type ComponentType } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import {
   HiCurrencyDollar,
   HiArrowTrendingUp,
@@ -24,7 +25,7 @@ import {
   type CheckUsernameResponse,
 } from "@/lib/api";
 import { useWallet } from "@/contexts/WalletContext";
-import { Button, Money } from "@/components/ui";
+import { Button, Money, GoHomeLink } from "@/components/ui";
 
 const MICRO_STX_PER_STX = 1_000_000;
 const USERNAME_DEBOUNCE_MS = 400;
@@ -42,26 +43,28 @@ function formatDate(iso: string) {
 }
 
 function txTypeLabel(type: CreditTransactionEntry["type"]): string {
-  const labels: Record<CreditTransactionEntry["type"], string> = {
+  const labels: Record<string, string> = {
     top_up: "Top-up",
-    deduct: "Deduct",
+    deduct: "Debit",
     profit: "Profit",
+    loss: "Loss",
     refund: "Refund",
     withdraw: "Withdraw",
+    milestone_bonus: "Bonus",
   };
   return labels[type] ?? type;
 }
 
-const TX_TYPE_STYLE: Record<
-  CreditTransactionEntry["type"],
-  { bg: string; text: string; icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }> }
-> = {
+const TX_TYPE_STYLE: Record<string, { bg: string; text: string; icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }> }> = {
   top_up: { bg: "bg-emerald-100", text: "text-emerald-800", icon: HiArrowDownCircle },
   deduct: { bg: "bg-amber-100", text: "text-amber-800", icon: HiMinusCircle },
   profit: { bg: "bg-green-100", text: "text-green-800", icon: HiArrowTrendingUp },
+  loss: { bg: "bg-red-100", text: "text-red-800", icon: HiArrowTrendingUp },
   refund: { bg: "bg-sky-100", text: "text-sky-800", icon: HiArrowPath },
   withdraw: { bg: "bg-violet-100", text: "text-violet-800", icon: HiArrowUpCircle },
+  milestone_bonus: { bg: "bg-amber-100", text: "text-amber-800", icon: HiTrophy },
 };
+const TX_TYPE_DEFAULT = { bg: "bg-gray-100", text: "text-gray-800", icon: HiCurrencyDollar };
 
 /** Simple URL check for image preview. */
 function isValidImageUrl(s: string): boolean {
@@ -156,6 +159,7 @@ export default function ProfilePage() {
     setLoading(false);
     if (res.error) {
       setError(res.error);
+      toast.error(res.error);
       setUser(null);
       return;
     }
@@ -182,7 +186,10 @@ export default function ProfilePage() {
       );
       if (cancelled) return;
       setRunsLoading(false);
-      if (r.error) setRunsError(r.error);
+      if (r.error) {
+        setRunsError(r.error);
+        toast.error(r.error);
+      }
       else setRuns(r.data?.runs ?? []);
     })();
     (async () => {
@@ -193,7 +200,10 @@ export default function ProfilePage() {
       );
       if (cancelled) return;
       setTxLoading(false);
-      if (r.error) setTxError(r.error);
+      if (r.error) {
+        setTxError(r.error);
+        toast.error(r.error);
+      }
       else setTransactions(r.data?.transactions ?? []);
     })();
     return () => { cancelled = true; };
@@ -214,11 +224,13 @@ export default function ProfilePage() {
     setSaving(false);
     if (res.error) {
       setError(res.error);
+      toast.error(res.error);
       return;
     }
     if (res.data) {
       setUser(res.data);
       setIsEditing(false);
+      toast.success("Profile updated");
     }
   };
 
@@ -270,18 +282,14 @@ export default function ProfilePage() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-[var(--ui-neutral-text)]">Profile</h1>
-          <Link href="/" className="text-sm text-[var(--ui-neutral-muted)] underline">
-            Back
-          </Link>
+          <GoHomeLink variant="link" />
         </div>
         <div
           className="rounded-[var(--ui-radius)] border-[length:var(--ui-border-width)] border-[var(--ui-border)] p-8 text-center"
           style={{ borderStyle: "solid" }}
         >
           <p className="text-[var(--ui-neutral-muted)]">Connect your wallet to view profile.</p>
-          <Link href="/" className="mt-3 inline-block text-sm text-[var(--ui-accent)] font-medium underline">
-            Go home
-          </Link>
+          <GoHomeLink className="mt-3" />
         </div>
       </div>
     );
@@ -328,14 +336,8 @@ export default function ProfilePage() {
     <div className="w-full px-4 sm:px-6 py-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[var(--ui-neutral-text)]">Profile</h1>
-        <Link href="/" className="text-sm text-[var(--ui-neutral-muted)] underline">
-          Back
-        </Link>
+        <GoHomeLink variant="link" />
       </div>
-
-      {error && (
-        <p className="text-sm text-[var(--ui-failure)] mb-4">{error}</p>
-      )}
 
       {/* Bento: full-width two columns — left: profile + insights + runs; right: tx history */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 min-h-[60vh]">
@@ -364,7 +366,7 @@ export default function ProfilePage() {
                       <button
                         type="button"
                         onClick={copyWallet}
-                        className="shrink-0 rounded-none border-2 border-black px-3 py-1.5 text-xs font-medium hover:bg-black/5 transition-colors"
+                        className="shrink-0 rounded-xl border-2 border-black px-3 py-1.5 text-xs font-medium hover:bg-black/5 transition-colors"
                         style={{ borderStyle: "solid" }}
                       >
                         {copySuccess ? "Copied!" : "Copy"}
@@ -379,7 +381,7 @@ export default function ProfilePage() {
                     setEditPfpUrl(user.pfpUrl ?? "");
                     setIsEditing(true);
                   }}
-                  className="mt-4 w-fit px-4 py-2 rounded-none border-2 bg-black text-white border-black hover:bg-black/80 transition-colors"
+                  className="mt-4 w-fit"
                 >
                   Edit profile
                 </Button>
@@ -476,28 +478,42 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Run history with expand */}
+          {/* Run history with expand — outcome-colored cards, labeled metrics */}
           <div
-            className="rounded-none border-2 border-[var(--ui-border)] p-4 flex flex-col flex-1 min-h-[280px]"
+            className="rounded-xl border-2 border-[var(--ui-border)] p-4 flex flex-col flex-1 min-h-[280px] bg-[var(--ui-neutral-bg)]/50"
             style={{ borderStyle: "solid" }}
           >
-            <h3 className="text-sm font-bold text-[var(--ui-neutral-text)] uppercase tracking-wider mb-3 flex items-center gap-2">
-              <HiTrophy className="w-4 h-4 text-amber-500" />
-              Run history
-            </h3>
-            {runsLoading && <p className="text-sm text-[var(--ui-neutral-muted)]">Loading…</p>}
-            {runsError && <p className="text-sm text-[var(--ui-failure)]">{runsError}</p>}
+            <div className="flex items-center gap-2 mb-4">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                <HiTrophy className="w-4 h-4" aria-hidden />
+              </span>
+              <div>
+                <h3 className="text-sm font-bold text-[var(--ui-neutral-text)] uppercase tracking-wider">
+                  Run history
+                </h3>
+                <p className="text-xs text-[var(--ui-neutral-muted)]">Score, spent, earned, and net per run</p>
+              </div>
+            </div>
+            {runsLoading && <p className="text-sm text-[var(--ui-neutral-muted)] py-4">Loading…</p>}
             {!runsLoading && !runsError && runs.length === 0 && (
-              <p className="text-sm text-[var(--ui-neutral-muted)]">No runs yet.</p>
+              <p className="text-sm text-[var(--ui-neutral-muted)] py-4">No runs yet. Play from the home screen.</p>
             )}
             {!runsLoading && runs.length > 0 && (
-              <ul className="flex flex-col gap-2 overflow-y-auto flex-1">
+              <ul className="flex flex-col gap-3 overflow-y-auto flex-1 -mx-1 px-1">
                 {runs.map((run) => {
                   const isExpanded = expandedRunId === run.runId;
+                  const netStx = run.earned - run.spent;
+                  const outcome: "profit" | "loss" | "even" =
+                    netStx > 0 ? "profit" : netStx < 0 ? "loss" : "even";
+                  const outcomeStyle = {
+                    profit: { border: "border-l-emerald-500", bg: "bg-emerald-50/80", pill: "bg-emerald-100 text-emerald-800" },
+                    loss: { border: "border-l-red-500", bg: "bg-red-50/80", pill: "bg-red-100 text-red-800" },
+                    even: { border: "border-l-slate-400", bg: "bg-slate-50/80", pill: "bg-slate-100 text-slate-700" },
+                  }[outcome];
                   return (
                     <li
                       key={run.runId}
-                      className="rounded-none border-2 border-[var(--ui-border)] overflow-hidden shrink-0"
+                      className={`rounded-lg border-2 border-[var(--ui-border)] border-l-4 overflow-hidden shrink-0 ${outcomeStyle.border} ${outcomeStyle.bg}`}
                       style={{ borderStyle: "solid" }}
                     >
                       <button
@@ -505,33 +521,51 @@ export default function ProfilePage() {
                         onClick={() =>
                           setExpandedRunId((id) => (id === run.runId ? null : run.runId))
                         }
-                        className="w-full text-left p-3 flex items-center justify-between gap-2 hover:bg-black/5"
+                        className="w-full text-left p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:opacity-95 transition-opacity"
                       >
-                        <span className="text-xs font-mono text-[var(--ui-neutral-muted)]">
-                          {formatDate(run.createdAt)}
-                        </span>
-                        <span className="text-sm font-medium text-[var(--ui-neutral-text)]">
-                          Score {run.score} · <Money stx={run.spent} /> · <Money stx={run.earned} />
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2 min-w-0">
+                          <span className="text-xs font-medium text-[var(--ui-neutral-muted)]">
+                            {formatDate(run.createdAt)}
+                          </span>
+                          <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ${outcomeStyle.pill}`}>
+                            {outcome === "profit" ? "+" : ""}
+                            <Money stx={netStx} />
+                            {outcome === "even" ? " net" : ""}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                          <span className="text-[var(--ui-neutral-muted)]">
+                            Score <strong className="text-[var(--ui-neutral-text)] font-tabular">{run.score}</strong>
+                          </span>
+                          <span className="text-[var(--ui-neutral-muted)]">
+                            Spent <strong className="text-amber-700 font-tabular"><Money stx={run.spent} /></strong>
+                          </span>
+                          <span className="text-[var(--ui-neutral-muted)]">
+                            Earned <strong className="text-emerald-700 font-tabular"><Money stx={run.earned} /></strong>
+                          </span>
+                        </div>
                         {isExpanded ? (
-                          <HiChevronDown className="w-4 h-4 text-[var(--ui-neutral-muted)] shrink-0" aria-hidden />
+                          <HiChevronDown className="w-5 h-5 text-[var(--ui-neutral-muted)] shrink-0" aria-hidden />
                         ) : (
-                          <HiChevronRight className="w-4 h-4 text-[var(--ui-neutral-muted)] shrink-0" aria-hidden />
+                          <HiChevronRight className="w-5 h-5 text-[var(--ui-neutral-muted)] shrink-0" aria-hidden />
                         )}
                       </button>
                       {isExpanded && run.questions && run.questions.length > 0 && (
-                        <div className="border-t-2 border-[var(--ui-border)] p-3 bg-black/5">
-                          <ul className="space-y-3">
+                        <div className="border-t-2 border-[var(--ui-border)] p-4 bg-black/5">
+                          <h4 className="text-xs font-bold text-[var(--ui-neutral-muted)] uppercase tracking-wider mb-3">
+                            Questions in this run
+                          </h4>
+                          <ul className="space-y-4">
                             {run.questions.map((q, i) => (
-                              <li key={i} className="text-sm">
-                                <p className="text-[var(--ui-neutral-text)] font-medium">
+                              <li key={i} className="flex flex-col gap-1 pl-2 border-l-2 border-amber-200" style={{ borderStyle: "solid" }}>
+                                <p className="text-sm font-medium text-[var(--ui-neutral-text)]">
                                   Q{q.level ?? i + 1}: {q.question}
                                 </p>
-                                <p className="text-[var(--ui-neutral-muted)] mt-0.5">
-                                  Option {q.selectedIndex + 1} · +{q.points} pts
+                                <p className="text-xs text-[var(--ui-neutral-muted)]">
+                                  Your answer: option {q.selectedIndex + 1} · <span className="font-tabular text-emerald-600">+{q.points} pts</span>
                                 </p>
                                 {q.correctOptionText && (
-                                  <p className="text-emerald-600 text-xs mt-0.5">
+                                  <p className="text-xs text-emerald-700 mt-0.5">
                                     Correct: {q.correctOptionText}
                                   </p>
                                 )}
@@ -550,35 +584,43 @@ export default function ProfilePage() {
 
         {/* Right column — Tx history full height */}
         <div
-          className="rounded-none border-2 border-[var(--ui-border)] p-4 flex flex-col min-h-[400px] lg:min-h-0"
+          className="rounded-xl border-2 border-[var(--ui-border)] p-4 flex flex-col min-h-[400px] lg:min-h-0 bg-[var(--ui-neutral-bg)]/50"
           style={{ borderStyle: "solid" }}
         >
-          <h3 className="text-sm font-bold text-[var(--ui-neutral-text)] uppercase tracking-wider mb-3 flex items-center gap-2">
-            <HiWallet className="w-4 h-4 text-violet-500" />
-            Transaction history
-          </h3>
-          {txLoading && <p className="text-sm text-[var(--ui-neutral-muted)]">Loading…</p>}
-          {txError && <p className="text-sm text-[var(--ui-failure)]">{txError}</p>}
+          <div className="flex items-center gap-2 mb-4">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
+              <HiWallet className="w-4 h-4" aria-hidden />
+            </span>
+            <div>
+              <h3 className="text-sm font-bold text-[var(--ui-neutral-text)] uppercase tracking-wider">
+                Transaction history
+              </h3>
+              <p className="text-xs text-[var(--ui-neutral-muted)]">Top-ups, profits, withdrawals</p>
+            </div>
+          </div>
+          {txLoading && <p className="text-sm text-[var(--ui-neutral-muted)] py-4">Loading…</p>}
           {!txLoading && !txError && transactions.length === 0 && (
-            <p className="text-sm text-[var(--ui-neutral-muted)]">No transactions yet.</p>
+            <p className="text-sm text-[var(--ui-neutral-muted)] py-4">No transactions yet.</p>
           )}
           {!txLoading && transactions.length > 0 && (
-            <ul className="space-y-2 overflow-y-auto flex-1">
+            <ul className="space-y-2 overflow-y-auto flex-1 -mx-1 px-1">
               {transactions.map((tx) => {
-                const style = TX_TYPE_STYLE[tx.type];
+                const style = TX_TYPE_STYLE[tx.type] ?? TX_TYPE_DEFAULT;
                 const Icon = style.icon;
+                const amountStx = tx.amountMicroStx / MICRO_STX_PER_STX;
+                const isNegative = amountStx < 0;
                 return (
                   <li
                     key={tx.id}
-                    className={`rounded-none border-2 ${style.bg} ${style.text} p-3 flex items-center justify-between gap-3`}
+                    className={`rounded-lg border-2 ${style.bg} ${style.text} p-3 flex items-center justify-between gap-3 shadow-sm`}
                     style={{ borderStyle: "solid", borderColor: "currentColor" }}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="shrink-0 w-8 h-8 rounded-none bg-white/60 flex items-center justify-center">
+                      <span className="shrink-0 w-9 h-9 rounded-lg bg-white/70 flex items-center justify-center">
                         <Icon className="w-4 h-4" aria-hidden />
                       </span>
                       <div>
-                        <span className="font-semibold block">
+                        <span className="font-semibold block text-sm">
                           {txTypeLabel(tx.type)}
                         </span>
                         <span className="text-xs opacity-80">
@@ -586,8 +628,8 @@ export default function ProfilePage() {
                         </span>
                       </div>
                     </div>
-                    <span className="font-mono font-tabular font-semibold shrink-0">
-                      {(tx.amountMicroStx / MICRO_STX_PER_STX).toFixed(4)} STX
+                    <span className={`font-mono font-tabular font-semibold shrink-0 text-sm ${isNegative ? "" : ""}`}>
+                      {isNegative ? "" : "+"}{(amountStx).toFixed(4)} STX
                     </span>
                   </li>
                 );

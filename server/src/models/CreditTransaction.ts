@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
-export type CreditTransactionType = "top_up" | "deduct" | "profit" | "refund" | "withdraw" | "milestone_bonus";
+export type CreditTransactionType = "top_up" | "deduct" | "profit" | "loss" | "refund" | "withdraw" | "milestone_bonus";
 
 const creditTransactionSchema = new mongoose.Schema(
   {
     walletAddress: { type: String, required: true, index: true },
-    type: { type: String, required: true, enum: ["top_up", "deduct", "profit", "refund", "withdraw", "milestone_bonus"] },
+    type: { type: String, required: true, enum: ["top_up", "deduct", "profit", "loss", "refund", "withdraw", "milestone_bonus"] },
     amountMicroStx: { type: Number, required: true },
     balanceAfterMicroStx: { type: Number, required: true },
     refTxId: { type: String, required: false, index: true },

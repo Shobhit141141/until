@@ -1,19 +1,18 @@
 "use client";
 
-import { Button, Card, Money } from "@/components/ui";
+import { Button, Money } from "@/components/ui";
+import { getCostStx } from "@/lib/tokenomics";
 
-const COST_STX_BY_LEVEL = [0.72, 1.44, 2.16, 2.88, 4.32, 6.48, 9.36, 12.96, 17.28, 22.32];
 const MIN_LEVEL_BEFORE_STOP = 4;
 
-function costForLevel(level: number) {
-  return COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.72;
-}
 function bestCaseRewardStx(level: number) {
-  return costForLevel(level) * 1.5;
+  return getCostStx(level) * 1.5;
 }
 
 interface ContinueOrStopScreenProps {
   earnedSoFarStx: number;
+  /** Total profit/loss so far this run (earned − spent). Only for paid runs. */
+  profitLossSoFarStx?: number;
   nextLevel: number;
   completedLevels: number;
   isPractice: boolean;
@@ -26,6 +25,7 @@ interface ContinueOrStopScreenProps {
 /** Continue vs Stop: make the economic decision obvious. No nudging. */
 export function ContinueOrStopScreen({
   earnedSoFarStx,
+  profitLossSoFarStx,
   nextLevel,
   completedLevels,
   isPractice,
@@ -34,32 +34,44 @@ export function ContinueOrStopScreen({
   isContinueLoading,
   isStopping,
 }: ContinueOrStopScreenProps) {
-  const costNext = costForLevel(nextLevel);
+  const costNext = getCostStx(nextLevel);
   const bestCaseNext = bestCaseRewardStx(nextLevel);
   const canStop = isPractice || completedLevels >= MIN_LEVEL_BEFORE_STOP;
 
   return (
     <section className="flex flex-col gap-6 max-w-md">
-      <h2 className="text-lg font-bold text-[var(--ui-neutral-text)]">
+      <h2 className="text-lg font-bold text-gray-900">
         Continue or stop?
       </h2>
 
-      <Card>
+      <div className="rounded-xl border-2 border-gray-800 bg-gray-50 p-4 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
         <div className="flex flex-col gap-3 text-sm">
+          {!isPractice && typeof profitLossSoFarStx === "number" && (
+            <div className="flex justify-between font-medium">
+              <span className="text-gray-700">Total P&L so far</span>
+              <span
+                className={`font-mono font-tabular ${
+                  profitLossSoFarStx > 0 ? "text-emerald-600" : profitLossSoFarStx < 0 ? "text-red-600" : "text-gray-900"
+                }`}
+              >
+                {profitLossSoFarStx > 0 ? "+" : ""}{profitLossSoFarStx.toFixed(4)} STX
+              </span>
+            </div>
+          )}
           <div className="flex justify-between">
-            <span className="text-[var(--ui-neutral-muted)]">Earned so far</span>
+            <span className="text-gray-600">Earned so far</span>
             <Money stx={earnedSoFarStx} />
           </div>
           <div className="flex justify-between">
-            <span className="text-[var(--ui-neutral-muted)]">Cost of next question</span>
+            <span className="text-gray-600">Cost of next question</span>
             <Money stx={costNext} />
           </div>
           <div className="flex justify-between">
-            <span className="text-[var(--ui-neutral-muted)]">Best-case next reward</span>
+            <span className="text-gray-600">Best-case next reward</span>
             <Money stx={bestCaseNext} />
           </div>
         </div>
-      </Card>
+      </div>
 
       <div className="flex flex-col gap-2">
         <Button
@@ -86,7 +98,7 @@ export function ContinueOrStopScreen({
           {isStopping ? "Finishing…" : "Stop & lock result"}
         </Button>
         {!canStop && (
-          <p className="text-xs text-[var(--ui-neutral-muted)]">
+          <p className="text-xs text-gray-500">
             Stop unlocks after level {MIN_LEVEL_BEFORE_STOP}.
           </p>
         )}

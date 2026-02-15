@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { apiFetch, type UserMe, type CheckUsernameResponse } from "@/lib/api";
 import { Button } from "@/components/ui";
 import { Modal } from "@/components/ui/Modal";
+import toast from "react-hot-toast";
 
 const USERNAME_DEBOUNCE_MS = 400;
 type UsernameStatus = "idle" | "checking" | "available" | "taken";
@@ -43,6 +44,7 @@ export function ProfileModal({ wallet, initialUser, onClose, onSaved }: ProfileM
     setLoading(false);
     if (res.error) {
       setError(res.error);
+      toast.error(res.error);
       setUser(null);
       return;
     }
@@ -94,6 +96,7 @@ export function ProfileModal({ wallet, initialUser, onClose, onSaved }: ProfileM
     setSaving(false);
     if (res.error) {
       setError(res.error);
+      toast.error(res.error);
       return;
     }
     if (res.data) {
@@ -166,7 +169,6 @@ export function ProfileModal({ wallet, initialUser, onClose, onSaved }: ProfileM
               className="w-full border-2 border-gray-800 px-3 py-2 text-sm"
             />
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="flex gap-2">
             <Button variant="primary" onClick={saveProfile} disabled={saving || usernameStatus === "taken" || usernameStatus === "checking"} className="flex-1">
               {saving ? "Saving…" : "Save"}

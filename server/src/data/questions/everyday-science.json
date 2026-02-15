@@ -1,0 +1,1422 @@
+[
+  {
+    "level": 0,
+    "question": "If you drop a rock and a feather at the same time on the moon (no air), which hits the ground first?",
+    "options": [
+      "The rock",
+      "The feather",
+      "They hit at the same time",
+      "Neither falls"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Without air resistance, gravity pulls all objects at the same rate regardless of mass."
+  },
+  {
+    "level": 0,
+    "question": "When you walk on ice, why is it easy to slip?",
+    "options": [
+      "Ice is magnetic",
+      "Ice has low friction",
+      "Ice is heavy",
+      "Your shoes melt"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Ice provides very little friction (grip) for your shoes."
+  },
+  {
+    "level": 0,
+    "question": "What happens to a snowman when the temperature goes above freezing?",
+    "options": ["It grows", "It melts", "It turns to steam", "It hardens"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Above freezing (0°C/32°F), solid ice turns to liquid water."
+  },
+  {
+    "level": 0,
+    "question": "Why do we wear dark clothes in winter and light clothes in summer?",
+    "options": [
+      "Dark absorbs heat",
+      "Dark reflects heat",
+      "Fashion only",
+      "Light is heavier"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Dark colors absorb more sunlight (heat), keeping you warmer."
+  },
+  {
+    "level": 0,
+    "question": "If you hold an ice cube in your hand, why does it feel cold?",
+    "options": [
+      "Cold flows into you",
+      "Heat flows out of you",
+      "Your hand is wet",
+      "The ice is sharp"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Heat energy moves from the warmer object (hand) to the cooler object (ice)."
+  },
+  {
+    "level": 0,
+    "question": "Which creates a shadow?",
+    "options": ["Glass", "Clear water", "A brick wall", "Clean air"],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Shadows are formed by opaque objects blocking light."
+  },
+  {
+    "level": 0,
+    "question": "What happens to a puddle of water on a hot sunny day?",
+    "options": ["It freezes", "It evaporates", "It sinks", "It expands"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Heat causes liquid water to turn into gas (vapor) and rise into the air."
+  },
+  {
+    "level": 0,
+    "question": "Why do you see lightning before you hear thunder?",
+    "options": [
+      "Sound is faster",
+      "Light is faster",
+      "Your eyes are better",
+      "Thunder is quiet"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Light travels almost instantly; sound takes about 5 seconds to travel 1 mile."
+  },
+  {
+    "level": 0,
+    "question": "If you mix oil and water, what happens?",
+    "options": [
+      "They mix perfectly",
+      "The oil floats",
+      "The water floats",
+      "It explodes"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Oil is less dense than water, so it rests on top."
+  },
+  {
+    "level": 0,
+    "question": "Why does a ball roll down a hill?",
+    "options": ["Magnetism", "Gravity", "Friction", "Wind"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Gravity pulls everything toward the lowest possible point."
+  },
+  {
+    "level": 1,
+    "question": "Why does a helium balloon float in air?",
+    "options": [
+      "Helium is lighter than air",
+      "Helium is invisible",
+      "The rubber is light",
+      "Gravity ignores helium"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Helium is less dense than the surrounding air, creating an upward buoyant force."
+  },
+  {
+    "level": 1,
+    "question": "Why do your glasses fog up when you walk from cold outside to warm inside?",
+    "options": [
+      "Glass melts",
+      "Water vapor condenses",
+      "Sweat jumps",
+      "Dust collects"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Warm air holds more moisture; cooling it on cold lenses forces water to turn to liquid."
+  },
+  {
+    "level": 1,
+    "question": "Why does bread rise when baked?",
+    "options": [
+      "Yeast releases gas",
+      "Heat expands the flour",
+      "Water boils",
+      "The oven pulls it up"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Yeast creates carbon dioxide bubbles which get trapped in the dough."
+  },
+  {
+    "level": 1,
+    "question": "Why does rubbing your hands together make them warm?",
+    "options": ["Electricity", "Friction", "Pressure", "Chemical reaction"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Friction converts kinetic energy (motion) directly into heat energy."
+  },
+  {
+    "level": 1,
+    "question": "Which part of a burning candle is the hottest?",
+    "options": ["The wick", "The yellow flame", "The blue base", "The wax"],
+    "correct_index": 2,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.95,
+    "reason": "The blue part at the base has the most oxygen and burns cleanest/hottest."
+  },
+  {
+    "level": 1,
+    "question": "Why does a metal spoon get hot in soup but a wooden one doesn't?",
+    "options": [
+      "Metal conducts heat well",
+      "Wood reflects heat",
+      "Metal creates heat",
+      "Wood absorbs cold"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Metal is a good conductor; it transfers heat quickly up the handle."
+  },
+  {
+    "level": 1,
+    "question": "Why do tires screech when a car stops suddenly?",
+    "options": [
+      "The engine screams",
+      "Rubber sliding on road",
+      "Air escaping",
+      "Brakes breaking"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Friction shifts from rolling to sliding (skidding), vibrating the rubber."
+  },
+  {
+    "level": 1,
+    "question": "Why does salt disappear in water?",
+    "options": ["It melts", "It dissolves", "It evaporates", "It reacts"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Water molecules pull the salt crystal apart into individual ions."
+  },
+  {
+    "level": 1,
+    "question": "Why does a straw look bent in a glass of water?",
+    "options": [
+      "The glass bends it",
+      "Light refracts",
+      "Water magnifies",
+      "Illusion of depth"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Light travels at different speeds in air vs water, bending the light rays (refraction)."
+  },
+  {
+    "level": 1,
+    "question": "Why do compasses point North?",
+    "options": [
+      "North Pole has more iron",
+      "Earth is a magnet",
+      "Magic",
+      "Wind blows North"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "The Earth has a magnetic field that aligns the magnetized needle."
+  },
+  {
+    "level": 2,
+    "question": "Why does a sealed bag of chips puff up on an airplane?",
+    "options": [
+      "Chips ferment",
+      "Air pressure drops",
+      "Cabin is hot",
+      "Chips expand"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "The air inside the bag is at ground pressure; the cabin pressure is lower, so the bag pushes out."
+  },
+  {
+    "level": 2,
+    "question": "Why does blowing on hot soup cool it down?",
+    "options": [
+      "Your breath is freezing",
+      "Increases evaporation",
+      "Pushes heat away",
+      "Adds oxygen"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Moving air carries away the water vapor, speeding up evaporation which absorbs heat."
+  },
+  {
+    "level": 2,
+    "question": "Why is the ocean salty but rivers are fresh?",
+    "options": [
+      "Fish pee salt",
+      "Rivers wash salt to sea",
+      "Ocean floor is salt",
+      "Rain is salty"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Rivers carry trace minerals (salt) to the sea. Water evaporates, but salt stays and accumulates."
+  },
+  {
+    "level": 2,
+    "question": "Why does a door handle shock you in winter?",
+    "options": [
+      "Wiring issue",
+      "Static electricity",
+      "Cold metal conducts better",
+      "Your hands are dry"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Dry winter air prevents charge from leaking off your body, building up static."
+  },
+  {
+    "level": 2,
+    "question": "Why does a heavy boat float?",
+    "options": [
+      "Wood is magic",
+      "It displaces water",
+      "The engine lifts it",
+      "Surface tension"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "It pushes away a weight of water equal to its own weight (Buoyancy)."
+  },
+  {
+    "level": 2,
+    "question": "Why does coffee spill when you stop walking suddenly?",
+    "options": ["Gravity", "Inertia", "Friction", "Heat"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "The coffee 'wants' to keep moving forward when the cup stops (Newton's 1st Law)."
+  },
+  {
+    "level": 2,
+    "question": "Why does the sun appear red at sunset?",
+    "options": [
+      "Sun cools down",
+      "Light travels through more air",
+      "Ocean reflects red",
+      "Our eyes get tired"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Sunlight passes through more atmosphere, scattering away blue light and leaving red."
+  },
+  {
+    "level": 2,
+    "question": "Why do soda bubbles rise?",
+    "options": [
+      "They are lighter than liquid",
+      "Sugar pushes them",
+      "Heat rises",
+      "Glass repels them"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Gas (CO2) is much less dense than the liquid soda."
+  },
+  {
+    "level": 2,
+    "question": "Why does wet laundry dry faster on a windy day?",
+    "options": [
+      "Wind blows water off",
+      "Wind carries saturated air away",
+      "Wind heats the clothes",
+      "Friction"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Wind removes the humid air directly around the clothes, allowing more evaporation."
+  },
+  {
+    "level": 2,
+    "question": "Why don't birds get shocked on power lines?",
+    "options": [
+      "Their feet are rubber",
+      "They don't touch the ground",
+      "Current is low",
+      "They are too small"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Electricity needs a path to the ground. Touching only one wire completes no circuit."
+  },
+  {
+    "level": 3,
+    "question": "Why does a shower curtain blow inward when the water runs?",
+    "options": [
+      "Heat rises",
+      "Lower pressure inside",
+      "Water magnetism",
+      "Steam is heavy"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Fast moving water/air creates lower pressure inside the shower (Bernoulli principle)."
+  },
+  {
+    "level": 3,
+    "question": "Why does metal feel colder than wood at the same room temperature?",
+    "options": [
+      "Metal is actually colder",
+      "Metal conducts heat away faster",
+      "Wood generates heat",
+      "Metal is smoother"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Metal steals heat from your hand faster than wood, triggering 'cold' sensation."
+  },
+  {
+    "level": 3,
+    "question": "Why does a full freezer consume less energy than an empty one?",
+    "options": [
+      "Food generates cold",
+      "Air falls out easily",
+      "Solids hold cold better than air",
+      "Motor works harder on food"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Cold air spills out when you open the door. Frozen food stays put and retains the cold."
+  },
+  {
+    "level": 3,
+    "question": "Why does salt melt ice on roads?",
+    "options": [
+      "Salt is hot",
+      "Salt lowers freezing point",
+      "Salt creates friction",
+      "Salt absorbs water"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Saltwater freezes at a much lower temperature than pure water."
+  },
+  {
+    "level": 3,
+    "question": "Why do astronauts float in the ISS?",
+    "options": [
+      "No gravity there",
+      "They are in freefall",
+      "Air is thin",
+      "Suits are buoyant"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "They are falling around the Earth at the same speed as the station (Orbit)."
+  },
+  {
+    "level": 3,
+    "question": "Why does sound travel faster in water than air?",
+    "options": [
+      "Water is denser/stiffer",
+      "Water is wet",
+      "Air blocks sound",
+      "Fish need to hear"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Molecules are packed tighter in liquid, transmitting vibration energy faster."
+  },
+  {
+    "level": 3,
+    "question": "Why does a bike stay upright when moving?",
+    "options": [
+      "Gyroscopic effect/Steering",
+      "Wind holds it up",
+      "Tires expand",
+      "Rider is heavy"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "A combination of wheel spin stability and the rider steering into leans."
+  },
+  {
+    "level": 3,
+    "question": "Why does the moon have phases?",
+    "options": [
+      "Earth casts a shadow",
+      "We see different sunlit parts",
+      "The moon spins",
+      "Clouds block it"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "As the moon orbits, we see varying angles of the side lit by the Sun."
+  },
+  {
+    "level": 3,
+    "question": "Why does popcorn pop?",
+    "options": [
+      "Water turns to steam",
+      "Oil burns",
+      "Corn expands",
+      "The shell shrinks"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Tiny drop of water inside the kernel turns to steam, pressurizing until it explodes."
+  },
+  {
+    "level": 3,
+    "question": "Why is the top of a mountain colder?",
+    "options": [
+      "Closer to space",
+      "Air is thinner/less pressure",
+      "More wind",
+      "Snow cools it"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Air expands and cools as pressure drops at higher altitudes (Adiabatic cooling)."
+  },
+  {
+    "level": 4,
+    "question": "If you hold a balloon in a car and brake, which way does the balloon move?",
+    "options": ["Forward", "Backward", "Stays still", "Down"],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "The heavier air inside the car rushes forward (inertia), pushing the lighter balloon backward."
+  },
+  {
+    "level": 4,
+    "question": "Why does hot water sound different than cold water when poured?",
+    "options": [
+      "Steam muffles sound",
+      "Viscosity changes",
+      "Cup expands",
+      "Bubbles pop"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Hot water is less viscous (thinner), changing the pitch of the splash."
+  },
+  {
+    "level": 4,
+    "question": "Why does a whip crack?",
+    "options": [
+      "It hits itself",
+      "Tip breaks sound barrier",
+      "Leather slaps air",
+      "Handle vibrates"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "The wave traveling down the whip accelerates the tip to supersonic speeds."
+  },
+  {
+    "level": 4,
+    "question": "Why does rubbing alcohol feel cold on skin?",
+    "options": [
+      "It is stored cold",
+      "Rapid evaporation",
+      "Chemical reaction",
+      "It kills cells"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Alcohol evaporates very quickly, absorbing significant heat energy from your skin."
+  },
+  {
+    "level": 4,
+    "question": "Why is the sky blue?",
+    "options": [
+      "Reflects ocean",
+      "Oxygen is blue",
+      "Atmosphere scatters blue light",
+      "Sunlight is blue"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Rayleigh scattering affects short wavelengths (blue) more than long ones (red)."
+  },
+  {
+    "level": 4,
+    "question": "Why do golf balls have dimples?",
+    "options": [
+      "Aesthetic",
+      "Reduce drag/fly further",
+      "Weigh less",
+      "Better grip"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Dimples create a turbulent boundary layer that reduces aerodynamic drag."
+  },
+  {
+    "level": 4,
+    "question": "Why does honey crystallize?",
+    "options": [
+      "It goes bad",
+      "Sugar precipitates out",
+      "Bacteria growth",
+      "Water evaporates"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Honey is a supersaturated sugar solution; glucose naturally tends to separate out."
+  },
+  {
+    "level": 4,
+    "question": "Why does a swinging pendulum eventually stop?",
+    "options": [
+      "Gravity gives up",
+      "Air resistance/Friction",
+      "Earth spins",
+      "String stretches"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Energy is slowly lost to air drag and friction at the pivot point."
+  },
+  {
+    "level": 4,
+    "question": "Why does a candle flame point up?",
+    "options": [
+      "Fire seeks the sun",
+      "Hot air rises",
+      "Wick shape",
+      "Oxygen is heavy"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Convection currents push the hot gases upward against gravity."
+  },
+  {
+    "level": 4,
+    "question": "Why does fresh egg sink and old egg float?",
+    "options": [
+      "Shell gets thinner",
+      "Air pocket grows",
+      "Yolk shrinks",
+      "White gets heavy"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "As an egg ages, moisture leaves and air enters, increasing the air cell size."
+  },
+  {
+    "level": 5,
+    "question": "Why does shaking a soda can make it explode?",
+    "options": [
+      "Increases pressure",
+      "Dissolves gas",
+      "Nucleates bubbles on walls",
+      "Heats it up"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Shaking mixes gas into liquid and attaches bubbles to the sides, which expand rapidly when opened."
+  },
+  {
+    "level": 5,
+    "question": "Why does stretching a rubber band make it warm?",
+    "options": [
+      "Friction inside",
+      "Entropy decreases",
+      "Breaking bonds",
+      "Absorbs light"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.9,
+    "reason": "Aligning the polymer chains reduces entropy (order), releasing heat energy (Thermodynamics)."
+  },
+  {
+    "level": 5,
+    "question": "Why does light form a rainbow?",
+    "options": [
+      "Water colors light",
+      "Refraction and reflection",
+      "Diffraction",
+      "Interference"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Raindrops act like prisms, bending (refracting) and reflecting sunlight into colors."
+  },
+  {
+    "level": 5,
+    "question": "Why does a spinning top stay upright?",
+    "options": [
+      "Centrifugal force",
+      "Angular momentum",
+      "Air cushion",
+      "Magnetic field"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Conservation of angular momentum resists changes to the axis of rotation."
+  },
+  {
+    "level": 5,
+    "question": "Why do two sheets of paper stick together if you blow between them?",
+    "options": ["Static", "Bernoulli Principle", "Wet breath", "Gravity"],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Fast air has lower pressure; higher pressure outside pushes the papers together."
+  },
+  {
+    "level": 5,
+    "question": "Why does dry ice smoke?",
+    "options": [
+      "It is burning",
+      "It melts",
+      "Sublimation condenses air moisture",
+      "Chemical reaction"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "The extreme cold causes water vapor in the air to condense into visible fog."
+  },
+  {
+    "level": 5,
+    "question": "Why does a magnet fall slowly through a copper pipe?",
+    "options": [
+      "Copper is magnetic",
+      "Eddy currents",
+      "Friction",
+      "Air pressure"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Moving magnetic field creates electric currents in copper that oppose the motion (Lenz's Law)."
+  },
+  {
+    "level": 5,
+    "question": "Why does stainless steel not rust?",
+    "options": ["No iron", "Chromium oxide layer", "Painted", "Too hard"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Chromium reacts with oxygen to form a invisible protective skin that prevents rust."
+  },
+  {
+    "level": 5,
+    "question": "Why does fluorescent light hum?",
+    "options": [
+      "Bulb vibration",
+      "Ballast frequency",
+      "Gas moving",
+      "Electrons hitting glass"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Magnetic constriction in the ballast causes plates to vibrate at 60Hz (mains frequency)."
+  },
+  {
+    "level": 5,
+    "question": "Why does vegetable oil stop pasta water from foaming?",
+    "options": [
+      "Changes boiling point",
+      "Breaks surface tension",
+      "Cools water",
+      "Flavor masking"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Oil disrupts the starch structure and surface tension that allows bubbles to stack."
+  },
+  {
+    "level": 6,
+    "question": "Why do mirrors flip left-right but not up-down?",
+    "options": [
+      "Gravity",
+      "Eye placement",
+      "They actually flip front-back",
+      "Mirrors have axis"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Mirrors reflect along the Z-axis (depth); your brain interprets this as a rotation."
+  },
+  {
+    "level": 6,
+    "question": "Why does boiling water sometimes freeze faster than cold water (Mpemba effect)?",
+    "options": [
+      "It doesn't",
+      "Evaporation/Convection",
+      "Magic",
+      "Cold water has more gas"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.9,
+    "reason": "Complex factors like evaporation reducing mass and convection currents allow rapid cooling."
+  },
+  {
+    "level": 6,
+    "question": "Why does a bike chain get loose over time?",
+    "options": [
+      "Metal stretches",
+      "Pins wear down",
+      "Links expand",
+      "Sprockets shrink"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "The metal plates don't stretch; the pivot pins wear down, creating gaps (effective lengthening)."
+  },
+  {
+    "level": 6,
+    "question": "Why does sunlight bleach colors but darken skin?",
+    "options": [
+      "Different UV types",
+      "Melanin reaction vs Photodegradation",
+      "Heat vs Light",
+      "Skin is alive"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "UV breaks down dye molecules (fading) but triggers protective pigment production in cells (tanning)."
+  },
+  {
+    "level": 6,
+    "question": "Why does a tea bag spin if you empty it and light it (Rocket Tea Bag)?",
+    "options": [
+      "Convection chimney",
+      "Gas propulsion",
+      "Ash is lighter",
+      "Magic smoke"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "The flame heats air inside the cylinder, creating an updraft that lifts the lightweight ash."
+  },
+  {
+    "level": 6,
+    "question": "Why does scratching an itch feel good?",
+    "options": [
+      "Pain signal overrides itch",
+      "Removes bacteria",
+      "Increases blood flow",
+      "Kills nerves"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Mild pain from scratching distracts the spinal cord from transmitting the itch signal."
+  },
+  {
+    "level": 6,
+    "question": "Why does a satellite not fall to Earth?",
+    "options": [
+      "No gravity",
+      "It falls but misses",
+      "Rocket engines",
+      "Magnetic levitation"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "It has enough sideways speed that the Earth curves away as fast as the satellite falls."
+  },
+  {
+    "level": 6,
+    "question": "Why does blacktop road shimmer on a hot day?",
+    "options": [
+      "Melting tar",
+      "Mirage/Refraction",
+      "Water evaporation",
+      "Eye strain"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Hot air near the ground bends light rays upward, creating an image of the sky on the ground."
+  },
+  {
+    "level": 6,
+    "question": "Why does microwave food cool down so fast?",
+    "options": [
+      "Microwaves are fake heat",
+      "Uneven heating/Steam leaves",
+      "Plate is cold",
+      "Molecules stop moving"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.9,
+    "reason": "Microwaves heat water; once steam escapes (evaporation), the heat energy is lost quickly."
+  },
+  {
+    "level": 6,
+    "question": "Why does a tuning fork sound louder against a table?",
+    "options": [
+      "Table amplifies",
+      "Forced vibration",
+      "Echo",
+      "Table is hollow"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "The fork forces the large surface area of the table to vibrate, moving more air."
+  },
+  {
+    "level": 7,
+    "question": "Why does water stay in a bucket swung overhead?",
+    "options": [
+      "Centrifugal force/Inertia",
+      "Gravity stops",
+      "Vacuum",
+      "Surface tension"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Inertia wants the water to travel straight; the bucket forces it curve, pinning it to the bottom."
+  },
+  {
+    "level": 7,
+    "question": "Why does a camera lens look dark even if glass is clear?",
+    "options": [
+      "Black paint inside",
+      "It absorbs all light",
+      "No light reflects out",
+      "Aperture is closed"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Lenses trap light to focus it on the sensor; very little light reflects back to your eye."
+  },
+  {
+    "level": 7,
+    "question": "Why does static shock hurt more in dry weather?",
+    "options": [
+      "Higher voltage build-up",
+      "Skin is sensitive",
+      "Air resists flow",
+      "Clothes are wool"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Moist air bleeds charge away naturally; dry air allows massive voltage potentials to accumulate."
+  },
+  {
+    "level": 7,
+    "question": "Why does blowing between two cans make them roll together?",
+    "options": ["Magnetism", "Bernoulli effect", "Static", "Vibration"],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Fast air decreases pressure between them; higher atmospheric pressure outside pushes them in."
+  },
+  {
+    "level": 7,
+    "question": "Why does aluminum foil spark in the microwave?",
+    "options": [
+      "It burns",
+      "Arcing electrons",
+      "Reflects waves back",
+      "It contains iron"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Thin metal can't conduct the high currents induced by microwaves, causing electrons to jump air gaps."
+  },
+  {
+    "level": 7,
+    "question": "Why does a heavy coat make you warm? (It generates no heat)",
+    "options": [
+      "Friction",
+      "Insulation/Traps air",
+      "Reflects body heat",
+      "Absorbs light"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "It traps a layer of air (a poor conductor) near your body, preventing your own heat from escaping."
+  },
+  {
+    "level": 7,
+    "question": "Why does gasoline smell usually mean a leak?",
+    "options": [
+      "Gas is heavy",
+      "Gas evaporates easily",
+      "Added odorants",
+      "It stains"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Gasoline is highly volatile; fumes travel far and fast even from small sources."
+  },
+  {
+    "level": 7,
+    "question": "Why does coffee cream mix itself eventually (Diffusion)?",
+    "options": [
+      "Gravity",
+      "Brownian motion",
+      "Heat currents",
+      "Chemical bonding"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Random collisions of molecules spread the cream evenly over time without stirring."
+  },
+  {
+    "level": 7,
+    "question": "Why does a piece of paper fall slower than a crumpled ball?",
+    "options": [
+      "Mass changes",
+      "Air resistance",
+      "Gravity changes",
+      "Static lift"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Flat paper has high surface area for air to push against; crumpling reduces area relative to weight."
+  },
+  {
+    "level": 7,
+    "question": "Why does looking through a pinhole improve vision without glasses?",
+    "options": [
+      "Focuses light rays",
+      "Blocks stray light",
+      "Magnifies",
+      "Diffraction"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "It restricts light to the center of the lens, reducing blur caused by refractive errors."
+  },
+  {
+    "level": 8,
+    "question": "Why does a raw egg spin differently than a hard-boiled egg?",
+    "options": [
+      "Weight diff",
+      "Liquid inertia",
+      "Shell texture",
+      "Center of gravity"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "The liquid inside a raw egg resists spinning (inertia), acting as a brake; solid eggs spin as one unit."
+  },
+  {
+    "level": 8,
+    "question": "Why does a candle go out if you blow on it too hard?",
+    "options": [
+      "Too much CO2",
+      "Removes heat/fuel",
+      "Breaks wick",
+      "Too much oxygen"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "The fast air pushes the flame away from the wax vapor (fuel) and cools the reaction zone."
+  },
+  {
+    "level": 8,
+    "question": "Why does a wet finger feel cooler in the wind?",
+    "options": [
+      "Wind is cold",
+      "Evaporative cooling",
+      "Friction heat loss",
+      "Nerve shock"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Evaporation requires energy (latent heat), which is taken from your skin."
+  },
+  {
+    "level": 8,
+    "question": "Why does a magnet lose strength when heated?",
+    "options": [
+      "Electrons melt",
+      "Domains randomize",
+      "Iron evaporates",
+      "Mass loss"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Heat energy causes atoms to vibrate, jiggling the aligned magnetic domains out of order."
+  },
+  {
+    "level": 8,
+    "question": "Why does distant pavement look wet (Mirage)?",
+    "options": ["Water vapor", "Refracting skylight", "Oil sheen", "Eye trick"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Hot air near the road bends light from the sky upward; you see the sky on the ground."
+  },
+  {
+    "level": 8,
+    "question": "Why does sucking on a helium balloon make your voice high?",
+    "options": [
+      "Tightens cords",
+      "Sound travels faster",
+      " Helium is cold",
+      "Lighter density"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Sound travels faster in light helium, changing the resonance frequencies of your vocal tract."
+  },
+  {
+    "level": 8,
+    "question": "Why does sugar glow when crushed (Triboluminescence)?",
+    "options": [
+      "Friction heat",
+      "Breaking bonds electrons",
+      "Static reflection",
+      "Chemical reaction"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.9,
+    "reason": "Breaking asymmetric crystal bonds separates charges; nitrogen in air glows when charges jump."
+  },
+  {
+    "level": 8,
+    "question": "Why does a siphon work?",
+    "options": [
+      "Air pressure pushes",
+      "Gravity pulls column",
+      "Water adhesion",
+      "Vacuum suction"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Gravity pulls the liquid in the longer leg down, creating low pressure that pulls liquid up the short leg."
+  },
+  {
+    "level": 8,
+    "question": "Why does an airplane wing lift?",
+    "options": [
+      "Pushes air down",
+      "Bernoulli/Pressure diff",
+      "Both of these",
+      "Engine angle"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "It's a mix of Newton (deflecting air down) and Bernoulli (low pressure on top)."
+  },
+  {
+    "level": 8,
+    "question": "Why does adding salt to ice make it colder?",
+    "options": [
+      "Endothermic reaction",
+      "Freezing point depression",
+      "Magic",
+      "Salt is cold"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Salt forces ice to melt; melting requires heat, which is drawn from the mixture itself."
+  },
+  {
+    "level": 9,
+    "question": "Why does a bike wheel resist turning when spinning fast?",
+    "options": [
+      "Gyroscopic precession",
+      "Wind resistance",
+      "Friction",
+      "Weight increase"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Angular momentum makes the spinning wheel resist changing its orientation."
+  },
+  {
+    "level": 9,
+    "question": "Why does a shower curtain stick to you?",
+    "options": ["Bernoulli/Vortex", "Static", "Heat rise", "Adhesion"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.9,
+    "reason": "A horizontal vortex driven by the spray lowers pressure inside the curtain."
+  },
+  {
+    "level": 9,
+    "question": "Why does blue light focus differently than red (Chromatic aberration)?",
+    "options": [
+      "Speed difference",
+      "Refractive index varies",
+      "Blue is heavier",
+      "Lens shape"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Glass bends (refracts) different wavelengths by different amounts; blue bends more."
+  },
+  {
+    "level": 9,
+    "question": "Why does a grape produce plasma in a microwave?",
+    "options": [
+      "Water conducts",
+      "Shape focuses waves",
+      "Skin burns",
+      "Resonance"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.9,
+    "reason": "The grape's size/water acts as a dielectric resonator, concentrating energy to ionize air."
+  },
+  {
+    "level": 9,
+    "question": "Why does hot water freeze faster (Mpemba)? Specific mechanism.",
+    "options": [
+      "Evaporation",
+      "Convection currents",
+      "Supercooling",
+      "All/Debated"
+    ],
+    "correct_index": 3,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "It's a complex combination of evaporation, dissolved gases, and convection currents."
+  },
+  {
+    "level": 9,
+    "question": "Why does a heavy chain falling from a beaker leap upwards (Mold effect)?",
+    "options": ["Momentum/Kickback", "Static", "Air lift", "Magnetic"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.9,
+    "reason": "The chain links lever against the pile/beaker rim, pushing the chain up as they are pulled down."
+  },
+  {
+    "level": 9,
+    "question": "Why does a magnet fall slowly in copper (Lenz Law)? Energy source?",
+    "options": [
+      "Gravity",
+      "Kinetic Energy",
+      "Magnetic potential",
+      "Heat in copper"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Falling kinetic energy is converted into electrical currents (heat) in the copper."
+  },
+  {
+    "level": 9,
+    "question": "Why does fluid speed up in a narrow pipe (Venturi)?",
+    "options": [
+      "Continuity eq",
+      "Friction",
+      "Pressure increase",
+      "Density change"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Mass must be conserved; same amount of fluid must pass through smaller area, so speed increases."
+  },
+  {
+    "level": 9,
+    "question": "Why does a inverted spoon in stream pull into water?",
+    "options": ["Coanda effect", "Impact pressure", "Drag", "Surface tension"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.9,
+    "reason": "Fluid tends to follow curved surfaces; the reaction force pulls the spoon into the flow."
+  },
+  {
+    "level": 9,
+    "question": "Why does a Prince Rupert's Drop explode if tail is cut?",
+    "options": [
+      "Internal tension",
+      "Chemical reaction",
+      "Vibration",
+      "Heat release"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "The outside is in extreme compression, inside in tension; breaking the tail releases the tension instantly."
+  }
+]

@@ -9,6 +9,7 @@ import {
   type CategorySamplesResponse,
   type SampleQuestion,
 } from "@/lib/api";
+import { GoHomeLink } from "@/components/ui";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"];
 
@@ -35,11 +36,11 @@ function SampleQuestionCard({
   const [selected, setSelected] = useState<number | null>(null);
 
   return (
-    <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 bg-zinc-50/50 dark:bg-zinc-900/50">
-      <p className="font-medium text-foreground mb-2">
+    <div className="rounded-xl border-2 border-gray-800 bg-white p-5 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
+      <p className="font-medium text-gray-900 mb-3">
         {index + 1}. {q.question}
       </p>
-      <ul className="flex flex-col gap-1.5 mb-3">
+      <ul className="flex flex-col gap-2 mb-4">
         {q.options.map((opt, i) => {
           const isCorrect = i === q.correctIndex;
           const isSelected = selected === i;
@@ -50,22 +51,22 @@ function SampleQuestionCard({
               <button
                 type="button"
                 onClick={() => !revealed && setSelected(i)}
-                className={`w-full text-left rounded px-3 py-2 border text-sm transition-colors ${
+                className={`w-full text-left rounded-xl border-2 px-4 py-2.5 text-sm transition-all ${
                   showCorrect
-                    ? "border-amber-500 bg-amber-500/10 dark:bg-amber-500/20"
+                    ? "border-amber-600 bg-amber-50 text-amber-900"
                     : showWrong
-                      ? "border-red-400 dark:border-red-600 bg-red-500/10 dark:bg-red-500/20"
+                      ? "border-red-500 bg-red-50 text-red-900"
                       : isSelected && !revealed
-                        ? "border-zinc-500 bg-zinc-200 dark:bg-zinc-700"
-                        : "border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                        ? "border-gray-800 bg-amber-50 text-gray-900 shadow-[2px_2px_0_0_rgba(0,0,0,0.08)]"
+                        : "border-gray-300 bg-white text-gray-900 hover:border-gray-500 hover:shadow-[2px_2px_0_0_rgba(0,0,0,0.06)]"
                 }`}
               >
-                <span className="font-mono text-zinc-500 mr-2">
+                <span className="font-mono text-gray-500 mr-2">
                   {OPTION_LETTERS[i]}.
                 </span>
                 {opt}
                 {showCorrect && (
-                  <span className="ml-2 text-amber-600 dark:text-amber-400">
+                  <span className="ml-2 text-amber-700 font-medium">
                     ✓ Correct
                   </span>
                 )}
@@ -78,12 +79,12 @@ function SampleQuestionCard({
         <button
           type="button"
           onClick={onReveal}
-          className="text-sm text-zinc-500 hover:text-foreground underline"
+          className="text-sm text-gray-600 hover:text-gray-900 font-medium underline underline-offset-2"
         >
           Reveal answer
         </button>
       ) : (
-        <p className="text-sm text-amber-600 dark:text-amber-400">
+        <p className="text-sm text-amber-800 font-medium">
           Correct: {OPTION_LETTERS[q.correctIndex]}
         </p>
       )}
@@ -138,7 +139,7 @@ export default function CategoryDetailPage({
   if (loading && !categoryName) {
     return (
       <div className="min-h-screen p-6 flex items-center justify-center">
-        <p className="text-zinc-500">Loading…</p>
+        <p className="text-gray-500">Loading…</p>
       </div>
     );
   }
@@ -146,10 +147,8 @@ export default function CategoryDetailPage({
   if (notFound || !categoryName) {
     return (
       <div className="min-h-screen p-6 max-w-2xl mx-auto">
-        <Link href="/categories" className="text-sm text-zinc-500 hover:text-foreground underline">
-          ← Categories
-        </Link>
-        <p className="mt-4 text-zinc-600 dark:text-zinc-400">Category not found.</p>
+        <GoHomeLink />
+        <p className="mt-4 text-gray-600">Category not found.</p>
       </div>
     );
   }
@@ -158,27 +157,22 @@ export default function CategoryDetailPage({
     <div className="min-h-screen p-6 max-w-2xl mx-auto pb-12">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
-          <Link
-            href="/categories"
-            className="text-sm text-zinc-500 hover:text-foreground underline"
-          >
-            ← Categories
-          </Link>
-          <h1 className="text-2xl font-bold text-foreground">{categoryName}</h1>
+          <GoHomeLink />
+          <h1 className="text-2xl font-bold text-gray-900">{categoryName}</h1>
         </div>
 
         {meta && (
-          <section className="rounded border border-zinc-300 dark:border-zinc-600 p-4 bg-zinc-50/50 dark:bg-zinc-900/50">
-            <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-2">
+          <section className="rounded-xl border-2 border-gray-800 bg-amber-50/80 p-5 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)]">
+            <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">
               About this category
             </h2>
-            <p className="text-foreground text-sm mb-3">{meta.description}</p>
+            <p className="text-gray-900 text-sm mb-3">{meta.description}</p>
             {meta.rules?.length > 0 && (
               <>
-                <h3 className="text-sm font-medium text-foreground mt-3 mb-1">
+                <h3 className="text-sm font-medium text-gray-900 mt-3 mb-1">
                   Rules
                 </h3>
-                <ul className="list-disc list-inside text-sm text-zinc-600 dark:text-zinc-400 space-y-0.5">
+                <ul className="list-disc list-inside text-sm text-gray-600 space-y-0.5">
                   {meta.rules.map((r, i) => (
                     <li key={i}>{r}</li>
                   ))}
@@ -186,30 +180,30 @@ export default function CategoryDetailPage({
               </>
             )}
             {meta.difficulty_scaling && (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-3">
-                <span className="font-medium text-foreground">Difficulty scaling: </span>
+              <p className="text-sm text-gray-600 mt-3">
+                <span className="font-medium text-gray-900">Difficulty scaling: </span>
                 {meta.difficulty_scaling}
               </p>
             )}
             {meta.example && (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 italic">
+              <p className="text-sm text-gray-600 mt-2 italic">
                 Example: {meta.example}
               </p>
             )}
           </section>
         )}
 
-        <p className="text-sm text-zinc-500">
-          Sample questions (static) — try them to get a feel for the category.
+        <p className="text-sm text-gray-600">
+          Example questions from this category — try them to get a feel before you play.
         </p>
 
         {loading && !samples ? (
-          <p className="text-zinc-500">Loading sample questions…</p>
+          <p className="text-gray-500">Loading sample questions…</p>
         ) : samples ? (
           <div className="flex flex-col gap-8">
             {samples.sets.map((set, setIdx) => (
               <section key={setIdx}>
-                <h2 className="text-lg font-semibold text-foreground mb-3">
+                <h2 className="text-lg font-semibold text-gray-900 mb-3">
                   {set.title}
                 </h2>
                 <div className="flex flex-col gap-4">

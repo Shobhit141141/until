@@ -2,11 +2,19 @@ import type { Request, Response } from "express";
 import * as challengeService from "../services/challenge.service.js";
 import * as stacksService from "../services/stacks.service.js";
 import * as userService from "../services/user.service.js";
+import { getCategoryPlayCount, incrementCategoryPlayCount, getMaxCategoryPlaysBeta } from "../services/user.service.js";
 import * as questionService from "../services/question.service.js";
 import * as runStateService from "../services/run-state.service.js";
 import * as runBatchService from "../services/run-batch.service.js";
 import * as creditsService from "../services/credits.service.js";
-import { getCostMicroStx, getDifficultyLabel, TOP_UP_SUGGESTED_STX } from "../config/tokenomics.js";
+import {
+  getCostMicroStx,
+  getTotalCostMicroStxThroughLevel,
+  getDifficultyLabel,
+  TOP_UP_SUGGESTED_STX,
+  QUESTION_TIME_CAP_SEC,
+  MIN_LEVEL_BEFORE_STOP,
+} from "../config/tokenomics.js";
 import { STACKS_RECIPIENT_ADDRESS } from "../config/stacks.js";
 import { logger } from "../config/logger.js";
 
@@ -74,9 +82,9 @@ export async function submitPaymentAndGetQuestion(
     let resolvedRunId: string;
     const seed = `practice-${level}-${walletAddressBody}-${Date.now()}`;
     try {
-      const result = await questionService.getQuestionForRun(runId, level, user._id, seed, preferredCategory);
+      const result = await questionService.getQuestionForRun(runId, level, user._id, seed, preferredCategory, true);
       const { payload, questionId, category: resultCategory, restBatch } = result;
-      const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 30;
+      const estimatedSolveTimeSec = QUESTION_TIME_CAP_SEC;
       const costMicroStx = 0n;
       if (runId) {
         const updated = runStateService.setQuestionForRun(
@@ -107,7 +115,7 @@ export async function submitPaymentAndGetQuestion(
         runStateService.addQuestionIdToRun(resolvedRunId, questionId);
         runStateService.addDeliveredQuestionInfo(resolvedRunId, questionId, payload.correct_index, payload.options, payload.reasoning);
         if (restBatch && restBatch.length > 0) {
-          runBatchService.setBatch(resolvedRunId, category, restBatch);
+          await runBatchService.setBatch(resolvedRunId, category, restBatch);
         }
       }
       const json: Record<string, unknown> = {
@@ -115,7 +123,7 @@ export async function submitPaymentAndGetQuestion(
         options: payload.options,
         difficulty: payload.difficulty,
         difficultyLabel: getDifficultyLabel(level),
-        estimated_solve_time_sec: payload.estimated_solve_time_sec,
+        estimated_solve_time_sec: QUESTION_TIME_CAP_SEC,
         runId: resolvedRunId,
         level,
         practice: true,
@@ -154,20 +162,53 @@ export async function submitPaymentAndGetQuestion(
       const costMicroStx = getCostMicroStx(level);
       totalRequiredMicroStx = Number(run.spentMicroStx) + Number(costMicroStx);
     } else {
+      // Beta: each category can be played at most getMaxCategoryPlaysBeta() times (e.g. 2).
+      const categoryToCheck = preferredCategory?.trim() || undefined;
+      if (categoryToCheck) {
+        const count = await getCategoryPlayCount(walletAddressBody, categoryToCheck);
+        if (count >= getMaxCategoryPlaysBeta()) {
+          res.status(400).json({
+            error: "This category has reached its play limit for the current beta. Try another category.",
+            betaLimit: true,
+          });
+          return;
+        }
+      }
       level = Math.max(0, Math.min(9, Number(raw.difficulty) ?? 0));
-      const costMicroStx = getCostMicroStx(level);
-      totalRequiredMicroStx = Number(costMicroStx);
+      // Pre-start: require balance to cover levels 0 through 9 so the game can be played without mid-run top-up.
+      const requiredToStartMicroStx = getTotalCostMicroStxThroughLevel(9);
+      totalRequiredMicroStx = Number(requiredToStartMicroStx);
     }
     const balanceMicroStx = await userService.getCreditsMicroStx(walletAddressBody);
     if (balanceMicroStx < totalRequiredMicroStx) {
-      res.status(402).json({
+      const payload: Record<string, unknown> = {
         error: "Insufficient credits",
         topUp: true,
         suggestedAmountStx: TOP_UP_SUGGESTED_STX,
         recipient: (STACKS_RECIPIENT_ADDRESS || "").trim(),
         creditsStx: balanceMicroStx / 1_000_000,
         requiredStx: totalRequiredMicroStx / 1_000_000,
-      });
+      };
+      // Mid-run insufficient: always offer two options — (1) top up to continue, (2) pull out without adding funds. If user opts not to add funds: level < 4 → settle (force stop); level >= 4 → cash out. Never lose history.
+      if (runId) {
+        const run = runStateService.getRun(runId);
+        const completedLevels = run?.completedLevels ?? 0;
+        payload.insufficientMidRun = true;
+        payload.completedLevels = completedLevels;
+        payload.canPullOut = true; // User may choose to pull out (don't top up) in both cases
+        if (completedLevels < MIN_LEVEL_BEFORE_STOP) {
+          payload.mustSettle = true; // If they pull out: must call stop with forceStopBeforeMinLevel to settle and save history
+          payload.message =
+            "Insufficient credits. Option 1: Top up to continue. Option 2: Pull out (don't add funds) — call POST /run/stop with forceStopBeforeMinLevel: true to settle and save run history.";
+        } else {
+          payload.message =
+            "Insufficient credits. Option 1: Top up to continue. Option 2: Pull out (don't add funds) — call POST /run/stop to cash out and save run history.";
+        }
+      } else {
+        payload.requiredForLevels0To9 = true;
+        payload.message = "Need enough credits for levels 0–9 to start a run. Top up first.";
+      }
+      res.status(402).json(payload);
       return;
     }
     const costMicroStx = getCostMicroStx(level);
@@ -175,9 +216,17 @@ export async function submitPaymentAndGetQuestion(
     let resolvedRunId: string;
     const seed = `credits-${level}-${walletAddressBody}-${Date.now()}`;
     try {
-      const result = await questionService.getQuestionForRun(runId, level, user._id, seed, preferredCategory);
+      const result = await questionService.getQuestionForRun(runId, level, user._id, seed, preferredCategory, false);
       const { payload, questionId, category: resultCategory, restBatch } = result;
-      const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 30;
+      logger.info("[next-question] delivering question (credits)", {
+        runId: runId?.slice(0, 8),
+        level,
+        correct_index: payload.correct_index,
+        correct_indexType: typeof payload.correct_index,
+        options: payload.options,
+        questionPreview: payload.question?.slice(0, 60),
+      });
+      const estimatedSolveTimeSec = QUESTION_TIME_CAP_SEC;
       if (runId) {
         const updated = runStateService.setQuestionForRun(
           runId,
@@ -203,10 +252,11 @@ export async function submitPaymentAndGetQuestion(
           estimatedSolveTimeSec,
           category
         );
+        if (category) await incrementCategoryPlayCount(walletAddressBody, category);
         runStateService.addQuestionIdToRun(resolvedRunId, questionId);
         runStateService.addDeliveredQuestionInfo(resolvedRunId, questionId, payload.correct_index, payload.options, payload.reasoning);
         if (restBatch && restBatch.length > 0) {
-          runBatchService.setBatch(resolvedRunId, category, restBatch);
+          await runBatchService.setBatch(resolvedRunId, category, restBatch);
         }
       }
       const json: Record<string, unknown> = {
@@ -214,7 +264,7 @@ export async function submitPaymentAndGetQuestion(
         options: payload.options,
         difficulty: payload.difficulty,
         difficultyLabel: getDifficultyLabel(level),
-        estimated_solve_time_sec: payload.estimated_solve_time_sec,
+        estimated_solve_time_sec: QUESTION_TIME_CAP_SEC,
         runId: resolvedRunId,
         level,
       };
@@ -319,17 +369,29 @@ export async function submitPaymentAndGetQuestion(
     resolvedRunId = "";
   }
 
+  if (!resolvedRunId && preferredCategory) {
+    const count = await getCategoryPlayCount(walletAddress, preferredCategory);
+    if (count >= getMaxCategoryPlaysBeta()) {
+      res.status(400).json({
+        error: "This category has reached its play limit for the current beta. Try another category.",
+        betaLimit: true,
+      });
+      return;
+    }
+  }
+
   try {
     const result = await questionService.getQuestionForRun(
       resolvedRunId || undefined,
       level,
       user._id,
       `level-${level}-${nonce}`,
-      preferredCategory
+      preferredCategory,
+      false
     );
     const { payload, questionId, category: resultCategory, restBatch } = result;
     const priceMicroStx = entry.priceMicroStx;
-    const estimatedSolveTimeSec = payload.estimated_solve_time_sec ?? 30;
+    const estimatedSolveTimeSec = QUESTION_TIME_CAP_SEC;
 
     if (resolvedRunId) {
       const updated = runStateService.setQuestionForRun(
@@ -355,10 +417,11 @@ export async function submitPaymentAndGetQuestion(
         estimatedSolveTimeSec,
         category
       );
+      if (category) await incrementCategoryPlayCount(walletAddress, category);
       runStateService.addQuestionIdToRun(resolvedRunId, questionId);
       runStateService.addDeliveredQuestionInfo(resolvedRunId, questionId, payload.correct_index, payload.options, payload.reasoning);
       if (restBatch && restBatch.length > 0) {
-        runBatchService.setBatch(resolvedRunId, category, restBatch);
+        await runBatchService.setBatch(resolvedRunId, category, restBatch);
       }
     }
 
@@ -367,7 +430,7 @@ export async function submitPaymentAndGetQuestion(
       options: payload.options,
       difficulty: payload.difficulty,
       difficultyLabel: getDifficultyLabel(level),
-      estimated_solve_time_sec: payload.estimated_solve_time_sec,
+      estimated_solve_time_sec: QUESTION_TIME_CAP_SEC,
       runId: resolvedRunId,
       level,
     };

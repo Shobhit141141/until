@@ -1,7 +1,15 @@
 /**
- * Static sample questions per category — 2 sets each — for "get to know the category" pages.
- * correctIndex is 0-based; exposed only on category preview pages, not in paid gameplay.
+ * Sample questions for category pages: loaded from practice set (practice-<slug>.json).
+ * Picks 2 questions from the practice set to show as examples.
  */
+
+import { readFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+import { getCategoryFilename } from "../config/category-files.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const QUESTIONS_DIR = join(__dirname, "questions");
 
 export type SampleQuestion = {
   question: string;
@@ -16,6 +24,12 @@ export type SampleSet = {
 
 export type CategorySamples = {
   sets: SampleSet[];
+};
+
+type PracticeQuestion = {
+  question: string;
+  options: string[];
+  correct_index: number;
 };
 
 const SAMPLES: Record<string, SampleSet[]> = {
@@ -483,12 +497,37 @@ const SAMPLES: Record<string, SampleSet[]> = {
   ],
 };
 
+function loadPracticeQuestions(category: string): PracticeQuestion[] | null {
+  const filename = getCategoryFilename(category);
+  if (!filename) return null;
+  const base = filename.replace(/\.json$/, "");
+  const path = join(QUESTIONS_DIR, `practice-${base}.json`);
+  try {
+    const raw = readFileSync(path, "utf-8");
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : null;
+  } catch {
+    return null;
+  }
+}
+
 export function getCategorySamples(category: string): CategorySamples | null {
-  const sets = SAMPLES[category];
-  if (!sets || sets.length === 0) return null;
-  return { sets };
+  const list = loadPracticeQuestions(category);
+  if (!list || list.length < 2) return null;
+  const indices = [0, Math.min(5, list.length - 1)];
+  const picked = indices.map((i) => list[i]!).filter(Boolean);
+  if (picked.length < 2) return null;
+  const questions: SampleQuestion[] = picked.map((q) => ({
+    question: q.question,
+    options: Array.isArray(q.options) && q.options.length >= 4 ? q.options.slice(0, 4) : ["A", "B", "C", "D"],
+    correctIndex: Math.max(0, Math.min(3, Number(q.correct_index) ?? 0)),
+  }));
+  return {
+    sets: [{ title: "Example questions", questions }],
+  };
 }
 
 export function hasSamples(category: string): boolean {
-  return category in SAMPLES && Array.isArray(SAMPLES[category]) && SAMPLES[category].length >= 2;
+  const list = loadPracticeQuestions(category);
+  return list != null && list.length >= 2;
 }

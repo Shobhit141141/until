@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import * as userService from "../services/user.service.js";
 import type { UserDoc, UserResponse } from "../types/user.types.js";
+import { isValidStacksAddress } from "../config/stacks.js";
 
 const MICRO_STX_PER_STX = 1_000_000;
 
@@ -24,11 +25,11 @@ export async function getMe(req: Request, res: Response): Promise<void> {
     res.status(400).json({ error: "wallet query required (current user)" });
     return;
   }
-  const user = await userService.findByWallet(wallet);
-  if (!user) {
-    res.status(404).json({ error: "User not found" });
+  if (!isValidStacksAddress(wallet)) {
+    res.status(400).json({ error: "Invalid wallet address" });
     return;
   }
+  const user = await userService.findOrCreateUser(wallet);
   res.json(toResponse(user));
 }
 
@@ -41,6 +42,10 @@ export async function updateMe(req: Request, res: Response): Promise<void> {
   const walletAddress = typeof wallet === "string" ? wallet.trim() : "";
   if (!walletAddress) {
     res.status(400).json({ error: "wallet required in body (current user)" });
+    return;
+  }
+  if (!isValidStacksAddress(walletAddress)) {
+    res.status(400).json({ error: "Invalid wallet address" });
     return;
   }
   try {
@@ -74,12 +79,20 @@ export async function checkUsername(req: Request, res: Response): Promise<void> 
     res.status(400).json({ error: "username and wallet query required" });
     return;
   }
+  if (!isValidStacksAddress(wallet)) {
+    res.status(400).json({ error: "Invalid wallet address" });
+    return;
+  }
   const available = await userService.isUsernameAvailable(username, wallet);
   res.json({ available });
 }
 
 export async function getByWallet(req: Request, res: Response): Promise<void> {
-  const { walletAddress } = req.params;
+  const walletAddress = (req.params.walletAddress ?? "").trim();
+  if (!walletAddress || !isValidStacksAddress(walletAddress)) {
+    res.status(400).json({ error: "Invalid wallet address" });
+    return;
+  }
   const user = await userService.findByWallet(walletAddress);
   if (!user) {
     res.status(404).json({ error: "User not found" });
@@ -92,7 +105,11 @@ export async function updateProfile(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { walletAddress } = req.params;
+  const walletAddress = (req.params.walletAddress ?? "").trim();
+  if (!walletAddress || !isValidStacksAddress(walletAddress)) {
+    res.status(400).json({ error: "Invalid wallet address" });
+    return;
+  }
   const body = req.body as { username?: string; pfpUrl?: string };
 
   try {

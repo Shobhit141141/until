@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { apiFetch, type CategoriesResponse, type CategoryMetadata } from "@/lib/api";
+import { GoHomeLink } from "@/components/ui";
 
 function categoryToSlug(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-");
@@ -26,7 +27,7 @@ export default function CategoriesPage() {
   if (loading) {
     return (
       <div className="min-h-screen p-6 flex items-center justify-center">
-        <p className="text-zinc-500">Loading categories…</p>
+        <p className="text-gray-500">Loading categories…</p>
       </div>
     );
   }
@@ -35,15 +36,10 @@ export default function CategoriesPage() {
     <div className="min-h-screen p-6 max-w-2xl mx-auto">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            className="text-sm text-zinc-500 hover:text-foreground underline"
-          >
-            ← Back
-          </Link>
-          <h1 className="text-2xl font-bold text-foreground">Categories</h1>
+          <GoHomeLink />
+          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
         </div>
-        <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+        <p className="text-gray-600 text-sm">
           Get to know each category with sample questions before you play.
         </p>
         <ul className="flex flex-col gap-3">
@@ -54,11 +50,11 @@ export default function CategoriesPage() {
               <li key={name}>
                 <Link
                   href={`/categories/${slug}`}
-                  className="block rounded border border-zinc-300 dark:border-zinc-600 px-4 py-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                  className="block rounded-xl border-2 border-gray-800 px-4 py-3 bg-white text-gray-900 shadow-[4px_4px_0_0_rgba(0,0,0,0.08)] hover:bg-amber-50 hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.1)] hover:-translate-y-0.5 transition-all"
                 >
-                  <span className="font-medium text-foreground">{name}</span>
+                  <span className="font-medium">{name}</span>
                   {meta?.description && (
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-2">
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                       {meta.description}
                     </p>
                   )}

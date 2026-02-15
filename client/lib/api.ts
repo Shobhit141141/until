@@ -24,6 +24,8 @@ export async function apiFetch<T>(
   error?: string;
   paymentRequired?: PaymentRequiredPayload;
   topUpRequired?: TopUpRequiredPayload;
+  /** When true, category play limit reached (beta). */
+  betaLimit?: boolean;
 }> {
   const base = getBase();
   const { body, ...rest } = opts ?? {};
@@ -68,6 +70,7 @@ export async function apiFetch<T>(
     return {
       status: res.status,
       error: json.error ?? res.statusText,
+      betaLimit: Boolean(json.betaLimit),
     };
   }
 
@@ -97,6 +100,8 @@ export type SubmitAnswerCorrect = {
 export type SubmitAnswerWrong = {
   correct: false;
   runEnded: true;
+  /** True when run ended due to time limit; false when wrong answer (index_mismatch). */
+  timedOut?: boolean;
   completedLevels: number;
   totalPoints?: number;
   spent?: number;
@@ -107,27 +112,26 @@ export type SubmitAnswerWrong = {
   profit?: number;
   milestoneBonusStx?: number;
   milestoneTier?: "70" | "100" | null;
+  /** Current credits balance after settlement (profit + optional milestone). */
+  creditsStx?: number;
+  /** Option text the user submitted (server-authoritative for "Your answer" display). */
+  selectedOptionText?: string;
   correctOptionText?: string;
   reasoning?: string;
 };
 export type StopRunResponse = {
-  runId: string;
-  totalPoints: number;
-  completedLevels: number;
-  spent: number;
-  grossEarnedStx: number;
-  netEarnedStx: number;
-  profit: number;
+  runId?: string;
+  totalPoints?: number;
+  completedLevels?: number;
+  spent?: number;
+  grossEarnedStx?: number;
+  netEarnedStx?: number;
+  profit?: number;
   creditsStx?: number;
   milestoneBonusStx?: number;
   milestoneTier?: "70" | "100" | null;
-};
-export type LeaderboardEntry = {
-  rank: number;
-  walletAddress: string;
-  username: string | null;
-  pfpUrl: string | null;
-  bestScore: number;
+  /** When true: run was aborted — no history, no settlement; creditsStx is current balance. */
+  aborted?: boolean;
 };
 export type UserMe = {
   walletAddress: string;
@@ -151,7 +155,7 @@ export type TopUpInfo = {
 
 export type CreditTransactionEntry = {
   id: string;
-  type: "top_up" | "deduct" | "profit" | "refund" | "withdraw";
+  type: "top_up" | "deduct" | "profit" | "loss" | "refund" | "withdraw" | "milestone_bonus";
   amountMicroStx: number;
   balanceAfterMicroStx: number;
   refTxId?: string;

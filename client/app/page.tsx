@@ -21,6 +21,7 @@ import { useWallet } from "@/contexts/WalletContext";
 import { Button } from "@/components/ui";
 import {
   HomeScreen,
+  QuizLoader,
   TopUpScreen,
   QuestionScreen,
   FeedbackCorrect,
@@ -31,13 +32,20 @@ import {
   ProfileModal,
 } from "@/components/screens";
 import { Modal } from "@/components/ui";
+import { QUESTION_TIME_CAP_SEC } from "@/lib/tokenomics";
 import toast from "react-hot-toast";
 
 const COST_STX_BY_LEVEL = [0.72, 1.44, 2.16, 2.88, 4.32, 6.48, 9.36, 12.96, 17.28, 22.32];
 const MIN_LEVEL_BEFORE_STOP = 4;
 const MIN_WITHDRAW_STX = 0.01;
 const MICRO_STX_PER_STX = 1_000_000;
-const PREDEFINED_TOP_UPS_STX = [0.05, 0.1, 0.25, 0.5, 1];
+/** Tokenomics-aligned: 1 question, 3 questions, 5 questions, full 10-level run. */
+const PREDEFINED_TOP_UPS_STX = [
+  COST_STX_BY_LEVEL[0],
+  COST_STX_BY_LEVEL[0] + COST_STX_BY_LEVEL[1] + COST_STX_BY_LEVEL[2],
+  COST_STX_BY_LEVEL.slice(0, 5).reduce((a, b) => a + b, 0),
+  COST_STX_BY_LEVEL.reduce((a, b) => a + b, 0),
+];
 const MIN_TOP_UP_STX = 0.001;
 
 type Step =
@@ -53,7 +61,7 @@ type Step =
   | "stopped";
 
 export default function Home() {
-  const { address: wallet } = useWallet();
+  const { address: wallet, connectWallet } = useWallet();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [difficulty, setDifficulty] = useState(0);
@@ -94,27 +102,40 @@ export default function Home() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showCreditsModal, setShowCreditsModal] = useState(false);
   const [user, setUser] = useState<UserMe | null>(null);
-  const practiceHandledRef = useRef(false);
+  const [showQuizLoader, setShowQuizLoader] = useState(false);
+  const [practiceMode, setPracticeMode] = useState(false);
+  /** Per-level breakdown (level index, time taken sec, points earned) for run summary. */
+  const [levelBreakdown, setLevelBreakdown] = useState<{ level: number; timeTakenSec: number; allowedSec: number; points: number }[]>([]);
+  const previousTotalPointsRef = useRef(0);
+  const timeoutFiredRef = useRef(false);
+  /** Incremented on each next-question fetch; used to ignore stale responses (e.g. double-click). */
+  const nextQuestionFetchIdRef = useRef(0);
+  /** Synced on every option click so submit always has the latest selection (avoids stale closure). */
+  const selectedIndexRef = useRef<number | null>(null);
+  /** When quiz loader was shown; used to enforce min display time. */
+  const quizLoaderShownAtRef = useRef<number | null>(null);
 
   const costForLevel = (level: number) => COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.72;
 
-  const refreshCreditsBalance = useCallback(() => {
+  const refreshCreditsBalance = useCallback(async () => {
     if (!wallet) return;
-    apiFetch<UserMe>(`/users/me?wallet=${encodeURIComponent(wallet)}`).then((res) => {
-      if (res.data) {
-        setCreditsStx(res.data.creditsStx);
-        setUser(res.data);
-      }
-    }).catch(() => {});
+    const res = await apiFetch<UserMe>(`/users/me?wallet=${encodeURIComponent(wallet)}`).catch(
+      (): { data?: UserMe } => ({})
+    );
+    if (res && res.data) {
+      setCreditsStx(res.data.creditsStx);
+      setUser(res.data);
+    }
   }, [wallet]);
 
+  // Refresh credits only when wallet connects; after balance-changing actions we call refreshCreditsBalance() explicitly (avoids bombarding /users/me on every step change)
   useEffect(() => {
     if (!wallet) {
       setCreditsStx(0);
       return;
     }
     refreshCreditsBalance();
-  }, [wallet, step, refreshCreditsBalance]);
+  }, [wallet, refreshCreditsBalance]);
 
   useEffect(() => {
     if (!wallet) return;
@@ -135,31 +156,35 @@ export default function Home() {
     }
   }, [searchParams, router]);
 
-  // Start practice run when navigating with ?practice=1
-  useEffect(() => {
-    if (searchParams.get("practice") !== "1") {
-      practiceHandledRef.current = false;
-      return;
-    }
-    if (!wallet || practiceHandledRef.current) return;
-    practiceHandledRef.current = true;
-    router.replace("/", { scroll: false });
-    getNextQuestionWithPractice(0);
-  }, [searchParams, router, wallet]);
-
   useEffect(() => {
     if (step !== "question" || questionStartedAt == null) return;
+    timeoutFiredRef.current = false;
     const tick = () => setElapsedSec(Math.floor((Date.now() - questionStartedAt) / 1000));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [step, questionStartedAt]);
 
+  /** When time runs out (30s cap), auto-end quiz: submit and end run. Never use API estimated_solve_time. */
+  useEffect(() => {
+    if (step !== "question" || !question || timeoutFiredRef.current) return;
+    if (elapsedSec >= QUESTION_TIME_CAP_SEC) {
+      timeoutFiredRef.current = true;
+      submitAnswer(true);
+    }
+  }, [step, question, elapsedSec]);
+
   /** Try to get next question using credits. On insufficient credits, sets step to topup. */
-  const getNextQuestionWithCredits = async (level: number, currentRunId?: string | null) => {
+  const getNextQuestionWithCredits = async (
+    level: number,
+    currentRunId?: string | null,
+    preferredCategoryOverride?: string | null
+  ) => {
     if (!wallet) return;
     setError(null);
     setIsGettingQuestion(true);
+    const fetchId = ++nextQuestionFetchIdRef.current;
+    const category = preferredCategoryOverride ?? selectedCategory;
     const body: { walletAddress: string; useCredits: true; difficulty?: number; runId?: string; preferredCategory?: string } = {
       walletAddress: wallet,
       useCredits: true,
@@ -167,17 +192,22 @@ export default function Home() {
     if (currentRunId) body.runId = currentRunId;
     else {
       body.difficulty = level;
-      if (selectedCategory) body.preferredCategory = selectedCategory;
+      if (category) body.preferredCategory = category;
     }
 
     try {
       const res = await apiFetch<QuestionResponse>("/next-question", { method: "POST", body: body as unknown as Record<string, unknown> });
 
+      if (fetchId !== nextQuestionFetchIdRef.current) return;
+
       if (res.status === 402 && res.topUpRequired) {
         setTopUpRequired(res.topUpRequired);
         setPendingAfterTopUp({ level, runId: currentRunId ?? undefined });
         setStep("topup");
-        if (res.error) setError(res.error);
+        if (res.error) {
+          setError(res.error);
+          toast.error(res.error);
+        }
         return;
       }
       if (res.status === 402 && res.paymentRequired) {
@@ -186,10 +216,16 @@ export default function Home() {
         return;
       }
       if (res.error) {
-        setError(res.error);
+        const msg = res.betaLimit
+          ? "This category has reached its play limit. Currently in beta—try another category."
+          : res.error;
+        setError(msg);
+        toast.error(msg);
         return;
       }
       if (res.data) {
+        selectedIndexRef.current = null;
+        setSelectedIndex(null);
         setQuestion(res.data);
         setQuestionStartedAt(Date.now());
         if (!runId) setCompletedLevelsInRun(0);
@@ -202,15 +238,21 @@ export default function Home() {
         setIsPracticeRun(false);
       }
     } finally {
-      setIsGettingQuestion(false);
+      if (fetchId === nextQuestionFetchIdRef.current) setIsGettingQuestion(false);
     }
   };
 
   /** Practice mode: no tokenomics, no payment, no credits. Same gameplay. */
-  const getNextQuestionWithPractice = async (level: number, currentRunId?: string | null) => {
+  const getNextQuestionWithPractice = async (
+    level: number,
+    currentRunId?: string | null,
+    preferredCategoryOverride?: string | null
+  ) => {
     if (!wallet) return;
     setError(null);
     setIsGettingQuestion(true);
+    const fetchId = ++nextQuestionFetchIdRef.current;
+    const category = preferredCategoryOverride ?? selectedCategory;
     const body: { walletAddress: string; practice: true; difficulty?: number; runId?: string; preferredCategory?: string } = {
       walletAddress: wallet,
       practice: true,
@@ -218,15 +260,19 @@ export default function Home() {
     if (currentRunId) body.runId = currentRunId;
     else {
       body.difficulty = level;
-      if (selectedCategory) body.preferredCategory = selectedCategory;
+      if (category) body.preferredCategory = category;
     }
     try {
       const res = await apiFetch<QuestionResponse>("/next-question", { method: "POST", body: body as unknown as Record<string, unknown> });
+      if (fetchId !== nextQuestionFetchIdRef.current) return;
       if (res.error) {
         setError(res.error);
+        toast.error(res.error);
         return;
       }
       if (res.data) {
+        selectedIndexRef.current = null;
+        setSelectedIndex(null);
         setQuestion(res.data);
         setQuestionStartedAt(Date.now());
         if (!currentRunId) setCompletedLevelsInRun(0);
@@ -238,7 +284,7 @@ export default function Home() {
         setIsPracticeRun(!!res.data.practice);
       }
     } finally {
-      setIsGettingQuestion(false);
+      if (fetchId === nextQuestionFetchIdRef.current) setIsGettingQuestion(false);
     }
   };
 
@@ -250,7 +296,10 @@ export default function Home() {
       setStep("pay");
       return;
     }
-    if (res.error) setError(res.error);
+    if (res.error) {
+      setError(res.error);
+      toast.error(res.error);
+    }
   };
 
   const submitPaymentAndGetQuestion = async (txIdFromWallet: string) => {
@@ -279,6 +328,8 @@ export default function Home() {
         await new Promise((r) => setTimeout(r, intervalMs));
         res = await doPost();
         if (res.status === 200 && res.data) {
+          selectedIndexRef.current = null;
+          setSelectedIndex(null);
           setQuestion(res.data);
           setQuestionStartedAt(Date.now());
           if (!runId) setCompletedLevelsInRun(0);
@@ -292,12 +343,15 @@ export default function Home() {
           setChallenge(null);
           setStep("ready");
           setError(res.error);
+          toast.error(res.error);
           return;
         }
       }
       setChallenge(null);
       setStep("ready");
-      setError("Confirmation timed out. Check your wallet; you can try again with a new question.");
+      const timeoutMsg = "Confirmation timed out. Check your wallet; you can try again with a new question.";
+      setError(timeoutMsg);
+      toast.error(timeoutMsg);
       return;
     }
 
@@ -305,14 +359,18 @@ export default function Home() {
       setChallenge(null);
       setStep("ready");
       setError(res.error);
+      toast.error(res.error);
       return;
     }
     if (res.error) {
       setError(res.error);
+      toast.error(res.error);
       setStep("pay");
       return;
     }
     if (res.data) {
+      selectedIndexRef.current = null;
+      setSelectedIndex(null);
       setQuestion(res.data);
       setQuestionStartedAt(Date.now());
       if (!runId) setCompletedLevelsInRun(0);
@@ -326,7 +384,9 @@ export default function Home() {
   const payWithWallet = async () => {
     if (!challenge) return;
     if (!challenge.recipient || !/^S[TP][0-9A-HJ-NP-Za-km-z]{39}$/.test(challenge.recipient)) {
-      setError("Server misconfiguration: invalid payment recipient. Set STACKS_RECIPIENT_ADDRESS.");
+      const msg = "Server misconfiguration: invalid payment recipient. Set STACKS_RECIPIENT_ADDRESS.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
     setError(null);
@@ -342,18 +402,23 @@ export default function Home() {
       const txid = (response as { txid?: string })?.txid;
       if (!txid) {
         setError("Payment failed: no transaction ID");
+        toast.error("Payment failed: no transaction ID");
         setStep("pay");
         return;
       }
       await submitPaymentAndGetQuestion(txid);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Payment cancelled or failed");
+      const msg = err instanceof Error ? err.message : "Payment cancelled or failed";
+      setError(msg);
+      toast.error(msg);
       setStep("pay");
     }
   };
 
-  const submitAnswer = async () => {
-    if (!runId || selectedIndex === null) return;
+  const submitAnswer = async (isTimeout = false, explicitIndex?: number) => {
+    const indexToSend = isTimeout ? -1 : (explicitIndex ?? selectedIndexRef.current ?? selectedIndex);
+    if (!wallet || !runId) return;
+    if (!isTimeout && (indexToSend === null || indexToSend === undefined)) return;
     setStep("submitting");
     setError(null);
     setIsSubmittingAnswer(true);
@@ -361,54 +426,90 @@ export default function Home() {
       "/run/submit-answer",
       {
         method: "POST",
-        body: { runId, selectedIndex },
+        body: {
+          runId,
+          walletAddress: wallet,
+          ...(isTimeout ? { timedOut: true, selectedIndex: -1 } : { selectedIndex: indexToSend ?? 0 }),
+        },
       }
     );
     if (res.error) {
       setError(res.error);
+      toast.error(res.error);
       setStep("question");
       setIsSubmittingAnswer(false);
       return;
     }
     if (res.data?.correct) {
+      const totalNow = res.data.totalPoints ?? 0;
+      const pointsThisLevel = totalNow - previousTotalPointsRef.current;
+      setLevelBreakdown((prev) => [
+        ...prev,
+        { level: difficulty, timeTakenSec: elapsedSec, allowedSec: QUESTION_TIME_CAP_SEC, points: pointsThisLevel },
+      ]);
+      previousTotalPointsRef.current = totalNow;
       setResult(res.data);
       setCompletedLevelsInRun(res.data.completedLevels);
       setStep("correct");
+      selectedIndexRef.current = null;
       setSelectedIndex(null);
       setQuestion(null);
+      refreshCreditsBalance();
     } else if (res.data && !res.data.correct) {
       setResult(res.data);
       setStep("wrong");
       setRunId(null);
       setCompletedLevelsInRun(0);
       setIsPracticeRun(false);
+      if (res.data.creditsStx != null) setCreditsStx(res.data.creditsStx);
+      refreshCreditsBalance();
     }
     setIsSubmittingAnswer(false);
   };
 
-  const stopRun = async () => {
+  const stopRun = async (opts?: { forceStopBeforeMinLevel?: boolean; abort?: boolean }) => {
     if (!runId || !wallet) {
       setError("Wallet required to stop");
+      toast.error("Wallet required to stop");
       return;
     }
     setError(null);
     setIsStoppingRun(true);
-    const res = await apiFetch<StopRunResponse>("/run/stop", {
-      method: "POST",
-      body: { runId, walletAddress: wallet },
-    });
+    const body: { runId: string; walletAddress: string; forceStopBeforeMinLevel?: boolean; abort?: boolean } = {
+      runId,
+      walletAddress: wallet,
+    };
+    if (opts?.forceStopBeforeMinLevel) body.forceStopBeforeMinLevel = true;
+    if (opts?.abort) body.abort = true;
+    const res = await apiFetch<StopRunResponse>("/run/stop", { method: "POST", body });
     setIsStoppingRun(false);
     if (res.error) {
       setError(res.error);
+      toast.error(res.error);
       return;
     }
     if (res.data) {
+      if (res.data.aborted) {
+        setStep("ready");
+        setRunId(null);
+        setQuestion(null);
+        setResult(null);
+        setTopUpRequired(null);
+        setPendingAfterTopUp(null);
+        setCompletedLevelsInRun(0);
+        setIsPracticeRun(false);
+        if (res.data.creditsStx != null) setCreditsStx(res.data.creditsStx);
+        refreshCreditsBalance();
+        return;
+      }
       setResult(res.data);
       setStep("stopped");
       setRunId(null);
       setQuestion(null);
       setCompletedLevelsInRun(0);
       setIsPracticeRun(false);
+      if (res.data.creditsStx != null) setCreditsStx(res.data.creditsStx);
+      refreshCreditsBalance();
     }
   };
 
@@ -419,9 +520,12 @@ export default function Home() {
     setQuestion(null);
     setResult(null);
     setChallenge(null);
+    selectedIndexRef.current = null;
     setSelectedIndex(null);
     setError(null);
     setCompletedLevelsInRun(0);
+    setLevelBreakdown([]);
+    previousTotalPointsRef.current = 0;
     setIsPracticeRun(false);
   };
 
@@ -444,6 +548,7 @@ export default function Home() {
       const txid = (response as { txid?: string })?.txid;
       if (!txid) {
         setError("Payment failed: no transaction ID");
+        toast.error("Payment failed: no transaction ID");
         setIsToppingUp(false);
         return;
       }
@@ -459,24 +564,34 @@ export default function Home() {
           if (res.status === 200 && res.data) break;
           if (res.status === 402 && res.error && res.error !== "Transaction pending") {
             setError(res.error);
+            toast.error(res.error);
             setIsToppingUp(false);
             return;
           }
         }
       }
       if (res.error) {
-        setError(res.error ?? "Top-up failed");
+        const topUpErr = res.error ?? "Top-up failed";
+        setError(topUpErr);
+        toast.error(topUpErr);
         setIsToppingUp(false);
         return;
       }
-      refreshCreditsBalance();
+      if (res.data?.creditsStx != null) setCreditsStx(res.data.creditsStx);
+      await refreshCreditsBalance();
       setTopUpRequired(null);
       if (pendingAfterTopUp) {
         await getNextQuestionWithCredits(pendingAfterTopUp.level, pendingAfterTopUp.runId);
         setPendingAfterTopUp(null);
+      } else {
+        toast.success("Credits added.");
+        setStep("ready");
+        router.push("/profile");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Top-up cancelled or failed");
+      const msg = err instanceof Error ? err.message : "Top-up cancelled or failed";
+      setError(msg);
+      toast.error(msg);
     }
     setIsToppingUp(false);
   };
@@ -528,6 +643,7 @@ export default function Home() {
       return;
     }
     setWithdrawAmount("");
+    if (res.data?.creditsStx != null) setCreditsStx(res.data.creditsStx);
     refreshCreditsBalance();
     toast.success(res.data?.message ?? `Sent ${res.data?.withdrawnStx} STX to your wallet.`);
     setWithdrawSuccess(res.data?.message ?? `Sent ${res.data?.withdrawnStx} STX to your wallet.`);
@@ -552,6 +668,24 @@ export default function Home() {
     loadCreditsHistory();
   };
 
+  /** From credits modal: fetch top-up info and show TopUpScreen (voluntary add credits). */
+  const openAddCreditsFromModal = async () => {
+    setShowCreditsModal(false);
+    const res = await apiFetch<{ recipient: string; suggestedAmountStx: number }>("/credits/top-up-info");
+    if (res.error || !res.data?.recipient) {
+      toast.error(res.error ?? "Could not load top-up info");
+      return;
+    }
+    setTopUpRequired({
+      topUp: true,
+      recipient: res.data.recipient,
+      suggestedAmountStx: res.data.suggestedAmountStx ?? 0.05,
+      creditsStx,
+    });
+    setPendingAfterTopUp(null);
+    setStep("topup");
+  };
+
   const openCreditsView = () => {
     setShowCreditsView(true);
     loadCreditsHistory();
@@ -561,7 +695,33 @@ export default function Home() {
     (Number(micro) / 1_000_000).toFixed(4);
 
   const mainContent = () => {
-    if (!wallet) return null;
+    if (!wallet) {
+      if (step === "ready" && !showCreditsView && !showRunHistory) {
+        return (
+          <>
+            <HomeScreen
+              creditsStx={0}
+              totalSpent={0}
+              totalEarned={0}
+              bestScore={0}
+              categories={categories}
+              selectedCategory={selectedCategory}
+              practiceMode={practiceMode}
+              onPracticeModeChange={() => {
+                toast("Please log in to play.");
+                connectWallet();
+              }}
+              onCategoryClick={() => {
+                toast("Please log in to play.");
+                connectWallet();
+              }}
+              hideStats
+            />
+          </>
+        );
+      }
+      return null;
+    }
 
     if (step === "ready" && showCreditsView) {
       return (
@@ -576,8 +736,6 @@ export default function Home() {
             transactions={creditsHistory}
             onClose={() => setShowCreditsView(false)}
           />
-          {withdrawSuccess && <p className="text-sm text-green-700">{withdrawSuccess}</p>}
-          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       );
     }
@@ -640,27 +798,69 @@ export default function Home() {
             bestScore={user?.bestScore ?? 0}
             categories={categories}
             selectedCategory={selectedCategory}
-            onCategorySelect={setSelectedCategory}
+            practiceMode={practiceMode}
+            onPracticeModeChange={setPracticeMode}
+            onCategoryClick={(category) => {
+              setSelectedCategory(category);
+              setLevelBreakdown([]);
+              previousTotalPointsRef.current = 0;
+              const minLoaderMs = 1500;
+              setShowQuizLoader(true);
+              quizLoaderShownAtRef.current = Date.now();
+              (practiceMode
+                ? getNextQuestionWithPractice(0, undefined, category)
+                : getNextQuestionWithCredits(0, undefined, category)
+              ).finally(() => {
+                const elapsed = Date.now() - (quizLoaderShownAtRef.current ?? 0);
+                const remaining = Math.max(0, minLoaderMs - elapsed);
+                if (remaining > 0) {
+                  setTimeout(() => {
+                    setShowQuizLoader(false);
+                    quizLoaderShownAtRef.current = null;
+                  }, remaining);
+                } else {
+                  setShowQuizLoader(false);
+                  quizLoaderShownAtRef.current = null;
+                }
+              });
+            }}
           />
-          {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
         </>
       );
     }
 
     if (step === "topup" && topUpRequired) {
+      const handlePullOut = () => {
+        setTopUpRequired(null);
+        setPendingAfterTopUp(null);
+        setError(null);
+        void stopRun({ forceStopBeforeMinLevel: true });
+      };
+      const handleAbort = () => {
+        setTopUpRequired(null);
+        setPendingAfterTopUp(null);
+        setError(null);
+        void stopRun({ abort: true });
+      };
       return (
-        <TopUpScreen
-          suggestedStx={topUpRequired.suggestedAmountStx}
-          recipient={topUpRequired.recipient}
-          currentCreditsStx={topUpRequired.creditsStx}
-          predefinedAmounts={PREDEFINED_TOP_UPS_STX}
-          customAmount={topUpStepCustomStx}
-          onCustomAmountChange={setTopUpStepCustomStx}
-          onTopUp={(amt) => doTopUpWithWallet(amt, topUpRequired.recipient)}
-          onCancel={() => { setStep("ready"); setTopUpRequired(null); setPendingAfterTopUp(null); setError(null); }}
-          isToppingUp={isToppingUp}
-          minTopUpStx={MIN_TOP_UP_STX}
-        />
+        <div className="w-full flex-1 min-h-0 flex items-center justify-center p-4">
+          <TopUpScreen
+            suggestedStx={topUpRequired.suggestedAmountStx}
+            recipient={topUpRequired.recipient}
+            currentCreditsStx={topUpRequired.creditsStx}
+            predefinedAmounts={PREDEFINED_TOP_UPS_STX}
+            customAmount={topUpStepCustomStx}
+            onCustomAmountChange={setTopUpStepCustomStx}
+            onTopUp={(amt) => doTopUpWithWallet(amt, topUpRequired.recipient)}
+            onCancel={() => { setStep("ready"); setTopUpRequired(null); setPendingAfterTopUp(null); setError(null); }}
+            isToppingUp={isToppingUp}
+            minTopUpStx={MIN_TOP_UP_STX}
+            runId={runId}
+            onPullOut={runId ? handlePullOut : undefined}
+            onAbort={runId ? handleAbort : undefined}
+            isEndingRun={isStoppingRun}
+          />
+        </div>
       );
     }
 
@@ -694,9 +894,12 @@ export default function Home() {
           completedLevelsInRun={completedLevelsInRun}
           isSubmitting={isSubmittingAnswer}
           isStopping={isStoppingRun}
-          onSelectOption={setSelectedIndex}
-          onSubmit={submitAnswer}
-          onStop={stopRun}
+          onSelectOption={(i) => {
+            selectedIndexRef.current = i;
+            setSelectedIndex(i);
+          }}
+          onSubmit={(index) => submitAnswer(false, index)}
+          onStop={() => stopRun()}
         />
       );
     }
@@ -706,70 +909,83 @@ export default function Home() {
     }
 
     if (step === "correct" && result && "correct" in result && result.correct) {
+      const spentSoFarStx =
+        completedLevelsInRun > 0
+          ? Array.from({ length: completedLevelsInRun }, (_, i) => costForLevel(i)).reduce((a, b) => a + b, 0)
+          : 0;
+      const profitLossSoFarStx = (result.totalPoints ?? 0) - spentSoFarStx;
       return (
-        <div className="space-y-6 max-w-md">
-          <FeedbackCorrect earnedStx={result.totalPoints} />
-          <ContinueOrStopScreen
+        <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center">
+          <div className="space-y-6 max-w-md w-full">
+            <FeedbackCorrect earnedStx={result.totalPoints} />
+            <ContinueOrStopScreen
             earnedSoFarStx={result.totalPoints ?? 0}
+            profitLossSoFarStx={isPracticeRun ? undefined : profitLossSoFarStx}
             nextLevel={result.level}
             completedLevels={completedLevelsInRun}
             isPractice={isPracticeRun}
             onContinue={() => isPracticeRun ? getNextQuestionWithPractice(result.level, runId) : getNextQuestionWithCredits(result.level, runId)}
-            onStop={stopRun}
+            onStop={() => stopRun()}
             isContinueLoading={isGettingQuestion}
             isStopping={isStoppingRun}
           />
+          </div>
         </div>
       );
     }
 
     if (step === "wrong" && result && "runEnded" in result) {
       const r = result as SubmitAnswerWrong & { practice?: boolean };
+      const totalSpentStx = typeof r.spent === "number" ? r.spent : Number(r.spentMicroStx) / MICRO_STX_PER_STX;
+      const totalEarnedStx = r.grossEarnedStx ?? (typeof r.totalPoints === "number" ? r.totalPoints : 0);
+      const profitStx = r.profit ?? (totalEarnedStx - totalSpentStx);
       return (
-        <div className="space-y-6 max-w-md">
-          <FeedbackWrong isPractice={r.practice === true} />
-          <Button onClick={startOver} variant="primary" className="w-full py-3">Start over</Button>
+        <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center">
+          <div className="space-y-6 max-w-md w-full">
+            <FeedbackWrong
+            isPractice={r.practice === true}
+            timedOut={r.timedOut === true}
+            levelBreakdown={levelBreakdown}
+            selectedOptionText={r.selectedOptionText ?? (selectedIndex != null && question?.options?.[selectedIndex] != null ? question.options[selectedIndex] : undefined)}
+            correctOptionText={r.correctOptionText}
+            reasoning={r.reasoning}
+            totalSpentStx={totalSpentStx}
+            totalEarnedStx={totalEarnedStx}
+            profitStx={profitStx}
+          />
+            <Button onClick={startOver} variant="primary" className="w-full py-3">Start over</Button>
+          </div>
         </div>
       );
     }
 
-    if (step === "stopped" && result && "totalPoints" in result) {
+    if (step === "stopped" && result && "totalPoints" in result && !("aborted" in result && result.aborted)) {
       const r = result as StopRunResponse & { practice?: boolean };
-      const totalEarned = typeof r.totalPoints === "number" ? r.totalPoints : Number(r.totalPoints);
-      const profit = r.profit ?? totalEarned - r.spent;
+      const totalEarned = typeof r.totalPoints === "number" ? r.totalPoints : Number(r.totalPoints ?? 0);
+      const spent = r.spent ?? 0;
+      const profit = r.profit ?? totalEarned - spent;
       return (
-        <RunSummaryScreen
-          correctCount={r.completedLevels}
-          totalSpentStx={r.spent}
+        <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center">
+          <RunSummaryScreen
+          correctCount={r.completedLevels ?? 0}
+          totalSpentStx={spent}
           totalEarnedStx={totalEarned}
           profitStx={profit}
           isPractice={r.practice === true}
+          levelBreakdown={levelBreakdown}
           onPlayAgain={startOver}
           onViewCredits={openCreditsModal}
         />
+        </div>
       );
     }
-
-    if (withdrawSuccess && !showCreditsView) {
-      return (
-        <p className="text-sm text-green-700">
-          {withdrawSuccess.includes("View on explorer:") ? (
-            <>
-              {withdrawSuccess.split("View on explorer:")[0]}
-              <a href={withdrawSuccess.split("View on explorer:")[1]?.trim() ?? "#"} target="_blank" rel="noopener noreferrer" className="underline ml-1">View on explorer</a>
-            </>
-          ) : withdrawSuccess}
-        </p>
-      );
-    }
-
-    if (error && step === "ready") return <p className="text-sm text-red-600">{error}</p>;
 
     return null;
   };
 
   return (
     <>
+      {showQuizLoader && <QuizLoader />}
       {mainContent()}
 
       {showProfileModal && wallet && (
@@ -780,6 +996,8 @@ export default function Home() {
           onSaved={(updated) => {
             setUser(updated);
             setShowProfileModal(false);
+            toast.success("Profile updated");
+            router.push("/profile");
           }}
         />
       )}
@@ -796,8 +1014,8 @@ export default function Home() {
             transactions={creditsHistory}
             onClose={() => setShowCreditsModal(false)}
             hideHeader
+            onAddCredits={openAddCreditsFromModal}
           />
-          {withdrawSuccess && <p className="text-sm text-green-700 mt-2">{withdrawSuccess}</p>}
         </Modal>
       )}
     </>

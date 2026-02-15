@@ -115,12 +115,13 @@ export async function deductCredits(
 
 export type TopUpResult =
   | { ok: true; creditsStx: number; creditsMicroStx: number }
+  | { ok: true; alreadyApplied: true }
   | { ok: false; reason: string };
 
 /**
- * Apply a verified top-up tx: idempotent by txId. If txId already applied, returns current balance.
- * Caller must only invoke after stacksService.verifyTopUp() returns ok (tx confirmed and anchored).
- * No amount or transaction is written until the on-chain tx is confirmed.
+ * Apply a verified top-up tx: idempotent by txId. If txId already applied, returns alreadyApplied
+ * (no balance in response to avoid leaking to a different caller). Caller must only invoke after
+ * stacksService.verifyTopUp() returns ok (tx confirmed and anchored).
  */
 export async function applyTopUp(
   txId: string,
@@ -129,16 +130,7 @@ export async function applyTopUp(
 ): Promise<TopUpResult> {
   const existing = (await TopUp.findOne({ txId }).lean().exec()) as LeanTopUp | null;
   if (existing) {
-    const user = (await User.findOne({ walletAddress: existing.walletAddress })
-      .select("creditsMicroStx")
-      .lean()
-      .exec()) as LeanUserCredits | null;
-    const micro = user?.creditsMicroStx ?? 0;
-    return {
-      ok: true,
-      creditsMicroStx: micro,
-      creditsStx: micro / MICRO_STX_PER_STX,
-    };
+    return { ok: true, alreadyApplied: true };
   }
 
   await userService.findOrCreateUser(walletAddress);

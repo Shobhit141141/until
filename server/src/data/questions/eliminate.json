@@ -1,0 +1,1027 @@
+[
+  {
+    "level": 0,
+    "question": "Exactly one of these is true: (A) It is Monday. (B) It is Tuesday. (C) Today is not Monday. If (A) is false, which must be true?",
+    "options": ["A", "B", "C", "Cannot tell"],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "If A is false, it is not Monday. Then (C) 'Today is not Monday' is true. Only one is true, so C is that one."
+  },
+  {
+    "level": 0,
+    "question": "Three statements: only one is true. (1) X = 2. (2) X = 5. (3) X is not 2. If (1) is false, which is true?",
+    "options": ["1", "2", "3", "Cannot tell"],
+    "correct_index": 2,
+    "difficulty": 0.12,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "If (1) is false, X is not 2. So (3) is true. Exactly one true, so (3) is the one."
+  },
+  {
+    "level": 0,
+    "question": "Which statement is false? 'The room has 3 doors.' 'Exactly one door is open.' You see 2 open doors.",
+    "options": ["Room has 3 doors", "Exactly one open", "Both could be true", "Neither is false"],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "If you see 2 open doors, 'Exactly one door is open' is false. So that statement is the false one."
+  },
+  {
+    "level": 0,
+    "question": "Eliminate the impossible: A > B, B > C. Which cannot be the smallest?",
+    "options": ["A", "B", "C", "All could be smallest"],
+    "correct_index": 0,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "A > B and B > C, so A > B > C. A is the largest; C is the smallest. A cannot be the smallest."
+  },
+  {
+    "level": 0,
+    "question": "One of four switches is ON. The others are OFF. Statement 'Switch 2 is OFF' is true. What can we conclude?",
+    "options": ["Switch 1 is ON", "Switch 2 is ON", "Switch 2 is OFF", "Switch 3 is ON"],
+    "correct_index": 2,
+    "difficulty": 0.12,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "The statement says 'Switch 2 is OFF' and we're told it is true. So we conclude Switch 2 is OFF."
+  },
+  {
+    "level": 0,
+    "question": "Exactly one is lying. Alice: 'I did it.' Bob: 'Alice did it.' Carol: 'Bob did it.' If Alice did it, who is lying?",
+    "options": ["Alice", "Bob", "Carol", "More than one"],
+    "correct_index": 2,
+    "difficulty": 0.18,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "If Alice did it: Alice tells truth, Bob tells truth (Alice did it), Carol says Bob did it — false. So Carol is lying."
+  },
+  {
+    "level": 0,
+    "question": "Constraint: X is even. X is less than 10. X is greater than 3. Which value does NOT fit?",
+    "options": ["4", "6", "8", "10"],
+    "correct_index": 3,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "X must be even, 3 < X < 10. So X can be 4, 6, 8. 10 is not less than 10, so 10 does not fit."
+  },
+  {
+    "level": 0,
+    "question": "Only one statement is true: (P) It is raining. (Q) It is not raining. (R) P is false. If it is not raining, which is true?",
+    "options": ["P", "Q", "R", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.18,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "If it is not raining, (Q) is true. So Q is the one true statement."
+  },
+  {
+    "level": 0,
+    "question": "Order: A is before B. B is before C. Which order is impossible?",
+    "options": ["A, B, C", "B, A, C", "C, B, A", "A, C, B"],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "A before B and B before C forces A then B then C. B, A, C has A after B, so it violates A before B."
+  },
+  {
+    "level": 0,
+    "question": "Two of three are true: (1) 2+2=4. (2) 3+3=6. (3) 4+4=9. Which one must be false?",
+    "options": ["1", "2", "3", "Any could be false"],
+    "correct_index": 2,
+    "difficulty": 0.18,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "(1) and (2) are true. (3) is false (4+4=8). So (3) must be the false one."
+  },
+  {
+    "level": 1,
+    "question": "Exactly one statement is true: (A) X is 2. (B) X is 4. (C) X is not 2. (D) X is 6. If (A) is false, which can be true?",
+    "options": ["A", "B", "C", "D"],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "If A is false, X is not 2. Then (C) 'X is not 2' is true. So C is the one that can be true."
+  },
+  {
+    "level": 1,
+    "question": "Only one statement is true. (A) Box 1 has the key. (B) Box 2 has the key. (C) Box 1 does not have the key. If the key is in Box 2, which is true?",
+    "options": ["A", "B", "C", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.22,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "If key is in Box 2, (B) is true and (A),(C) are false. So B is the one true statement."
+  },
+  {
+    "level": 1,
+    "question": "Three people; one always lies. A says 'B is the liar.' B says 'C is the liar.' C says 'A is the liar.' If A tells the truth, who is the liar?",
+    "options": ["A", "B", "C", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "If A tells truth: B is the liar. So B lies; then C is not the liar, so C tells truth; then A is not the liar — consistent. Liar is B."
+  },
+  {
+    "level": 1,
+    "question": "Exactly two of these are true: (1) 1+1=2. (2) 2+2=5. (3) 3+3=6. (4) 4+4=8. Which pair is true?",
+    "options": ["1 and 2", "2 and 3", "1 and 3", "2 and 4"],
+    "correct_index": 2,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "(1) and (3) are true; (2) and (4) are false. So the true pair is 1 and 3."
+  },
+  {
+    "level": 1,
+    "question": "Eliminate the option that breaks the rule: All of 1, 2, 3 must be in the set. Set = {1, 2, 4}. Which element should be removed to satisfy 'all from 1,2,3'?",
+    "options": ["1", "2", "4", "None"],
+    "correct_index": 2,
+    "difficulty": 0.28,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Set has 1, 2, 4. To have only 1,2,3 we must remove 4. So remove 4."
+  },
+  {
+    "level": 1,
+    "question": "If P then Q. Q is false. What can we conclude about P?",
+    "options": ["P is true", "P is false", "P is unknown", "P and Q are both true"],
+    "correct_index": 1,
+    "difficulty": 0.28,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "If P were true, Q would be true. Q is false, so P must be false (modus tollens)."
+  },
+  {
+    "level": 1,
+    "question": "Cards 1, 2, 3 in some order. Exactly one clue is true: '2 is in the middle.' '1 is first.' '3 is last.' If '2 is in the middle' is true, what is the order?",
+    "options": ["1,2,3", "2,1,3", "3,2,1", "Cannot determine"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "If 2 is in middle, order is _ 2 _. So 3,2,1 or 1,2,3. But only one clue is true; if 2 in middle is true, then 1 first and 3 last are false, so order could be 3,2,1."
+  },
+  {
+    "level": 1,
+    "question": "Which equation is false?",
+    "options": ["5 × 0 = 0", "5 / 0 = 0", "0 / 5 = 0", "5 − 0 = 5"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Division by zero is undefined; 5/0 = 0 is false. The others are correct."
+  },
+  {
+    "level": 1,
+    "question": "Schedule: Not Monday. Not Wednesday. Two days after Tuesday. What day?",
+    "options": ["Tuesday", "Thursday", "Friday", "Sunday"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Two days after Tuesday is Thursday. Eliminate Mon/Wed; only Thursday fits."
+  },
+  {
+    "level": 1,
+    "question": "Constraint: A > B. B > C. Who is smallest?",
+    "options": ["A", "B", "C", "Cannot tell"],
+    "correct_index": 2,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Transitive order: A > B > C. So C is the smallest."
+  },
+  {
+    "level": 2,
+    "question": "Exactly one of these is true: (1) Key is in room A. (2) Key is in room B. (3) Key is not in room A. If the key is in room B, which statement is true?",
+    "options": ["1", "2", "3", "More than one"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "If key is in B, (2) is true and (1),(3) are false. Exactly one true, so (2) is that one."
+  },
+  {
+    "level": 2,
+    "question": "Which number is neither prime nor a multiple of 2? (Eliminate the one that fits both.)",
+    "options": ["2", "9", "11", "4"],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "2 and 11 are prime; 4 is a multiple of 2. 9 is composite (3×3) and odd, so neither prime nor a multiple of 2."
+  },
+  {
+    "level": 2,
+    "question": "Which word does not fit the pattern? Ride, Hide, Side, Said.",
+    "options": ["Ride", "Hide", "Side", "Said"],
+    "correct_index": 3,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Ride, Hide, Side share the spelling pattern '-ide'. Said is spelled differently (though rhymes)."
+  },
+  {
+    "level": 2,
+    "question": "Three statements; exactly one is false. (1) 2+2=4. (2) 3+3=7. (3) 4+4=8. Which is false?",
+    "options": ["1", "2", "3", "None"],
+    "correct_index": 1,
+    "difficulty": 0.32,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "(1) and (3) are true. (2) is false (3+3=6). So (2) is the one false statement."
+  },
+  {
+    "level": 2,
+    "question": "Find the odd number out: 3, 5, 7, 9.",
+    "options": ["3", "5", "7", "9"],
+    "correct_index": 3,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "3, 5, 7 are prime numbers. 9 is composite (3x3)."
+  },
+  {
+    "level": 2,
+    "question": "Sort by size: A < B, B < C, D < A. Which is the largest?",
+    "options": ["A", "B", "C", "D"],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "D < A < B < C. So C is the largest. Eliminate A, B, D by the order."
+  },
+  {
+    "level": 2,
+    "question": "Which does not evaluate to 10?",
+    "options": ["2 x 5", "100 / 10", "3 + 7", "4 + 5"],
+    "correct_index": 3,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "4 + 5 = 9. The others equal 10."
+  },
+  {
+    "level": 2,
+    "question": "There are 4 switches. Only Switch 3 is ON. Which statement is false?",
+    "options": ["Switch 1 is off", "Switch 2 is off", "Switch 3 is off", "Switch 4 is off"],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Switch 3 is ON, so 'Switch 3 is off' is false. Others are true."
+  },
+  {
+    "level": 2,
+    "question": "Prize in one of three boxes. A: 'Prize here.' B: 'Prize not here.' C: 'B is lying.' Only one label is true. Where is the prize?",
+    "options": ["A", "B", "C", "Cannot tell"],
+    "correct_index": 2,
+    "difficulty": 0.38,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "If C true: B is lying, so prize is in B; then A false. So prize in B, only C true. If B true: prize not in B; C false so B not lying, so B's statement true; A false so prize not in A; prize in C. Only B true. So prize in C."
+  },
+  {
+    "level": 2,
+    "question": "Digits: code has first digit 1, last digit 5, and digit sum 10. What is the middle digit?",
+    "options": ["2", "3", "4", "5"],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "1 + middle + 5 = 10, so middle = 4. Eliminate others by arithmetic."
+  },
+  {
+    "level": 3,
+    "question": "Constraint: A > B. B > C. Who is smallest?",
+    "options": ["A", "B", "C", "Cannot tell"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Transitive property: A > B > C. C is the smallest."
+  },
+  {
+    "level": 3,
+    "question": "There are 4 switches. Only Switch 3 is on. Which statement is false?",
+    "options": [
+      "Switch 1 is off",
+      "Switch 2 is off",
+      "Switch 3 is off",
+      "Switch 4 is off"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "We know Switch 3 is ON. The statement 'Switch 3 is off' is therefore false."
+  },
+  {
+    "level": 3,
+    "question": "Find the word that cannot be made from the letters in 'PLANET' (each letter at most once).",
+    "options": ["LATE", "PLANE", "PLANTS", "NET"],
+    "correct_index": 2,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "PLANET has P, L, A, N, E, T. PLANTS requires an S, which is not in PLANET. The others use only letters from PLANET."
+  },
+  {
+    "level": 3,
+    "question": "Which number is not a perfect square?",
+    "options": ["4", "9", "12", "16"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "2^2=4, 3^2=9, 4^2=16. 12 is not a square."
+  },
+  {
+    "level": 3,
+    "question": "Which option does NOT fly? (Eliminate the one that cannot fly.)",
+    "options": ["Bat", "Eagle", "Bee", "Penguin"],
+    "correct_index": 3,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Bats fly, eagles fly, bees fly. Penguins are flightless birds."
+  },
+  {
+    "level": 3,
+    "question": "Which option is NOT a subset of the others?",
+    "options": ["Vehicles", "Cars", "Trucks", "Banana"],
+    "correct_index": 3,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Cars and Trucks are subsets of Vehicles. Banana is unrelated."
+  },
+  {
+    "level": 3,
+    "question": "I have keys but no locks. I have a space but no room. You can enter but never go outside. What am I?",
+    "options": ["A Map", "A Piano", "A Keyboard", "A House"],
+    "correct_index": 2,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Keyboard has 'keys', 'space' bar, 'enter' key."
+  },
+  {
+    "level": 3,
+    "question": "Which of these numbers is divisible by 3 but not by 2?",
+    "options": ["6", "9", "12", "10"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "6 (Div 2). 12 (Div 2). 10 (Not div 3). 9 is div by 3 (3x3) and odd (not div 2)."
+  },
+  {
+    "level": 3,
+    "question": "Logic: Not Red. Not Blue. Not Green. What remains?",
+    "options": ["Red", "Blue", "Green", "Yellow"],
+    "correct_index": 3,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Direct elimination of options A, B, C."
+  },
+  {
+    "level": 3,
+    "question": "Find the odd pattern: 2, 4, 8, 14.",
+    "options": ["2", "4", "8", "14"],
+    "correct_index": 3,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Doubling pattern: 2->4->8->16. 14 breaks the pattern."
+  },
+  {
+    "level": 4,
+    "question": "Three positions: left, middle, right. P is left of Q. R is right of Q. Who is in the middle?",
+    "options": ["P", "Q", "R", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Order is P, Q, R. So Q is in the middle."
+  },
+  {
+    "level": 4,
+    "question": "Schedule: Not Monday. Not Wednesday. Two days after Tuesday. What day?",
+    "options": ["Tuesday", "Thursday", "Friday", "Sunday"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Two days after Tuesday is Thursday."
+  },
+  {
+    "level": 4,
+    "question": "Code: 4 digits. Starts with 1, ends with 9, digit sum > 12, and at least one digit appears twice. Which code fits?",
+    "options": ["1239", "1009", "1559", "1119"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "1239 sum=15 but no repeated digit. 1009 sum=10. 1119 sum=12, not >12. 1559 has sum 20 and digit 5 repeated."
+  },
+  {
+    "level": 4,
+    "question": "Logic: If it rains, I stay home. I am not at home. Conclusion?",
+    "options": ["It is raining", "It is not raining", "I am wet", "Unknown"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Modus Tollens. R -> H. Not H -> Not R."
+  },
+  {
+    "level": 4,
+    "question": "Eliminate the geometric impossibility in Euclidean space.",
+    "options": [
+      "Triangle with 2 right angles",
+      "Square with 4 equal sides",
+      "Circle with radius 5",
+      "Triangle with 3 acute angles"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "A triangle sum is 180. Two right angles = 180, leaving 0 for the third. Impossible."
+  },
+  {
+    "level": 4,
+    "question": "Sort: A < B. B < C. D < A. Which is the largest?",
+    "options": ["A", "B", "C", "D"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "D < A < B < C. C is max."
+  },
+  {
+    "level": 4,
+    "question": "Which of these words is NOT a palindrome?",
+    "options": ["Level", "Radar", "Kayak", "River"],
+    "correct_index": 3,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "River backwards is Revir. Others read same backwards."
+  },
+  {
+    "level": 4,
+    "question": "Chemistry: Which is NOT a state of matter?",
+    "options": ["Solid", "Liquid", "Gas", "Energy"],
+    "correct_index": 3,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Energy is a property, not a state of matter (like Plasma, etc)."
+  },
+  {
+    "level": 4,
+    "question": "Set: {2, 4, 6, 8}. Element X is in Set. X is divisible by 3. X is?",
+    "options": ["2", "4", "6", "8"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Only 6 is divisible by 3."
+  },
+  {
+    "level": 4,
+    "question": "Family: A is B's father. B is C's brother. A is C's...?",
+    "options": ["Father", "Uncle", "Brother", "Grandfather"],
+    "correct_index": 0,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "B and C are siblings. A is father to both."
+  },
+  {
+    "level": 5,
+    "question": "Binary Logic: 1011 (11). Eliminate the number that is NOT a power of 2.",
+    "options": ["1", "2", "3", "4"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Powers of 2: 1 (2^0), 2 (2^1), 4 (2^2). 3 is not."
+  },
+  {
+    "level": 5,
+    "question": "Timeline: Event A is before B. Event C is before A. Order?",
+    "options": ["C, A, B", "A, B, C", "B, A, C", "C, B, A"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "C < A. A < B. Sequence: C -> A -> B."
+  },
+  {
+    "level": 5,
+    "question": "Grid: Row 1 sum = 10. Row 2 sum = 10. Col 1 sum = 10. [5, ?]. [?, 5]. What fits?",
+    "options": ["5, 5", "5, 0", "0, 5", "10, 0"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Row 1: 5 + x = 10 -> x=5. Row 2: y + 5 = 10 -> y=5. Col 1: 5 + y = 10. Consistent. Missing numbers are 5, 5."
+  },
+  {
+    "level": 5,
+    "question": "Which fraction is the smallest?",
+    "options": ["1/2", "1/3", "1/4", "1/5"],
+    "correct_index": 3,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Larger denominator = smaller value."
+  },
+  {
+    "level": 5,
+    "question": "If X is true only when Y is false. Y is true. What is X?",
+    "options": ["True", "False", "Unknown", "Null"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Y is True. So X cannot be True. X is False."
+  },
+  {
+    "level": 5,
+    "question": "Select the invalid IP address.",
+    "options": ["192.168.1.1", "10.0.0.1", "256.0.0.1", "8.8.8.8"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "IP segments range 0-255. 256 is invalid."
+  },
+  {
+    "level": 5,
+    "question": "Which word is an anagram of 'LISTEN'?",
+    "options": ["SILENT", "LISTED", "TENILS", "SINTEL"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "SILENT uses exactly the letters L-I-S-T-E-N."
+  },
+  {
+    "level": 5,
+    "question": "Exactly two of four statements are true. (1) 1+1=2. (2) 2+2=5. (3) 3+3=6. (4) 4+4=9. Which pair is true?",
+    "options": ["1 and 2", "2 and 3", "1 and 3", "2 and 4"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "(1) and (3) are true; (2) and (4) are false. So the true pair is 1 and 3."
+  },
+  {
+    "level": 5,
+    "question": "Which equation is incorrect?",
+    "options": ["5 * 0 = 0", "5 / 0 = 0", "0 / 5 = 0", "5 - 0 = 5"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Division by zero is undefined, not 0."
+  },
+  {
+    "level": 5,
+    "question": "Eliminate the item that doesn't conduct electricity well.",
+    "options": ["Copper", "Gold", "Rubber", "Saltwater"],
+    "correct_index": 2,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Rubber is an insulator."
+  },
+  {
+    "level": 6,
+    "question": "Logic Gate: Output is 1. Gate is AND. Input A is 1. What is Input B?",
+    "options": ["0", "1", "Unknown", "Null"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "For AND to be 1, both inputs must be 1."
+  },
+  {
+    "level": 6,
+    "question": "Knights & Knaves: A says 'I am a Knave'. Is A a Knight or Knave?",
+    "options": ["Knight", "Knave", "Impossible", "Neither"],
+    "correct_index": 2,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "If Knight, lie (impossible). If Knave, truth (impossible). It's a paradox."
+  },
+  {
+    "level": 6,
+    "question": "Math: x^2 = 9. x > 0. Eliminate the impossible x.",
+    "options": ["3", "-3", "9", "0"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Constraint x > 0 eliminates -3 (which also squares to 9)."
+  },
+  {
+    "level": 6,
+    "question": "Fibonacci sequence: 2, 3, 5, 8, ?. What is the next number?",
+    "options": ["12", "13", "10", "15"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Each term is the sum of the two before: 2+3=5, 3+5=8, 5+8=13."
+  },
+  {
+    "level": 6,
+    "question": "Identify the logical fallacy: 'You are wrong because you are ugly.'",
+    "options": [
+      "Ad Hominem",
+      "Straw Man",
+      "Circular Reasoning",
+      "False Dichotomy"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Attacking the person instead of the argument."
+  },
+  {
+    "level": 6,
+    "question": "Color Mixing: Cyan is Blue + Green. Yellow is Red + Green. Magenta is Red + Blue. Which contains no Blue?",
+    "options": ["Cyan", "Yellow", "Magenta", "White"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Yellow is R+G. No Blue."
+  },
+  {
+    "level": 6,
+    "question": "Set A = {1, 2}. Set B = {2, 3}. What is in the intersection of A and B?",
+    "options": ["1", "2", "3", "4"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Intersection is the set of elements in both A and B. Only 2 is in both."
+  },
+  {
+    "level": 6,
+    "question": "Constraint: x is even and 3 < x < 10. Which value does NOT satisfy?",
+    "options": ["4", "6", "8", "10"],
+    "correct_index": 3,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "4, 6, 8 are even and between 3 and 10. 10 is not less than 10, so it does not satisfy."
+  },
+  {
+    "level": 6,
+    "question": "Code: IF (A > 5) THEN Print 'Hi'. Output is nothing. What is A?",
+    "options": ["6", "10", "5", "100"],
+    "correct_index": 2,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "If output is nothing, condition (A>5) failed. 5 is not > 5."
+  },
+  {
+    "level": 6,
+    "question": "Constraint: (A implies B) is false. What must be true of A and B?",
+    "options": ["A true, B true", "A false, B true", "A true, B false", "A false, B false"],
+    "correct_index": 2,
+    "difficulty": 0.72,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Implication is false only when antecedent is true and consequent is false. So A true, B false."
+  },
+  {
+    "level": 7,
+    "question": "Constraint: A is not B. B is C. C is D. Is A equal to D?",
+    "options": ["Yes", "No", "Maybe", "Only if B=0"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "B=C=D. Since A != B, then A != D."
+  },
+  {
+    "level": 7,
+    "question": "Truth Table: (P OR Q) is False. What are P and Q?",
+    "options": ["P=T, Q=F", "P=F, Q=T", "P=F, Q=F", "P=T, Q=T"],
+    "correct_index": 2,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "OR is only False if both inputs are False."
+  },
+  {
+    "level": 7,
+    "question": "If all Bloops are Zarks, and some Zarks are Tinz. Are all Bloops Tinz?",
+    "options": [
+      "Yes",
+      "No (Not necessarily)",
+      "Impossible",
+      "Yes, if Zarks > 0"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Subset logic. B inside Z. Z overlaps T. B might be outside the overlap."
+  },
+  {
+    "level": 7,
+    "question": "Modulo: x mod 5 = 2. Which x is impossible?",
+    "options": ["7", "12", "17", "20"],
+    "correct_index": 3,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "20 mod 5 = 0. The others give remainder 2."
+  },
+  {
+    "level": 7,
+    "question": "Sequence: J, F, M, A, M, J, J, ?. (First letters of months.) What is the next letter?",
+    "options": ["A", "S", "O", "N"],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Jan, Feb, Mar, Apr, May, Jun, Jul, Aug — next is August, so A."
+  },
+  {
+    "level": 7,
+    "question": "Cipher: Shift +2. Code 'CDE'. Original was?",
+    "options": ["ABC", "EFG", "BCD", "ZAB"],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Reverse shift (-2). C->A, D->B, E->C."
+  },
+  {
+    "level": 7,
+    "question": "Probability: Coin flipped 3 times. P(HHH) = 1/8. P(No Heads)?",
+    "options": ["1/8", "7/8", "1/2", "0"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "No heads = TTT. Same probability as HHH (1/8)."
+  },
+  {
+    "level": 7,
+    "question": "Geometry: Triangle sides 3, 4, X. Which X is impossible?",
+    "options": ["2", "5", "6", "7"],
+    "correct_index": 3,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Triangle Inequality: a+b > c. 3+4=7. X cannot be 7 or more."
+  },
+  {
+    "level": 7,
+    "question": "Logical Contrapositive: If P, then Q. What is equivalent?",
+    "options": [
+      "If Q, then P",
+      "If not P, then not Q",
+      "If not Q, then not P",
+      "P and Q"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Contrapositive form is logically equivalent."
+  },
+  {
+    "level": 7,
+    "question": "Solve: 2x + 3 = 11. What is x?",
+    "options": ["4", "3", "2", "5"],
+    "correct_index": 0,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "2x = 8, so x = 4."
+  },
+  {
+    "level": 8,
+    "question": "3 prisoners. 2 Red Hats, 3 Blue Hats. P1 sees R, R. What is P1?",
+    "options": ["Red", "Blue", "Unknown", "Green"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "If 2 Red exist total, and P1 sees 2 Red, P1 *must* be Blue (since only 2 Reds exist). Logic deduction."
+  },
+  {
+    "level": 8,
+    "question": "Three people; exactly one is the knight (always truth). A: 'I am the knight.' B: 'A is the knave.' C: 'B is the knave.' Who is the knight?",
+    "options": ["A", "B", "C", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 22,
+    "confidence_score": 0.99,
+    "reason": "If A knight: then B's 'A is knave' is false so B knave, and C's 'B is knave' is true so C knight — two knights. If C knight: then B is knave; B says A is knave (lie) so A is knight — two knights. So B must be knight: then A is knave, C's statement false so C is knave. Only B knight."
+  },
+  {
+    "level": 8,
+    "question": "Logic: (A implies B) is False. What are A and B?",
+    "options": ["A=T, B=T", "A=F, B=T", "A=T, B=F", "A=F, B=F"],
+    "correct_index": 2,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Implication is false ONLY when True -> False."
+  },
+  {
+    "level": 8,
+    "question": "Permutations: Place A, B, C in order. A is not first. A is not last. B is not second. C is not third. What is the order?",
+    "options": ["BCA", "CAB", "CBA", "BAC"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.99,
+    "reason": "A not 1st or 3rd so A is 2nd. So order is _ A _. B not 2nd, so B is 1st or 3rd. C not 3rd, so C is 1st or 2nd; 2nd is A so C is 1st. Then B is 3rd. Order: C A B (CAB)."
+  },
+  {
+    "level": 8,
+    "question": "Set: {A, B} subset of {A, B, C}. Which is False?",
+    "options": ["A in Set", "C in Set", "D in Set", "{A} subset"],
+    "correct_index": 2,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "D is not in the superset."
+  },
+  {
+    "level": 8,
+    "question": "If Day 1 is Monday. Day 10 is?",
+    "options": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+    "correct_index": 2,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "1+7=8(Mon). 9(Tue), 10(Wed)."
+  },
+  {
+    "level": 8,
+    "question": "Equation: |x| = -5. Solution?",
+    "options": ["5", "-5", "0", "No solution"],
+    "correct_index": 3,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Absolute value cannot be negative."
+  },
+  {
+    "level": 8,
+    "question": "Sequence: 1, 11, 21, 1211, ?. (Look and Say). Next?",
+    "options": ["111221", "312211", "1221", "2112"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "One 1, one 2, two 1s -> 111221."
+  },
+  {
+    "level": 8,
+    "question": "Grid logic: Sudoku row [1, 2, x]. x must be?",
+    "options": ["1", "2", "3", "4"],
+    "correct_index": 2,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Standard 1-3 set. 1, 2 present. 3 missing."
+  },
+  {
+    "level": 8,
+    "question": "A is 3 times B. B is 2. What is A?",
+    "options": ["5", "6", "32", "23"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "3 x 2 = 6."
+  },
+  {
+    "level": 9,
+    "question": "Knights/Knaves: A says 'At least one of us is a Knave'. A is?",
+    "options": ["Knight", "Knave", "Impossible", "Either"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "If A is Knave, statement 'At least 1 Knave' is True (since A is Knave). Knave telling Truth = Impossible. So A must be Knight (telling truth implies B is Knave)."
+  },
+  {
+    "level": 9,
+    "question": "4 boxes. 1 has Gold. A: 'Gold in B'. B: 'A is liar'. C: 'Gold in C'. D: 'Gold in D'. Only 1 truth. Where Gold?",
+    "options": ["A", "B", "C", "D"],
+    "correct_index": 1,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 30,
+    "confidence_score": 0.95,
+    "reason": "If C true -> Gold C. A false(ok), B true(ok) -> 2 truths. Fail. If D true -> Gold D. A false, B true, C false -> 2 truths. Fail. If A true -> Gold B. B false (A not liar - consistent). C false. D false. 1 truth. Works! Gold in B."
+  },
+  {
+    "level": 9,
+    "question": "Function f(x) = x^2 - 1. f(x) = 0. x > 0. Value?",
+    "options": ["1", "-1", "0", "2"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "x^2=1 -> x=1 or -1. Constraint x>0 leaves 1."
+  },
+  {
+    "level": 9,
+    "question": "Logic: All A are B. No B is C. Is A a C?",
+    "options": ["Yes", "No", "Maybe", "Undefined"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "A is inside B. B is disjoint from C. So A is disjoint from C."
+  },
+  {
+    "level": 9,
+    "question": "Paradox? 'This statement is false.'",
+    "options": ["True", "False", "Paradox", "Valid"],
+    "correct_index": 2,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Self-referential liar paradox."
+  },
+  {
+    "level": 9,
+    "question": "Code: 3 bits. Palindrome. Sum > 0. Count of '1's is even. The code?",
+    "options": ["000", "101", "010", "111"],
+    "correct_index": 1,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "000 sum=0 (Fail). 101 Palindrome, Sum=2 (>0), Count 1s=2 (Even). Works. 010 (1s count 1 - Odd). 111 (1s count 3 - Odd)."
+  },
+  {
+    "level": 9,
+    "question": "Prisoners: A sees B(Red), C(Blue). B sees C(Blue). Total 2 Red, 1 Blue. A knows he is?",
+    "options": ["Red", "Blue", "Unknown", "Green"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "Total 2R, 1B. C is Blue (Seen). A sees R, B. If A was Blue, B would see B, B -> B knows he is Red. B is silent. So A is not Blue. A is Red."
+  },
+  {
+    "level": 9,
+    "question": "Time: 12-hour clock. 100 hours after 2:00 PM. Time?",
+    "options": ["6:00 PM", "2:00 AM", "6:00 AM", "10:00 PM"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "100 mod 24 = 4. 2:00 PM + 4 hours = 6:00 PM."
+  },
+  {
+    "level": 9,
+    "question": "Algebra: xy = 0. x is not 0. What is y?",
+    "options": ["0", "1", "x", "Undefined"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Zero product property."
+  },
+  {
+    "level": 9,
+    "question": "Which set is empty? A={x|x!=x}, B={0}, C={null}.",
+    "options": ["A", "B", "C", "None"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "No x satisfies x != x. A is empty set. B contains 0. C contains null."
+  }
+]

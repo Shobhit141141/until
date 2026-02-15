@@ -3,15 +3,14 @@ import type { Types } from "mongoose";
 import { Question } from "../models/Question.js";
 import { getRedis } from "../config/redis.js";
 import { logger } from "../config/logger.js";
-import * as aiService from "./ai.service.js";
 import * as runBatchService from "./run-batch.service.js";
-import * as fallbackQuestions from "./fallback-questions.service.js";
+import * as staticQuestions from "./static-questions.service.js";
 import { isValidCategory } from "../config/categories.js";
+import { QUESTION_TIME_CAP_SEC } from "../config/tokenomics.js";
 import type { AiQuestionPayload } from "../types/question.types.js";
 
 const REDIS_USED_QUESTIONS_KEY = "until:used_questions";
 
-export type { GenerateQuestionInput } from "./ai.service.js";
 
 /** Stable hash for a question (content identity). Used to dedupe in Redis. */
 function questionContentHash(question: string, options: string[]): string {
@@ -66,42 +65,6 @@ export async function getSeenQuestionTextsForUser(userId: Types.ObjectId): Promi
 }
 
 /**
- * Orchestration: repeat check → AI service → persist (no correct_index in DB).
- * Called only after payment verification (controller responsibility).
- */
-export async function generateQuestion(
-  input: aiService.GenerateQuestionInput,
-  opts?: { txId?: string; nonce?: string; userId?: import("mongoose").Types.ObjectId; gameRunId?: import("mongoose").Types.ObjectId }
-): Promise<AiQuestionPayload> {
-  const prompt = aiService.buildPrompt(input);
-  const promptHash = hashPrompt(prompt);
-  logger.info("Question generation", { promptHash, level: input.level });
-
-  if (await isQuestionHashSeen(promptHash)) {
-    throw new Error("Repeated question hash - use different seed/params");
-  }
-
-  const payload = await aiService.generateQuestionContent(input);
-
-  await Question.create({
-    user: opts?.userId,
-    question: payload.question,
-    options: payload.options,
-    difficulty: payload.difficulty,
-    estimated_solve_time_sec: payload.estimated_solve_time_sec,
-    confidence_score: payload.confidence_score,
-    level: input.level,
-    topic: input.category,
-    prompt_hash: promptHash,
-    tx_id: opts?.txId,
-    nonce: opts?.nonce,
-    gameRun: opts?.gameRunId,
-  });
-
-  return payload;
-}
-
-/**
  * Get a question for a run: from per-run batch (same category). Remove from cache when used.
  * First question (no runId): pick category, create initial batch, return first + restBatch.
  * Later questions (runId): pop from run batch; refill in background when few left.
@@ -112,7 +75,8 @@ export async function getQuestionForRun(
   level: number,
   userId: Types.ObjectId,
   seed?: string,
-  preferredCategory?: string
+  preferredCategory?: string,
+  isPractice?: boolean
 ): Promise<GetQuestionForRunResult> {
   let payload: AiQuestionPayload;
   let category: string | undefined;
@@ -126,94 +90,45 @@ export async function getQuestionForRun(
     if (!runCategory) {
       throw new Error("Run not found or expired");
     }
-    let popped = runBatchService.popQuestion(runId);
+    let popped = await runBatchService.popQuestion(runId);
+    if (popped) {
+      logger.info("[question] from run batch", { runId: runId.slice(0, 8), level });
+    }
     if (!popped) {
-      const baseSeed = seed ?? `run-${runId}-${level}-${Date.now()}`;
-      const maxTries = 2;
-      let lastErr: Error | null = null;
-      for (let tryCount = 0; tryCount < maxTries; tryCount++) {
-        const trySeed = tryCount === 0 ? baseSeed : `${baseSeed}-retry-${tryCount}`;
-        const input: aiService.GenerateQuestionInput = {
-          level,
-          category: runCategory,
-          timeLimitSec: 120,
-          previousDifficulty: level > 0 ? level - 1 : undefined,
-          seed: trySeed,
-        };
-        const prompt = aiService.buildPrompt(input);
-        if (await isQuestionHashSeen(hashPrompt(prompt))) {
-          lastErr = new Error("Repeated question hash");
-          continue;
-        }
-        try {
-          popped = await aiService.generateQuestionContent(input);
-          break;
-        } catch (err) {
-          lastErr = err instanceof Error ? err : new Error(String(err));
-        }
-      }
-      if (!popped) {
-        const fallback = fallbackQuestions.getFallbackPayload(runCategory, level);
-        if (fallback) {
-          logger.info("Using fallback question after AI failure", { runId: runId.slice(0, 8), level });
-          popped = fallback;
-        } else {
-          throw lastErr ?? new Error("Question generation failed after retries and no fallback");
-        }
-      }
+      popped = staticQuestions.getQuestionAtLevel(runCategory, level);
+      if (popped) logger.info("[question] from static (batch empty)", { runId: runId.slice(0, 8), level });
+    }
+    if (!popped) {
+      throw new Error("No question available for this level");
     }
     let skipAttempts = 0;
     const maxSkipAttempts = 10;
     while (seenForUser.has(popped.question.trim()) && skipAttempts < maxSkipAttempts) {
       skipAttempts++;
-      const next = runBatchService.popQuestion(runId);
+      const next = await runBatchService.popQuestion(runId);
       if (next) {
         popped = next;
         continue;
       }
-      const genSeed = `run-${runId}-${level}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const input: aiService.GenerateQuestionInput = {
-        level,
-        category: runCategory,
-        timeLimitSec: 120,
-        previousDifficulty: level > 0 ? level - 1 : undefined,
-        seed: genSeed,
-      };
-      if (await isQuestionHashSeen(hashPrompt(aiService.buildPrompt(input)))) break;
-      try {
-        const generated = await aiService.generateQuestionContent(input);
-        if (!seenForUser.has(generated.question.trim())) {
-          popped = generated;
-          break;
-        }
-      } catch {
+      const fromStatic = staticQuestions.getQuestionAtLevel(runCategory, level);
+      if (fromStatic && !seenForUser.has(fromStatic.question.trim())) {
+        popped = fromStatic;
         break;
       }
+      break;
     }
-    // Skip if this question was already used in another run (Redis); get another so no question is repeated.
     while (await isQuestionUsedInRedis(popped)) {
-      const next = runBatchService.popQuestion(runId);
+      const next = await runBatchService.popQuestion(runId);
       if (next) {
         popped = next;
         continue;
       }
-      const genSeed = `run-${runId}-${level}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const input: aiService.GenerateQuestionInput = {
-        level,
-        category: runCategory,
-        timeLimitSec: 120,
-        previousDifficulty: level > 0 ? level - 1 : undefined,
-        seed: genSeed,
-      };
-      try {
-        const generated = await aiService.generateQuestionContent(input);
-        if (!(await isQuestionUsedInRedis(generated))) {
-          popped = generated;
-          break;
-        }
-      } catch {
+      const fromStatic = staticQuestions.getQuestionAtLevel(runCategory, level);
+      if (fromStatic && !(await isQuestionUsedInRedis(fromStatic))) {
+        popped = fromStatic;
         break;
       }
+      break;
     }
     payload = popped;
     runBatchService.refillRunBatchIfNeeded(runId);
@@ -221,27 +136,9 @@ export async function getQuestionForRun(
     category = preferredCategory && isValidCategory(preferredCategory)
       ? preferredCategory
       : runBatchService.pickCategoryForNewRun();
-    const { first, rest } = await runBatchService.createInitialBatch(category);
+    const { first, rest } = await runBatchService.createInitialBatch(category, { practice: isPractice });
     const candidates = [first, ...rest];
-    let filtered = candidates.filter((q) => !seenForUser.has(q.question.trim()));
-    if (filtered.length === 0) {
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const genSeed = `init-new-${Date.now()}-${attempt}-${Math.random().toString(36).slice(2, 8)}`;
-        const input: aiService.GenerateQuestionInput = { level: 0, category: category!, timeLimitSec: 120, seed: genSeed };
-        const prompt = aiService.buildPrompt(input);
-        if (await isQuestionHashSeen(hashPrompt(prompt))) continue;
-        try {
-          const generated = await aiService.generateQuestionContent(input);
-          if (!seenForUser.has(generated.question.trim())) {
-            filtered = [generated];
-            break;
-          }
-        } catch {
-          // ignore, try next
-        }
-      }
-    }
-    // Pick first candidate not already used in Redis so no question is repeated.
+    const filtered = candidates.filter((q) => !seenForUser.has(q.question.trim()));
     let idx = 0;
     while (idx < filtered.length && (await isQuestionUsedInRedis(filtered[idx]!))) idx++;
     payload = filtered[idx] ?? first;
@@ -254,12 +151,12 @@ export async function getQuestionForRun(
     question: payload.question,
     options: payload.options,
     difficulty: payload.difficulty,
-    estimated_solve_time_sec: payload.estimated_solve_time_sec,
+    estimated_solve_time_sec: QUESTION_TIME_CAP_SEC,
     confidence_score: payload.confidence_score,
     level,
     topic: topicForDoc ?? "unknown",
   });
-  logger.info("Question for run", { questionId: doc._id.toString(), level, category: topicForDoc });
+  logger.info("[question] for run", { questionId: doc._id.toString(), level, category: topicForDoc });
 
   // Mark as used in Redis so this question is never served again (no two questions repeated).
   await markQuestionAsUsedInRedis(payload);

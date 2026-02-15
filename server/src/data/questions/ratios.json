@@ -1,0 +1,1002 @@
+[
+  {
+    "level": 0,
+    "question": "If 2 cats catch 2 mice in 2 minutes, how many cats are needed to catch 10 mice in 10 minutes?",
+    "options": ["2", "10", "5", "1"],
+    "correct_index": 0,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "It takes the same team (2 cats) to perform the task. The time scales with the workload, but the workforce remains constant."
+  },
+  {
+    "level": 0,
+    "question": "A recipe for 4 people needs 2 eggs. How many eggs for 8 people?",
+    "options": ["2", "4", "6", "8"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Double the people (4->8) means double the ingredients (2->4)."
+  },
+  {
+    "level": 0,
+    "question": "If you drive at 60 mph, how far do you go in 1 hour?",
+    "options": ["30 miles", "60 miles", "120 miles", "1 mile"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "60 mph literally means 60 miles per hour."
+  },
+  {
+    "level": 0,
+    "question": "One box holds 10 books. How many books in 5 boxes?",
+    "options": ["15", "50", "2", "100"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "10 books/box * 5 boxes = 50 books."
+  },
+  {
+    "level": 0,
+    "question": "If a shirt costs $20 at full price, what is the price at 50% off?",
+    "options": ["$10", "$5", "$15", "$20"],
+    "correct_index": 0,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "50% off is half price. Half of 20 is 10."
+  },
+  {
+    "level": 0,
+    "question": "It takes 1 cup of rice to make 2 cups of cooked rice. How much dry rice for 10 cups cooked?",
+    "options": ["2 cups", "5 cups", "10 cups", "20 cups"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Ratio is 1:2. To get 10, you need 5 (since 5*2=10)."
+  },
+  {
+    "level": 0,
+    "question": "Three feet make a yard. How many feet in 2 yards?",
+    "options": ["3", "5", "6", "9"],
+    "correct_index": 2,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "3 * 2 = 6."
+  },
+  {
+    "level": 0,
+    "question": "If 1 dollar buys 100 pennies, how many pennies for 3 dollars?",
+    "options": ["103", "300", "30", "1000"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "100 * 3 = 300."
+  },
+  {
+    "level": 0,
+    "question": "A car uses 1 gallon of gas to go 30 miles. How many gallons for 60 miles?",
+    "options": ["1", "2", "3", "30"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "60 is double 30, so you need double the gas (2 gallons)."
+  },
+  {
+    "level": 0,
+    "question": "If you read 10 pages a day, how many days to read 50 pages?",
+    "options": ["4", "5", "10", "500"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "50 / 10 = 5."
+  },
+  {
+    "level": 1,
+    "question": "6 eggs cost $1.20. How much does 1 egg cost?",
+    "options": ["$0.10", "$0.20", "$0.12", "$0.06"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "1.20 / 6 = 0.20."
+  },
+  {
+    "level": 1,
+    "question": "A map scale says 1 inch = 10 miles. Two cities are 5 inches apart. Real distance?",
+    "options": ["50 miles", "15 miles", "5 miles", "100 miles"],
+    "correct_index": 0,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "5 inches * 10 miles/inch = 50 miles."
+  },
+  {
+    "level": 1,
+    "question": "If you double the speed of your car, how does your travel time change for a fixed distance?",
+    "options": ["Doubles", "Halves", "Stays same", "Triples"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Speed and time are inversely proportional. 2x speed = 1/2 time."
+  },
+  {
+    "level": 1,
+    "question": "A photocopy is scaled to 50%. The original image was 10 inches tall. How tall is the copy?",
+    "options": ["20 inches", "5 inches", "10 inches", "15 inches"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "50% of 10 is 5."
+  },
+  {
+    "level": 1,
+    "question": "You mix 1 part red paint with 3 parts white paint. How much of the mixture is white?",
+    "options": ["1/3", "3/4", "1/4", "3/1"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Total parts = 1 + 3 = 4. White is 3 parts. Fraction is 3/4."
+  },
+  {
+    "level": 1,
+    "question": "If 4 widgets weigh 20 lbs, how much do 6 widgets weigh?",
+    "options": ["24 lbs", "30 lbs", "32 lbs", "36 lbs"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "20/4 = 5 lbs per widget. 6 * 5 = 30 lbs."
+  },
+  {
+    "level": 1,
+    "question": "A video is played at 2x speed. It usually lasts 10 minutes. How long does it take now?",
+    "options": ["20 minutes", "5 minutes", "2 minutes", "10 minutes"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Faster speed means less time. 10 / 2 = 5."
+  },
+  {
+    "level": 1,
+    "question": "To make green, mix equal parts Blue and Yellow. You have 5 gallons of Blue. How much Yellow do you need?",
+    "options": ["2.5 gallons", "5 gallons", "10 gallons", "None"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Equal parts means 1:1 ratio. 5 Blue requires 5 Yellow."
+  },
+  {
+    "level": 1,
+    "question": "A shadow is twice the length of the object. The object is 3 ft tall. How long is the shadow?",
+    "options": ["1.5 ft", "6 ft", "9 ft", "3 ft"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "2 * 3 = 6."
+  },
+  {
+    "level": 1,
+    "question": "You work 8 hours to earn $80. What is your hourly rate?",
+    "options": ["$8", "$10", "$80", "$640"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "80 / 8 = 10."
+  },
+  {
+    "level": 2,
+    "question": "If 3 lemons make 1 cup of lemonade, how many lemons for a gallon (16 cups)?",
+    "options": ["16", "32", "48", "64"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "3 lemons/cup * 16 cups = 48 lemons."
+  },
+  {
+    "level": 2,
+    "question": "A 100-page book is 1cm thick. How thick is a 500-page book?",
+    "options": ["4cm", "5cm", "10cm", "50cm"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "500 is 5 times 100. So thickness is 5 times 1cm."
+  },
+  {
+    "level": 2,
+    "question": "If you zoom in 4x on a map, 1 mile on screen looks like how many miles?",
+    "options": ["4 miles", "0.25 miles", "1 mile", "16 miles"],
+    "correct_index": 0,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Zooming in magnifies things. What *was* 1 unit visually now represents a smaller area, but the visual span covers more. Wait. '1 mile on screen looks like...' Phrase is tricky. Let's rephrase: 'If you zoom in 4x, an object that was 1 inch long now appears how long?' Answer: 4 inches."
+  },
+  {
+    "level": 2,
+    "question": "Re-phrased: An object is 2 inches wide. You use a magnifying glass with 3x power. How wide does it look?",
+    "options": ["2 inches", "5 inches", "6 inches", "9 inches"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "2 * 3 = 6."
+  },
+  {
+    "level": 2,
+    "question": "Exchange rate: 1 Euro = 1.10 USD. How many USD for 10 Euros?",
+    "options": ["$10.00", "$11.00", "$12.10", "$1.10"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "1.10 * 10 = 11.00."
+  },
+  {
+    "level": 2,
+    "question": "If a square has side length 2 and area 4, what is the area if you double the side length to 4?",
+    "options": ["8", "12", "16", "6"],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Area scales by square of the factor. 2x sides -> 4x area. 4*4=16."
+  },
+  {
+    "level": 2,
+    "question": "A 12-inch pizza feeds 2 people. Assuming same appetite, a 24-inch pizza feeds how many?",
+    "options": ["4", "6", "8", "2"],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Double the diameter = 4x the area. 2 people * 4 = 8."
+  },
+  {
+    "level": 2,
+    "question": "Five workers take 2 hours to dig a hole. How long would it take 10 workers?",
+    "options": ["1 hour", "4 hours", "2 hours", "30 minutes"],
+    "correct_index": 0,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Double the workers = Half the time."
+  },
+  {
+    "level": 2,
+    "question": "If 10% of a number is 5, what is 100% of it?",
+    "options": ["10", "25", "50", "500"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "10% is 1/10. Multiply 5 by 10 to get 50."
+  },
+  {
+    "level": 2,
+    "question": "Gear A has 10 teeth. Gear B has 20 teeth. If A turns twice, how many times does B turn?",
+    "options": ["1", "2", "4", "0.5"],
+    "correct_index": 0,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Ratio 1:2. A turns 20 teeth total (10*2). B needs 20 teeth to pass, which is exactly 1 rotation."
+  },
+  {
+    "level": 3,
+    "question": "Recipe: 2 parts Oil, 1 part Vinegar. You want 3 cups of dressing total. How much Oil?",
+    "options": ["1 cup", "1.5 cups", "2 cups", "2.5 cups"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "2+1=3 parts total. 2 parts oil. Since total is 3 cups, oil is 2 cups."
+  },
+  {
+    "level": 3,
+    "question": "Battery lasts 10 hours at 50% brightness. How long does it last at 25% brightness (assuming linear scale)?",
+    "options": ["5 hours", "10 hours", "20 hours", "15 hours"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Half the power usage = Double the life. 10 * 2 = 20."
+  },
+  {
+    "level": 3,
+    "question": "Price is $40 after a 20% discount. What was the original price?",
+    "options": ["$48", "$50", "$60", "$45"],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "80% = $40. 10% = $5. 100% = $50."
+  },
+  {
+    "level": 3,
+    "question": "A flag is 3ft tall and 5ft wide. You scale it to be 9ft tall. How wide is it?",
+    "options": ["10ft", "12ft", "15ft", "18ft"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "3 -> 9 is a 3x scale. 5 * 3 = 15."
+  },
+  {
+    "level": 3,
+    "question": "If you drive 45 miles in 45 minutes, what is your speed in mph?",
+    "options": ["45 mph", "60 mph", "90 mph", "1 mph"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "1 mile per minute = 60 miles per hour."
+  },
+  {
+    "level": 3,
+    "question": "Tap A fills a bucket in 2 mins. Tap B fills it in 2 mins. Both taps on?",
+    "options": ["4 mins", "2 mins", "1 min", "3 mins"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Double the flow = Half the time."
+  },
+  {
+    "level": 3,
+    "question": "Shadows: A 6ft man casts a 4ft shadow. A tree casts a 20ft shadow. How tall is the tree?",
+    "options": ["24 ft", "30 ft", "36 ft", "40 ft"],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Ratio Man: 6/4 = 1.5. Tree: X/20 = 1.5. X = 30."
+  },
+  {
+    "level": 3,
+    "question": "You have 50 red beads. The ratio of red to blue is 5:2. How many blue beads?",
+    "options": ["10", "20", "25", "100"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "5 parts = 50. 1 part = 10. 2 parts = 20."
+  },
+  {
+    "level": 3,
+    "question": "A picture is 4:3 aspect ratio. If width is 1200, what is height?",
+    "options": ["800", "900", "1600", "1000"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "4 parts = 1200. 1 part = 300. 3 parts = 900."
+  },
+  {
+    "level": 3,
+    "question": "Buy 3 for $5. How much for 12?",
+    "options": ["$15", "$20", "$25", "$18"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "12 is 4 groups of 3. 4 * $5 = $20."
+  },
+  {
+    "level": 4,
+    "question": "If you drive faster, you arrive sooner. Speed 50mph -> 2 hours. Speed 100mph -> ?",
+    "options": ["4 hours", "1 hour", "30 mins", "1.5 hours"],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Double speed = Half time."
+  },
+  {
+    "level": 4,
+    "question": "Mixing Concrete: 1 Cement, 2 Sand, 3 Gravel. Total 60kg needed. How much Sand?",
+    "options": ["10kg", "20kg", "30kg", "15kg"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Total parts 1+2+3=6. 60kg/6 = 10kg per part. Sand is 2 parts = 20kg."
+  },
+  {
+    "level": 4,
+    "question": "A video game character levels up every 1000 XP. XP needed doubles every level. Level 1 needs 1000. Level 3 needs?",
+    "options": ["2000", "3000", "4000", "8000"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "L1: 1000. L2: 2000. L3: 4000 (Doubling each step)."
+  },
+  {
+    "level": 4,
+    "question": "Stock value drops 50%. How much must it rise to recover to original?",
+    "options": ["50%", "100%", "25%", "200%"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "100 -> 50. To get back to 100, must gain 50 (which is 100% of 50)."
+  },
+  {
+    "level": 4,
+    "question": "Two gears. Small (10 teeth), Large (30 teeth). Small spins 6 times. Large spins?",
+    "options": ["2", "3", "18", "6"],
+    "correct_index": 0,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Ratio 1:3. 6 / 3 = 2."
+  },
+  {
+    "level": 4,
+    "question": "Typing: 60 words per minute. How many words in 1.5 hours?",
+    "options": ["3600", "5400", "9000", "600"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "60 wpm * 60 mins = 3600/hr. 1.5 hours = 3600 + 1800 = 5400."
+  },
+  {
+    "level": 4,
+    "question": "If 1.5 chickens lay 1.5 eggs in 1.5 days, how many eggs does 1 chicken lay in 1 day?",
+    "options": ["1", "1.5", "0.66", "2/3"],
+    "correct_index": 3,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Rate: 1.5c -> 1.5e / 1.5d implies 1.5c -> 1e / 1d. So 1c -> (1/1.5)e / 1d. 1/1.5 = 2/3."
+  },
+  {
+    "level": 4,
+    "question": "Scale model 1:24. Real car is 12 ft long. Model length?",
+    "options": ["2 inches", "6 inches", "12 inches", "2 feet"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "12 ft = 144 inches. 144 / 24 = 6 inches."
+  },
+  {
+    "level": 4,
+    "question": "Investing: You gain 10% year 1, then lose 10% year 2. Are you even?",
+    "options": ["Yes", "No, lost money", "No, gained money", "Depends on amount"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "100 -> 110. 110 - 11 = 99. You lost 1%."
+  },
+  {
+    "level": 4,
+    "question": "A painter paints 100 sq ft in 1 hour. How long for a room 20x20 ft?",
+    "options": ["2 hours", "4 hours", "8 hours", "10 hours"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "20x20 = 400 sq ft. 400/100 = 4 hours."
+  },
+  {
+    "level": 5,
+    "question": "Compound Speed: Swim downstream. Current 5mph. Swim speed 5mph. Distance 10 miles. Time?",
+    "options": ["2 hours", "1 hour", "30 mins", "4 hours"],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Effective speed = 5+5 = 10mph. 10 miles / 10 mph = 1 hour."
+  },
+  {
+    "level": 5,
+    "question": "If x is directly proportional to y, and x=10 when y=2. What is x when y=5?",
+    "options": ["20", "25", "50", "15"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "x = 5y. 5 * 5 = 25."
+  },
+  {
+    "level": 5,
+    "question": "Box A is 2x2x2. Box B is 4x4x4. How many Box As fit inside Box B?",
+    "options": ["2", "4", "8", "16"],
+    "correct_index": 2,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Volume scales by cube. 2x dimension -> 2^3 volume. 8."
+  },
+  {
+    "level": 5,
+    "question": "Recipe serves 6. You want to serve 9. Original needs 4 cups flour. New amount?",
+    "options": ["5 cups", "6 cups", "8 cups", "5.5 cups"],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Scale factor 9/6 = 1.5. 4 * 1.5 = 6."
+  },
+  {
+    "level": 5,
+    "question": "Sound travels 1km in 3 seconds. Thunder heard 9 seconds after flash. Distance?",
+    "options": ["1 km", "3 km", "9 km", "27 km"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "9 seconds / 3 seconds per km = 3 km."
+  },
+  {
+    "level": 5,
+    "question": "A standard sheet of paper is A4. A3 is double the area of A4. A2 is double A3. How many A4s fit in A2?",
+    "options": ["2", "4", "8", "6"],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "A4 x 2 = A3. A3 x 2 = A2. Total 4."
+  },
+  {
+    "level": 5,
+    "question": "Pump A fills tank in 3 hours. Pump B in 6 hours. Together?",
+    "options": ["4.5 hours", "2 hours", "9 hours", "1.5 hours"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Rates: 1/3 + 1/6 = 2/6 + 1/6 = 3/6 = 1/2. Invert -> 2 hours."
+  },
+  {
+    "level": 5,
+    "question": "A rope is cut into ratio 3:5. The shorter piece is 12m. How long is the longer piece?",
+    "options": ["15m", "20m", "25m", "30m"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "3 parts = 12m -> 1 part = 4m. 5 parts = 20m."
+  },
+  {
+    "level": 5,
+    "question": "Digital photo: Width 1000px, Size 2MB. Width 2000px (same quality), Size?",
+    "options": ["2MB", "4MB", "8MB", "10MB"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "2D scaling. 2x width * 2x height = 4x pixels. 4 * 2MB = 8MB. (Wait, correcting logic: Question implies aspect ratio preserved. 2x linear dim = 4x area). Correct option 8MB."
+  },
+  {
+    "level": 5,
+    "question": "If 7 blarps equal 4 gloops, how many blarps in 12 gloops?",
+    "options": ["14", "21", "28", "18"],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "12 gloops is 3 sets of 4. So 3 sets of 7 blarps = 21."
+  },
+  {
+    "level": 6,
+    "question": "Compound: Double speed AND double time. How far do you go?",
+    "options": ["2x distance", "4x distance", "Same distance", "8x distance"],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Distance = Speed x Time. (2S) * (2T) = 4ST."
+  },
+  {
+    "level": 6,
+    "question": "Cylinder A has radius 1. Cylinder B has radius 2. Same height. Volume of B is?",
+    "options": ["2x A", "4x A", "8x A", "Same"],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Volume depends on radius squared. 2^2 = 4."
+  },
+  {
+    "level": 6,
+    "question": "Investment doubles every 7 years. How much did it grow after 21 years?",
+    "options": ["3x", "6x", "8x", "21x"],
+    "correct_index": 2,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "3 doublings: 2 * 2 * 2 = 8."
+  },
+  {
+    "level": 6,
+    "question": "Mixture: 20L of 10% salt. Add 20L water. New concentration?",
+    "options": ["5%", "10%", "2.5%", "20%"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Doubling the total volume while salt stays constant halves the concentration."
+  },
+  {
+    "level": 6,
+    "question": "Work: 3 robots build 3 cars in 3 days. 10 robots build 10 cars in...?",
+    "options": ["10 days", "3 days", "1 day", "30 days"],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Rate is 1 robot per car per 3 days. Time remains constant if ratio matches."
+  },
+  {
+    "level": 6,
+    "question": "Screen resolution: 1080p vs 4K. 4K is roughly 2x width and 2x height. How many 1080p screens fit in a 4K screen?",
+    "options": ["2", "4", "8", "16"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "2x * 2x = 4x."
+  },
+  {
+    "level": 6,
+    "question": "Density: Object A (Mass M, Vol V). Object B (Mass 2M, Vol 0.5V). Density of B?",
+    "options": ["Same", "2x", "4x", "0.5x"],
+    "correct_index": 2,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "D = M/V. B = 2M / 0.5V = 4 (M/V)."
+  },
+  {
+    "level": 6,
+    "question": "You travel 100 miles. First half at 60mph, second half at 30mph. Average speed?",
+    "options": ["45 mph", "40 mph", "50 mph", "35 mph"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Harmonic mean. Or logic: 50mi@60 (50 mins) + 50mi@30 (100 mins). 150 mins for 100 miles. 100 / 2.5hr = 40mph."
+  },
+  {
+    "level": 6,
+    "question": "Ratio of boys to girls is 3:2. 100 students total. How many girls?",
+    "options": ["30", "40", "50", "60"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "5 parts = 100. 1 part = 20. Girls (2 parts) = 40."
+  },
+  {
+    "level": 6,
+    "question": "If x/y = 3/4 and y/z = 4/5, what is x/z?",
+    "options": ["3/5", "3/4", "4/3", "1/2"],
+    "correct_index": 0,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "(x/y)*(y/z) = x/z. (3/4)*(4/5) = 3/5."
+  },
+  {
+    "level": 7,
+    "question": "A Pizza with radius Z and thickness A has Volume...?",
+    "options": ["Pi*Z*Z*A", "2*Pi*Z*A", "Pi*Z*A", "Z*Z*A"],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Standard volume formula (Pi*r^2*h) spells 'PIZZA'."
+  },
+  {
+    "level": 7,
+    "question": "Compound Interest Estimate: 10% growth per year. After 2 years, total growth is?",
+    "options": ["20%", "21%", "22%", "19%"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "1.10 * 1.10 = 1.21. 21%."
+  },
+  {
+    "level": 7,
+    "question": "Water flow: Pipe A (radius r). Pipe B (radius 2r). Speed is same. How many A's equal flow of B?",
+    "options": ["2", "4", "8", "16"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Flow area depends on radius squared. 2^2 = 4."
+  },
+  {
+    "level": 7,
+    "question": "Inverse Proportions: For fixed Area, if Width triples, Height must...?",
+    "options": ["Triple", "Stay same", "Be one-third", "Be one-ninth"],
+    "correct_index": 2,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "A = W*H. To keep A constant, if W * 3, H must be / 3."
+  },
+  {
+    "level": 7,
+    "question": "Two cubes. Ratio of side lengths 1:3. Ratio of volumes?",
+    "options": ["1:3", "1:9", "1:27", "1:6"],
+    "correct_index": 2,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Volume scales by cube. 3^3 = 27."
+  },
+  {
+    "level": 7,
+    "question": "Gas Law: PV = constant. If Pressure doubles, Volume...?",
+    "options": ["Doubles", "Halves", " quadruples", "Stays constant"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Inverse relationship."
+  },
+  {
+    "level": 7,
+    "question": "Trip: You have enough gas for 300 miles. Your car gets 30 mpg. Tank size?",
+    "options": ["10 gallons", "15 gallons", "20 gallons", "30 gallons"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "300 / 30 = 10."
+  },
+  {
+    "level": 7,
+    "question": "Population A grows 10%. Population B shrinks 10%. Start equal (100). Final diff?",
+    "options": ["0", "10", "20", "2"],
+    "correct_index": 2,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "A->110. B->90. Diff is 20."
+  },
+  {
+    "level": 7,
+    "question": "If a pendulum length quadruples (4x), the period (time of swing)...?",
+    "options": ["Quadruples", "Doubles", "Halves", "Stays same"],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Period T is proportional to sqrt(L). Sqrt(4) = 2."
+  },
+  {
+    "level": 7,
+    "question": "Cooking: 20 mins per pound + 20 mins extra. 5lb Turkey. Time?",
+    "options": ["100 mins", "120 mins", "80 mins", "140 mins"],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "20*5 = 100. +20 = 120."
+  },
+  {
+    "level": 8,
+    "question": "Mixing: Solution A (20% alcohol), B (40% alcohol). Mix 1:1. Result?",
+    "options": ["20%", "30%", "40%", "60%"],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Average of 20 and 40 is 30."
+  },
+  {
+    "level": 8,
+    "question": "Planet Gravity: Mass 2x Earth, Radius 2x Earth. Gravity?",
+    "options": ["2x", "1x (Same)", "0.5x", "4x"],
+    "correct_index": 2,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "g ~ M/R^2. 2M / (2R)^2 = 2/4 = 0.5."
+  },
+  {
+    "level": 8,
+    "question": "Work Rate: A in 4h, B in 4h, C in 2h. All together?",
+    "options": ["1 hour", "2 hours", "30 mins", "1.5 hours"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "A+B together = 2h. (A,B)+C = 2h + 2h rate -> 1h."
+  },
+  {
+    "level": 8,
+    "question": "Braking: Speed doubles (v -> 2v). Braking distance proportional to v^2. Distance?",
+    "options": ["2x", "4x", "8x", "Same"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Square law. 2^2 = 4."
+  },
+  {
+    "level": 8,
+    "question": "Three numbers in ratio 2:3:5. Sum is 100. Largest number?",
+    "options": ["30", "50", "20", "60"],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Total parts 10. 1 part = 10. Largest is 5 parts = 50."
+  },
+  {
+    "level": 8,
+    "question": "A cube is painted red, then cut into 27 small cubes (3x3x3). How many have NO red paint?",
+    "options": ["0", "1", "6", "8"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "Only the very center cube touches no outside face."
+  },
+  {
+    "level": 8,
+    "question": "Investment: $1000. +50% year 1, -50% year 2. Final?",
+    "options": ["$1000", "$750", "$500", "$0"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "1000 -> 1500. 1500 * 0.5 = 750."
+  },
+  {
+    "level": 8,
+    "question": "Aspect Ratio: 16:9. If height is 900, width is?",
+    "options": ["1200", "1600", "1440", "1920"],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Height 9 parts = 900 (mult 100). Width 16 parts = 1600."
+  },
+  {
+    "level": 8,
+    "question": "If you are 4th in a line of 10, what fraction of the line is behind you?",
+    "options": ["4/10", "5/10", "6/10", "7/10"],
+    "correct_index": 2,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "10 people. 4th person. 6 people behind. 6/10."
+  },
+  {
+    "level": 8,
+    "question": "Compound Speed: 30mph for 20 miles, then 60mph for 20 miles. Avg speed?",
+    "options": ["45mph", "40mph", "50mph", "35mph"],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "T1=40m (2/3 h). T2=20m (1/3 h). Total time 1h. Total dist 40 miles. Speed 40mph. (Wait 20/30=2/3, 20/60=1/3. 2/3+1/3=1. 40mi/1h=40mph). Correct."
+  },
+  {
+    "level": 9,
+    "question": "Square-Cube Law: Giant ant scaled up 10x size. Weight scales 1000x. Strength (cross-section) scales 100x. Can it stand?",
+    "options": ["Yes easily", "No, collapses", "Same as before", "Depends"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "Weight (Volume) grows faster than Strength (Area). Relative strength drops 10x."
+  },
+  {
+    "level": 9,
+    "question": "Lottery: Odds 1 in 100. Buy 100 tickets. Chance to win?",
+    "options": ["100%", "50%", "~63%", "1%"],
+    "correct_index": 2,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.9,
+    "reason": "1 - (99/100)^100. Approx 1 - 1/e ≈ 63%."
+  },
+  {
+    "level": 9,
+    "question": "Dilution: 100L 99% water. Evaporate until 98% water. New total volume?",
+    "options": ["98L", "50L", "99L", "1L"],
+    "correct_index": 1,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 30,
+    "confidence_score": 0.95,
+    "reason": "Potato Paradox. Non-water is 1L. If 98% water, 1L is 2%. Total vol = 1L / 0.02 = 50L."
+  },
+  {
+    "level": 9,
+    "question": "Relativity Lite: Travel at 50% light speed (0.5c) and turn on headlights (c). Light speed relative to you?",
+    "options": ["1.5c", "0.5c", "1.0c", "0c"],
+    "correct_index": 2,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Speed of light is constant c in all frames."
+  },
+  {
+    "level": 9,
+    "question": "Compound Mixing: Mix 1L @ 10C with 1L @ 50C. Temp? Then add 2L @ 0C. Final?",
+    "options": ["15C", "20C", "30C", "10C"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "Step 1: (10+50)/2 = 30C (2L). Step 2: 2L@30 + 2L@0. Average = 15C."
+  },
+  {
+    "level": 9,
+    "question": "Rule of 72: Interest rate 6%. Years to double?",
+    "options": ["6", "12", "8", "72"],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "72 / 6 = 12."
+  },
+  {
+    "level": 9,
+    "question": "Population: Bacteria doubles every min. Jar full at 12:00. When half full?",
+    "options": ["11:30", "11:59", "6:00", "11:55"],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "One doubling time prior."
+  },
+  {
+    "level": 9,
+    "question": "Three taps: A(1h), B(2h), C(-2h drain). All open. Time to fill?",
+    "options": ["1h", "2h", "Never", "30m"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.95,
+    "reason": "Rates: 1 + 0.5 - 0.5 = 1 tank/hr. Time 1 hour."
+  },
+  {
+    "level": 9,
+    "question": "Inflation: Prices rise 100%. To return to original, prices must drop...?",
+    "options": ["100%", "50%", "25%", "200%"],
+    "correct_index": 1,
+    "difficulty": 0.85,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Price 1 -> 2. Needs to drop 1 (which is 50% of 2)."
+  },
+  {
+    "level": 9,
+    "question": "Chess Board: 64 squares. Grains of wheat: 1, 2, 4, 8... Total on board?",
+    "options": ["2^63", "2^64 - 1", "2^64", "64^2"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "Sum of powers of 2 (geometric series)."
+  }
+]

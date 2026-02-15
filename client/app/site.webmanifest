@@ -1,0 +1,12 @@
+{
+  "name": "UNTIL — Skill-based quiz",
+  "short_name": "UNTIL",
+  "description": "Pay per question in STX. Stop when it's optimal.",
+  "icons": [
+    { "src": "/logo.png", "sizes": "any", "type": "image/png" }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#fcf4ef",
+  "display": "standalone",
+  "start_url": "/"
+}

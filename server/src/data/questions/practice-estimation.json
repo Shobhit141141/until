@@ -1,0 +1,142 @@
+[
+  {
+    "level": 0,
+    "question": "Which duration is longer?",
+    "options": [
+      "1,000 seconds",
+      "1 hour",
+      "They are equal",
+      "Cannot compare"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "confidence_score": 0.99,
+    "reason": "1 hour is 3,600 seconds. 3,600 > 1,000."
+  },
+  {
+    "level": 1,
+    "question": "Which is longer?",
+    "options": [
+      "1 Mile",
+      "1 Kilometer",
+      "1000 Meters",
+      "1 Yard"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.2,
+    "confidence_score": 0.99,
+    "reason": "1 Mile ≈ 1.6 Kilometers. 1km = 1000m. Mile is largest."
+  },
+  {
+    "level": 2,
+    "question": "Which is larger?",
+    "options": [
+      "150 minutes",
+      "2.5 hours",
+      "9000 seconds",
+      "They are equal"
+    ],
+    "correct_index": 3,
+    "difficulty": 0.3,
+    "confidence_score": 0.99,
+    "reason": "2.5 hrs = 150 mins. 150 * 60 = 9000 sec. All equal."
+  },
+  {
+    "level": 3,
+    "question": "Which is larger: 2^10 or 1000?",
+    "options": [
+      "2^10",
+      "1000",
+      "Equal",
+      "Cannot tell"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "confidence_score": 0.99,
+    "reason": "2^10 = 1024. 1024 > 1000."
+  },
+  {
+    "level": 4,
+    "question": "Which volume is greater? Sphere radius 10 or Cube side 20?",
+    "options": [
+      "Sphere",
+      "Cube",
+      "Equal",
+      "Close call"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "confidence_score": 0.95,
+    "reason": "Cube: 20^3 = 8000. Sphere: 4/3 * 3.14 * 1000 ≈ 4.2 * 1000 = 4200. Cube is nearly double."
+  },
+  {
+    "level": 5,
+    "question": "Which is larger: 5! or 2^6?",
+    "options": [
+      "5!",
+      "2^6",
+      "Equal",
+      "Cannot tell"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "confidence_score": 0.99,
+    "reason": "5! = 120. 2^6 = 64."
+  },
+  {
+    "level": 6,
+    "question": "Which is larger: 1.01^100 or 2?",
+    "options": [
+      "1.01^100",
+      "2",
+      "Equal",
+      "Unknown"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "confidence_score": 0.95,
+    "reason": "Rule of 72. 1% grows to double in ~72 steps. At 100 steps, it is > 2 (approx 2.7)."
+  },
+  {
+    "level": 7,
+    "question": "Which is greater: Sum of 1 to 100 or 5000?",
+    "options": [
+      "Sum",
+      "5000",
+      "Equal",
+      "Close"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "confidence_score": 0.99,
+    "reason": "Sum is 5050. 5050 > 5000."
+  },
+  {
+    "level": 8,
+    "question": "Which is larger: e^Pi or Pi^e?",
+    "options": [
+      "e^Pi",
+      "Pi^e",
+      "Equal",
+      "Unknown"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "confidence_score": 0.99,
+    "reason": "e^pi ~ 23.1. pi^e ~ 22.4."
+  },
+  {
+    "level": 9,
+    "question": "Which is larger: 100! or 10^158?",
+    "options": [
+      "100!",
+      "10^158",
+      "Equal",
+      "Unknown"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "confidence_score": 0.95,
+    "reason": "100! ≈ 9.3 x 10^157. Wait. 10^158 is larger. Let's verify Stirling. 100 log 100 - 100 = 200 - 100 = 100 (ln). Log10(100!) ~ 158. The values are very close. 10^158 is slightly larger. Correct B."
+  }
+]

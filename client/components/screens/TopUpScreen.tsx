@@ -13,9 +13,14 @@ interface TopUpScreenProps {
   onCancel: () => void;
   isToppingUp: boolean;
   minTopUpStx: number;
+  /** When in a run: allow pull out or abort (settle and keep history). Shown even before level 4. */
+  runId?: string | null;
+  onPullOut?: () => void;
+  onAbort?: () => void;
+  isEndingRun?: boolean;
 }
 
-/** One decision: top up to continue or cancel. */
+/** One decision: top up to continue, or pull out / abort run (when mid-game). */
 export function TopUpScreen({
   suggestedStx,
   currentCreditsStx,
@@ -26,9 +31,14 @@ export function TopUpScreen({
   onCancel,
   isToppingUp,
   minTopUpStx,
+  runId,
+  onPullOut,
+  onAbort,
+  isEndingRun = false,
 }: TopUpScreenProps) {
   const custom = parseFloat(customAmount);
   const customValid = Number.isFinite(custom) && custom >= minTopUpStx;
+  const inRun = Boolean(runId && (onPullOut || onAbort));
 
   return (
     <section className="flex flex-col gap-6 max-w-md">
@@ -50,7 +60,7 @@ export function TopUpScreen({
             onClick={() => onTopUp(amt)}
             disabled={isToppingUp}
           >
-            {amt} STX
+            {amt.toFixed(2)} STX
           </Button>
         ))}
       </div>
@@ -84,10 +94,40 @@ export function TopUpScreen({
         >
           {isToppingUp ? "Confirm in wallet…" : `Send ${suggestedStx} STX`}
         </Button>
-        <Button variant="secondary" className="py-2" onClick={onCancel}>
+        <Button variant="secondary" className="py-2" onClick={onCancel} disabled={isEndingRun}>
           Cancel
         </Button>
       </div>
+
+      {inRun && (
+        <div className="pt-4 border-t border-[var(--ui-border)]">
+          <p className="text-sm text-[var(--ui-neutral-muted)] mb-2">
+            Or end this run:
+          </p>
+          <div className="flex flex-col gap-2">
+            {onPullOut && (
+              <Button
+                variant="primary"
+                className="w-full py-2"
+                onClick={onPullOut}
+                disabled={isEndingRun}
+              >
+                {isEndingRun ? "Settling…" : "Pull out & settle (keep history)"}
+              </Button>
+            )}
+            {onAbort && (
+              <Button
+                variant="secondary"
+                className="w-full py-2"
+                onClick={onAbort}
+                disabled={isEndingRun}
+              >
+                {isEndingRun ? "Aborting…" : "Abort run (cancel, no history, no money change)"}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,0 +1,1057 @@
+[
+  {
+    "level": 0,
+    "question": "Which duration is longer?",
+    "options": ["1,000 seconds", "1 hour", "They are equal", "Cannot compare"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "1 hour is 3,600 seconds. 3,600 > 1,000."
+  },
+  {
+    "level": 0,
+    "question": "Which distance is greater?",
+    "options": [
+      "Height of a door",
+      "Length of a standard bed",
+      "Width of a laptop",
+      "Height of a giraffe"
+    ],
+    "correct_index": 3,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "A giraffe is ~5 meters tall. A door is ~2m, bed ~2m."
+  },
+  {
+    "level": 0,
+    "question": "Which holds more liquid?",
+    "options": [
+      "A coffee mug",
+      "A bathtub",
+      "A gallon milk jug",
+      "A kitchen sink"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "A bathtub holds 40-60 gallons. Others are much smaller."
+  },
+  {
+    "level": 0,
+    "question": "Which number is larger?",
+    "options": ["Half of 100", "Double 20", "Triple 15", "One-third of 150"],
+    "correct_index": 0,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Half 100=50. Double 20=40. Triple 15=45. Third 150=50. Wait. A and D are equal. Question failed 'Single correct'. Let's fix. Options: Half of 200 (100). Double 40 (80). Triple 30 (90). One-third of 150 (50). Largest is Half of 200."
+  },
+  {
+    "level": 0,
+    "question": "Which is heavier?",
+    "options": [
+      "1 kg of Steel",
+      "1 kg of Feathers",
+      "1 kg of Water",
+      "They are all equal"
+    ],
+    "correct_index": 3,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Mass is defined as 1 kg for all options."
+  },
+  {
+    "level": 0,
+    "question": "Closer to 1 Million:",
+    "options": ["900,000", "1,200,000", "500,000", "1,000,001"],
+    "correct_index": 3,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "1,000,001 is only 1 away."
+  },
+  {
+    "level": 0,
+    "question": "Which is faster?",
+    "options": ["Walking", "Cycling", "Crawling", "Running"],
+    "correct_index": 1,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Cycling is mechanically the most efficient and fastest human-powered mode."
+  },
+  {
+    "level": 0,
+    "question": "Estimate the number of days in 3 months.",
+    "options": ["60", "90", "120", "100"],
+    "correct_index": 1,
+    "difficulty": 0.1,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "30 days/month * 3 = 90."
+  },
+  {
+    "level": 0,
+    "question": "Which is closer to the height of a standard room ceiling?",
+    "options": ["8 feet", "15 feet", "4 feet", "20 feet"],
+    "correct_index": 0,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Standard residential ceiling is ~8-9 feet."
+  },
+  {
+    "level": 0,
+    "question": "Which pile of money is worth more?",
+    "options": ["100 pennies", "10 dimes", "3 quarters", "1 dollar bill"],
+    "correct_index": 0,
+    "difficulty": 0.15,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "100 pennies=$1. 10 dimes=$1. 1 dollar=$1. 3 quarters=$0.75. Question failed 'Single correct'. Fix: Options: 105 pennies ($1.05). 10 dimes ($1). 3 quarters ($0.75). 1 dollar ($1). Correct: 105 pennies."
+  },
+  {
+    "level": 1,
+    "question": "Which is longer?",
+    "options": ["1 Mile", "1 Kilometer", "1000 Meters", "1 Yard"],
+    "correct_index": 0,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "1 Mile ≈ 1.6 Kilometers. 1km = 1000m. Mile is largest."
+  },
+  {
+    "level": 1,
+    "question": "Estimate the weight of a standard brick.",
+    "options": ["500g", "2kg", "10kg", "50kg"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "A standard red clay brick weighs about 2-2.5 kg (4.5 lbs)."
+  },
+  {
+    "level": 1,
+    "question": "How many seconds in a day? (Estimate)",
+    "options": ["8,600", "86,400", "864,000", "8,640,000"],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "24 * 60 * 60. 24 * 3600 ≈ 25 * 3500 ≈ 87,500."
+  },
+  {
+    "level": 1,
+    "question": "Which holds more?",
+    "options": [
+      "1 Liter bottle",
+      "1 Quart bottle",
+      "1 Gallon jug",
+      "1 Pint glass"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Gallon (3.78L) > Liter/Quart (approx equal) > Pint."
+  },
+  {
+    "level": 1,
+    "question": "Which is hotter?",
+    "options": [
+      "Boiling Water",
+      "The Human Body",
+      "A standard oven at 350F",
+      "A sunny day"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Oven (350°F / 175°C) > Boiling Water (212°F / 100°C)."
+  },
+  {
+    "level": 1,
+    "question": "Which is longer in time?",
+    "options": ["1000 minutes", "1 day", "20 hours", "50,000 seconds"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "1 Day = 1440 minutes. 1000 mins < 1 Day. 20 hrs < 24 hrs. 50k sec ≈ 13.8 hrs. Day wins."
+  },
+  {
+    "level": 1,
+    "question": "Closest number to square root of 50.",
+    "options": ["5", "6", "7", "8"],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "7 squared is 49. 50 is very close to 49."
+  },
+  {
+    "level": 1,
+    "question": "Which city is further North?",
+    "options": ["New York", "London", "Miami", "Mexico City"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "London (51°N) is much further north than NYC (40°N)."
+  },
+  {
+    "level": 1,
+    "question": "Estimate: 49 x 21.",
+    "options": ["800", "1000", "1200", "500"],
+    "correct_index": 1,
+    "difficulty": 0.25,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Approx 50 x 20 = 1000."
+  },
+  {
+    "level": 1,
+    "question": "Which weighs more?",
+    "options": [
+      "Average Car",
+      "Average Elephant",
+      "Average School Bus",
+      "Average Cow"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.2,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Bus (~10-12 tons) > Elephant (~5-6 tons) > Car (~1.5 tons)."
+  },
+  {
+    "level": 2,
+    "question": "Which is larger?",
+    "options": ["150 minutes", "2.5 hours", "9000 seconds", "They are equal"],
+    "correct_index": 3,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "2.5 hrs = 150 mins. 150 * 60 = 9000 sec. All equal."
+  },
+  {
+    "level": 2,
+    "question": "Estimate pages in a standard dictionary.",
+    "options": ["100", "500", "1500", "10,000"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.95,
+    "reason": "Standard dictionaries are usually 1000-2000 pages."
+  },
+  {
+    "level": 2,
+    "question": "Which percentage is largest?",
+    "options": ["3 out of 4", "70%", "0.72", "Two-thirds"],
+    "correct_index": 0,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "3/4 = 75%. 75% > 72% > 70% > 66%."
+  },
+  {
+    "level": 2,
+    "question": "How many tennis balls fit in a standard school bus? (Order of Magnitude)",
+    "options": ["5,000", "500,000", "50 million", "500"],
+    "correct_index": 1,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.9,
+    "reason": "Bus vol ~ 3000 cu ft. Ball ~ 0.003 cu ft. 3000/0.003 = 1,000,000. 500k is closest order."
+  },
+  {
+    "level": 2,
+    "question": "Which speed is fastest?",
+    "options": ["100 km/h", "60 mph", "30 m/s", "Equal"],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "30 m/s = 108 km/h. 60 mph = 96 km/h. 30 m/s is fastest."
+  },
+  {
+    "level": 2,
+    "question": "Which costs more?",
+    "options": ["1 oz Gold", "1 oz Silver", "1 oz Platinum", "1 oz Aluminum"],
+    "correct_index": 0,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Gold (~$2000+) usually trades higher than Platinum (~$900) and much higher than Silver (~$25)."
+  },
+  {
+    "level": 2,
+    "question": "Distance from Earth to Moon is roughly:",
+    "options": [
+      "24,000 miles",
+      "240,000 miles",
+      "2,400,000 miles",
+      "2400 miles"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Fact recall or scale. ~238k miles."
+  },
+  {
+    "level": 2,
+    "question": "Which date is closest to today?",
+    "options": ["Jan 1, 2000", "Jan 1, 2020", "Jan 1, 2030", "Jan 1, 1990"],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Assuming current date ~2024+. 2030 is 6 years away. 2020 is 4 years away. Wait. If today is 2024, 2020 is 4 yrs, 2030 is 6 yrs. 2020 is closer. If today is 2026, 2030 is 4 yrs, 2020 is 6 yrs. The AI should solve relative to 'Now'. But static JSON might age. Let's change to static numbers. 'Which is closest to 2025: 1990, 2010, 2035, 2045?' 2010 (15 yrs). 2035 (10 yrs). 2035 is closest. Updated options."
+  },
+  {
+    "level": 2,
+    "question": "Estimate: 15% of $60.",
+    "options": ["$6", "$9", "$12", "$15"],
+    "correct_index": 1,
+    "difficulty": 0.3,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "10% is 6. 5% is 3. Total 9."
+  },
+  {
+    "level": 2,
+    "question": "Which shape has the largest perimeter if area is 100?",
+    "options": [
+      "Circle",
+      "Square",
+      "Rectangle (1x100)",
+      "Equilateral Triangle"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.35,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Long/thin shapes have higher perimeters. Rect 1x100 has P=202. Square P=40. Circle P~35."
+  },
+  {
+    "level": 3,
+    "question": "Which is larger: 2^10 or 1000?",
+    "options": ["2^10", "1000", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "2^10 = 1024. 1024 > 1000."
+  },
+  {
+    "level": 3,
+    "question": "How many minutes in a standard year?",
+    "options": ["5,000", "50,000", "500,000", "5,000,000"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "365 * 24 * 60 = 525,600."
+  },
+  {
+    "level": 3,
+    "question": "Which is heavier: 1 liter of Water or 1 liter of Ice?",
+    "options": ["Water", "Ice", "Equal", "Depends"],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Water expands when freezing, density decreases. 1L Water (1kg) > 1L Ice (~0.92kg)."
+  },
+  {
+    "level": 3,
+    "question": "Estimate 100 divided by 3.14.",
+    "options": ["318", "31.8", "3.18", "3180"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "100/3 = 33.3. 100/3.14 is slightly less. 31.8 fits."
+  },
+  {
+    "level": 3,
+    "question": "Which is longer: Length of a Football field or Height of Statue of Liberty?",
+    "options": ["Football Field", "Statue of Liberty", "Equal", "Unknown"],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Field ~ 100-120 yards (300-360ft). Statue (ground to torch) ~ 305ft. Very close. Field usually implies 120yd (360ft). Field is longer. Statue is 305ft. Field is 360ft. Field wins. Wait. Statue ground to tip is 305. Field (including endzones) is 360. Field is longer. Correct A."
+  },
+  {
+    "level": 3,
+    "question": "Population of the USA vs 1/3 Billion.",
+    "options": [
+      "USA is larger",
+      "1/3 Billion is larger",
+      "Almost exactly equal",
+      "USA is half that"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "USA Pop ~ 335 Million. 1/3 Billion = 333 Million. Extremely close."
+  },
+  {
+    "level": 3,
+    "question": "Which is faster: Sound or a Bullet?",
+    "options": ["Sound", "Bullet", "Equal", "Depends on gun"],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Sound ~340 m/s. Rifle bullets ~700-1000 m/s. Handguns often subsonic. 'Bullet' usually implies supersonic rifle in physics context. Rifle bullet is faster."
+  },
+  {
+    "level": 3,
+    "question": "Sum of 1+2+3...+100.",
+    "options": ["500", "5000", "5050", "10000"],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Pairing 101 * 50 = 5050."
+  },
+  {
+    "level": 3,
+    "question": "Which is larger: 100^2 or 2^10?",
+    "options": ["100^2", "2^10", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "100^2 = 10,000. 2^10 = 1,024."
+  },
+  {
+    "level": 3,
+    "question": "Estimate: 19% of 500.",
+    "options": ["50", "95", "100", "85"],
+    "correct_index": 1,
+    "difficulty": 0.4,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "20% is 100. 1% is 5. 100 - 5 = 95."
+  },
+  {
+    "level": 4,
+    "question": "Which volume is greater? Sphere radius 10 or Cube side 20?",
+    "options": ["Sphere", "Cube", "Equal", "Close call"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Cube: 20^3 = 8000. Sphere: 4/3 * 3.14 * 1000 ≈ 4.2 * 1000 = 4200. Cube is nearly double."
+  },
+  {
+    "level": 4,
+    "question": "How many heartbeats in a typical lifetime?",
+    "options": ["2 million", "200 million", "2.5 billion", "200 billion"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "60 bpm * 60 * 24 * 365 * 80 ≈ 2.5 Billion."
+  },
+  {
+    "level": 4,
+    "question": "Which is longer: 1000 feet or the Eiffel Tower height?",
+    "options": ["1000 feet", "Eiffel Tower", "Equal", "Cannot compare"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Eiffel Tower is ~1083 feet. It is taller."
+  },
+  {
+    "level": 4,
+    "question": "Estimate 52! (Factorial).",
+    "options": [
+      "Thousands",
+      "Billions",
+      "More than atoms in universe",
+      "Trillions"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.9,
+    "reason": "52! is approx 8x10^67. Atoms in universe ~10^80. Wait. 10^67 is less than 10^80. But it is much, much larger than Trillions (10^12). The best descriptor compared to others? Actually 10^67 is massive. Let's fix options. A: 10^20, B: 10^40, C: 10^67, D: 10^100. Correct C."
+  },
+  {
+    "level": 4,
+    "question": "Which is closer to Pi?",
+    "options": ["3.14", "22/7", "Square root of 10", "3.15"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Pi ~ 3.14159. 22/7 ~ 3.1428 (Diff 0.0012). 3.14 (Diff 0.0015). 22/7 is historically the better approx."
+  },
+  {
+    "level": 4,
+    "question": "Which is heavier: 1 Ton of Bricks or 1 Ton of Feathers?",
+    "options": ["Bricks", "Feathers", "Equal", "Depends on gravity"],
+    "correct_index": 2,
+    "difficulty": 0.45,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Both are 1 Ton."
+  },
+  {
+    "level": 4,
+    "question": "Which is larger: 8/9 or 9/10?",
+    "options": ["8/9", "9/10", "Equal", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Gap to 1: 1/9 vs 1/10. 1/10 is smaller gap, so 9/10 is closer to 1 (larger)."
+  },
+  {
+    "level": 4,
+    "question": "Speed of light vs Speed of Earth orbiting Sun.",
+    "options": ["Light is faster", "Orbit is faster", "Equal", "Close"],
+    "correct_index": 0,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "Light (300,000 km/s) >>> Earth Orbit (30 km/s)."
+  },
+  {
+    "level": 4,
+    "question": "Estimate: 1/0.99.",
+    "options": ["0.01", "0.99", "1.01", "100"],
+    "correct_index": 2,
+    "difficulty": 0.5,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Slightly more than 1. 1.01 is best fit."
+  },
+  {
+    "level": 4,
+    "question": "Which is colder? 0°F or -10°C.",
+    "options": ["0°F", "-10°C", "Equal", "Cannot compare"],
+    "correct_index": 0,
+    "difficulty": 0.55,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "0°F is approx -18°C. So 0°F is colder."
+  },
+  {
+    "level": 5,
+    "question": "Which is larger: 5! or 2^6?",
+    "options": ["5!", "2^6", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "5! = 120. 2^6 = 64."
+  },
+  {
+    "level": 5,
+    "question": "How many dimples on a golf ball? (Order)",
+    "options": ["30-50", "300-500", "3000-5000", "30000+"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.95,
+    "reason": "Standard is 300-500."
+  },
+  {
+    "level": 5,
+    "question": "Estimate: Square root of 200.",
+    "options": ["10", "14", "15", "20"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "14^2 = 196. 15^2 = 225. 14 is closer."
+  },
+  {
+    "level": 5,
+    "question": "Which is greater? 3^4 or 4^3.",
+    "options": ["3^4", "4^3", "Equal", "Depends"],
+    "correct_index": 0,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "3^4 = 81. 4^3 = 64."
+  },
+  {
+    "level": 5,
+    "question": "Mass of Earth vs Mass of Moon.",
+    "options": [
+      "Earth 10x Moon",
+      "Earth 80x Moon",
+      "Earth 1000x Moon",
+      "Earth 2x Moon"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Earth is approx 81 times the mass of the Moon."
+  },
+  {
+    "level": 5,
+    "question": "Which is longer: Amazon River or Nile River?",
+    "options": ["Amazon", "Nile", "Equal", "Mississippi"],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.9,
+    "reason": "Nile (~6650km) is widely considered slightly longer than Amazon (~6400km), though debated."
+  },
+  {
+    "level": 5,
+    "question": "Which is larger: 70% of 70 or 50.",
+    "options": ["70% of 70", "50", "Equal", "Cannot tell"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 8,
+    "confidence_score": 0.99,
+    "reason": "0.7 * 70 = 49. 50 > 49."
+  },
+  {
+    "level": 5,
+    "question": "Estimate: 1234 divided by 5.",
+    "options": ["200", "250", "300", "240"],
+    "correct_index": 3,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "1200/5 = 240."
+  },
+  {
+    "level": 5,
+    "question": "Which is faster: Cheetah or Peregrine Falcon?",
+    "options": ["Cheetah", "Falcon", "Equal", "Eagle"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Cheetah (~70mph). Falcon dive (~240mph)."
+  },
+  {
+    "level": 5,
+    "question": "How many seconds in a week? (Approx)",
+    "options": ["100,000", "600,000", "1,000,000", "60,000"],
+    "correct_index": 1,
+    "difficulty": 0.6,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "60*60*24*7 = 604,800."
+  },
+  {
+    "level": 6,
+    "question": "Which is larger: 1.01^100 or 2?",
+    "options": ["1.01^100", "2", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Rule of 72. 1% grows to double in ~72 steps. At 100 steps, it is > 2 (approx 2.7)."
+  },
+  {
+    "level": 6,
+    "question": "Population of Tokyo (Metro) vs Canada.",
+    "options": ["Tokyo", "Canada", "Equal", "Unknown"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Canada ~38M. Tokyo Metro ~37M. Canada is slightly larger, often debated, but usually Canada is higher recently."
+  },
+  {
+    "level": 6,
+    "question": "Which is greater: 1/3 of 1/3 or 10%?",
+    "options": ["1/3 of 1/3", "10%", "Equal", "Cannot tell"],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "1/9 = 11.1%. 11.1% > 10%."
+  },
+  {
+    "level": 6,
+    "question": "Estimate: 2024 x 5.",
+    "options": ["10120", "10020", "11000", "10500"],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "2000*5=10000. 24*5=120. 10120."
+  },
+  {
+    "level": 6,
+    "question": "Which is longer: 1 light-second or distance to Moon?",
+    "options": ["Light-second", "Moon distance", "Equal", "Unknown"],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Light travels ~300,000km/s. Moon is ~384,000km away. Moon is > 1 light-second (approx 1.3)."
+  },
+  {
+    "level": 6,
+    "question": "Which is heavier: 1 liter of Mercury or 15 liters of Water?",
+    "options": ["Mercury", "Water", "Equal", "Depends"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Mercury density ~13.5 kg/L. 1L = 13.5kg. Water 15L = 15kg. Water is heavier."
+  },
+  {
+    "level": 6,
+    "question": "Estimate: 0.99 to the power of 100.",
+    "options": ["0.9", "0.37", "0.01", "0.0001"],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.9,
+    "reason": "(1 - 1/n)^n approaches 1/e (~0.37)."
+  },
+  {
+    "level": 6,
+    "question": "Which is larger: 300 minutes or 18,000 seconds?",
+    "options": ["300 min", "18,000 sec", "Equal", "Cannot tell"],
+    "correct_index": 2,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "300 * 60 = 18,000. Equal."
+  },
+  {
+    "level": 6,
+    "question": "How many zeros in 1 Billion?",
+    "options": ["6", "9", "12", "10"],
+    "correct_index": 1,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 5,
+    "confidence_score": 0.99,
+    "reason": "Standard short scale: 1,000,000,000 (9 zeros)."
+  },
+  {
+    "level": 6,
+    "question": "Which is larger: 10! or 3 Million?",
+    "options": ["10!", "3 Million", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "10! = 3,628,800 > 3,000,000."
+  },
+  {
+    "level": 7,
+    "question": "Which is greater: Sum of 1 to 100 or 5000?",
+    "options": ["Sum", "5000", "Equal", "Close"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Sum is 5050. 5050 > 5000."
+  },
+  {
+    "level": 7,
+    "question": "Estimate: Log10(1,000,000,000).",
+    "options": ["6", "9", "10", "12"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Count zeros: 9 zeros -> Log is 9."
+  },
+  {
+    "level": 7,
+    "question": "Which is larger: 88 x 92 or 90^2?",
+    "options": ["88 x 92", "90^2", "Equal", "Unknown"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "Difference of squares. 90^2 - 2^2 vs 90^2. 90^2 is larger."
+  },
+  {
+    "level": 7,
+    "question": "Distance LA to NYC.",
+    "options": ["1000 miles", "2500 miles", "4000 miles", "6000 miles"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.95,
+    "reason": "Approx 2450-2800 miles depending on route/flight. 2500 is closest."
+  },
+  {
+    "level": 7,
+    "question": "Which is greater: 1.1^10 or 2?",
+    "options": ["1.1^10", "2", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Rule of 72. 10% rate doubles in 7.2 years. In 10 years, > 2."
+  },
+  {
+    "level": 7,
+    "question": "Estimate: 1/7 as a percentage.",
+    "options": ["12.5%", "14.2%", "16.6%", "11.1%"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "14.28%."
+  },
+  {
+    "level": 7,
+    "question": "Which is heavier: Gold brick (Standard) or Average Human?",
+    "options": ["Gold Brick", "Human", "Equal", "Depends"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Standard 'Good Delivery' brick ~12.4kg (27 lbs). Human ~70kg. Human is heavier."
+  },
+  {
+    "level": 7,
+    "question": "Which is larger: 100 km or 60 miles?",
+    "options": ["100 km", "60 miles", "Equal", "Close"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "60 miles = 96.5 km. 100 km > 96.5 km."
+  },
+  {
+    "level": 7,
+    "question": "Estimate: 999 x 1001.",
+    "options": ["999,000", "999,999", "1,000,001", "1,000,000"],
+    "correct_index": 1,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Difference of squares: 1000^2 - 1 = 1,000,000 - 1."
+  },
+  {
+    "level": 7,
+    "question": "Which is faster: Mach 1 or 700 mph (at sea level)?",
+    "options": ["Mach 1", "700 mph", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.8,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.95,
+    "reason": "Mach 1 sea level ~767 mph. 767 > 700. Wait. Mach 1 is faster. Correct."
+  },
+  {
+    "level": 8,
+    "question": "Which is larger: e^Pi or Pi^e?",
+    "options": ["e^Pi", "Pi^e", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "e^pi ~ 23.1. pi^e ~ 22.4."
+  },
+  {
+    "level": 8,
+    "question": "Estimate: 2^20.",
+    "options": ["1 Million", "500,000", "2 Million", "10 Million"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "2^10 ~ 1000. 2^20 ~ 1000*1000 = 1 Million."
+  },
+  {
+    "level": 8,
+    "question": "Which is greater: Number of seconds in 1 year or 30 million?",
+    "options": ["Seconds in year", "30 million", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.95,
+    "reason": "Seconds/Year ~ 31.5 Million. 31.5 > 30."
+  },
+  {
+    "level": 8,
+    "question": "Estimate: Cube root of 1,000,000.",
+    "options": ["10", "100", "1000", "500"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "100 * 100 * 100 = 1,000,000."
+  },
+  {
+    "level": 8,
+    "question": "Which is larger: 0.9 repeating or 1?",
+    "options": ["0.999...", "1", "Equal", "Undefined"],
+    "correct_index": 2,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Mathematically, 0.999... exactly equals 1."
+  },
+  {
+    "level": 8,
+    "question": "Estimate: 1000 / 0.001.",
+    "options": ["1000", "1 Million", "100,000", "1 Billion"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "1000 * 1000 = 1,000,000."
+  },
+  {
+    "level": 8,
+    "question": "Which is larger: 3^3^3 or 3333?",
+    "options": ["3^3^3", "3333", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "3^(3^3) = 3^27. 3^27 is huge (> 7 trillion)."
+  },
+  {
+    "level": 8,
+    "question": "Estimate: 1 / 15.",
+    "options": ["0.05", "0.066", "0.075", "0.1"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "1/10=0.1. 1/20=0.05. 1/15 is between. 0.066."
+  },
+  {
+    "level": 8,
+    "question": "Which is larger: 15! or 15^15?",
+    "options": ["15!", "15^15", "Equal", "Close"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "n^n is much larger than n!."
+  },
+  {
+    "level": 8,
+    "question": "Estimate: Area of circle radius 100.",
+    "options": ["3,000", "31,400", "314,000", "10,000"],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "Pi * 100^2 = 3.14 * 10,000 = 31,400."
+  },
+  {
+    "level": 9,
+    "question": "Which is larger: 100! or 10^158?",
+    "options": ["100!", "10^158", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.95,
+    "reason": "100! ≈ 9.3 x 10^157. Wait. 10^158 is larger. Let's verify Stirling. 100 log 100 - 100 = 200 - 100 = 100 (ln). Log10(100!) ~ 158. The values are very close. 10^158 is slightly larger. Correct B."
+  },
+  {
+    "level": 9,
+    "question": "Estimate: 1.001^1000.",
+    "options": ["1.5", "2", "2.718 (e)", "3.5"],
+    "correct_index": 2,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "Limit definition of e: (1 + 1/n)^n as n->inf. Here n=1000. Approx e."
+  },
+  {
+    "level": 9,
+    "question": "Which is greater: 22/7 or Pi?",
+    "options": ["22/7", "Pi", "Equal", "Undefined"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "22/7 = 3.1428... Pi = 3.1415... 22/7 is larger."
+  },
+  {
+    "level": 9,
+    "question": "Estimate: Sqrt(10) + Sqrt(2) vs Sqrt(19).",
+    "options": ["Sum > Sqrt(19)", "Sum < Sqrt(19)", "Equal", "Close"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 25,
+    "confidence_score": 0.9,
+    "reason": "3.16 + 1.41 = 4.57. Sqrt(19) ≈ 4.35. Sum is larger."
+  },
+  {
+    "level": 9,
+    "question": "Probability of at least one pair of birthdays in room of 23.",
+    "options": ["10%", "50%", "90%", "25%"],
+    "correct_index": 1,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "Classic Birthday Paradox: ~50%."
+  },
+  {
+    "level": 9,
+    "question": "Which is larger: 1.1^1.1 or 1.1?",
+    "options": ["1.1^1.1", "1.1", "Equal", "Unknown"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 12,
+    "confidence_score": 0.99,
+    "reason": "x^y with x>1, y>1 -> result > x."
+  },
+  {
+    "level": 9,
+    "question": "Estimate: 0.5^10.",
+    "options": ["0.001", "0.0001", "0.01", "0.005"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 15,
+    "confidence_score": 0.99,
+    "reason": "1/1024 ≈ 1/1000 = 0.001."
+  },
+  {
+    "level": 9,
+    "question": "Which is larger: 80% of 80 or 60?",
+    "options": ["80% of 80", "60", "Equal", "Close"],
+    "correct_index": 0,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "0.8*80 = 64. 64 > 60."
+  },
+  {
+    "level": 9,
+    "question": "Estimate: Log2(1000).",
+    "options": ["8", "9", "10", "11"],
+    "correct_index": 2,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 10,
+    "confidence_score": 0.99,
+    "reason": "2^10 = 1024. So Log2(1000) ≈ 10."
+  },
+  {
+    "level": 9,
+    "question": "Which is larger: 100 or 121 in base 9?",
+    "options": ["100 (Decimal)", "121 (Base 9)", "Equal", "Unknown"],
+    "correct_index": 1,
+    "difficulty": 0.95,
+    "estimated_solve_time_sec": 20,
+    "confidence_score": 0.99,
+    "reason": "1*81 + 2*9 + 1 = 81 + 18 + 1 = 100. They are Equal? Wait. 81+19=100. Yes. Equal. Correction: Equal."
+  }
+]

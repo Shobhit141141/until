@@ -1,12 +1,15 @@
 @import "tailwindcss";
 
-/* Light, colorful theme — sharp borders (no radius). */
+/* Light, colorful theme — sharp borders, rounded cards. */
 :root {
   font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
   --ui-border: 2px solid #1f2937;
-  --ui-radius: 0;
+  --ui-border-width: 2px;
+  --ui-radius: 0.75rem;
   --ui-neutral-text: #111827;
   --ui-neutral-muted: #6b7280;
+  --ui-neutral-bg: #f9fafb;
+  --ui-accent: #1f2937;
   --ui-success: #059669;
   --ui-failure: #dc2626;
 }

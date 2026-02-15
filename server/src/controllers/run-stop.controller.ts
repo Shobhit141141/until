@@ -11,16 +11,28 @@ import {
   MIN_LEVEL_BEFORE_STOP,
 } from "../config/tokenomics.js";
 import { logTransaction } from "../config/logger.js";
+import { isValidStacksAddress } from "../config/stacks.js";
 
 const MICRO_STX_PER_STX = 1_000_000;
 
 /** User stopped. Settlement: totalPoints → earned (no platform fee); profit = earned − totalSpent. */
 export async function stopRun(req: Request, res: Response): Promise<void> {
-  const { runId, walletAddress: wallet } = req.body as { runId?: string; walletAddress?: string };
+  const { runId, walletAddress: wallet, forceStopBeforeMinLevel, abort } = req.body as {
+    runId?: string;
+    walletAddress?: string;
+    /** When true (e.g. insufficient funds / can't top up), allow stop before MIN_LEVEL_BEFORE_STOP and settle. History kept. */
+    forceStopBeforeMinLevel?: boolean;
+    /** When true: cancel run, no history saved, no settlement — user balance unchanged, platform receives nothing. */
+    abort?: boolean;
+  };
 
   const walletAddress = typeof wallet === "string" ? wallet.trim() : "";
   if (!walletAddress) {
     res.status(400).json({ error: "walletAddress required" });
+    return;
+  }
+  if (!isValidStacksAddress(walletAddress)) {
+    res.status(400).json({ error: "Invalid wallet address" });
     return;
   }
   if (!runId || typeof runId !== "string") {
@@ -37,7 +49,17 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
     res.status(403).json({ error: "Run does not belong to this wallet" });
     return;
   }
-  if (!existing.isPractice && existing.completedLevels < MIN_LEVEL_BEFORE_STOP) {
+
+  if (abort === true) {
+    runStateService.stopRun(runId);
+    await runBatchService.clearRunBatch(runId);
+    const balance = await creditsService.getBalance(walletAddress);
+    res.status(200).json({ aborted: true, creditsStx: balance.creditsStx });
+    return;
+  }
+
+  const allowEarlyStop = forceStopBeforeMinLevel === true;
+  if (!existing.isPractice && existing.completedLevels < MIN_LEVEL_BEFORE_STOP && !allowEarlyStop) {
     res.status(400).json({
       error: "Must complete at least 4 levels before stopping",
       completedLevels: existing.completedLevels,
@@ -47,7 +69,7 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
   }
 
   const run: StopRunResult | null = runStateService.stopRun(runId);
-  runBatchService.clearRunBatch(runId);
+  await runBatchService.clearRunBatch(runId);
   if (!run) {
     res.status(404).json({ error: "Run not found or expired" });
     return;
@@ -84,14 +106,15 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
   const netResultMicroStx = Math.round(profit * MICRO_STX_PER_STX);
   await runService.addProfitToCredits(walletAddress, netResultMicroStx);
   const balance = await creditsService.getBalance(walletAddress);
+  const txType = netResultMicroStx >= 0 ? "profit" : "loss";
   await creditsService.recordTransaction(
     walletAddress,
-    "profit",
+    txType,
     netResultMicroStx,
     balance.creditsMicroStx,
     { refRunId: runId }
   );
-  logTransaction("profit", walletAddress, profit, balance.creditsStx, { runId });
+  logTransaction(txType, walletAddress, profit, balance.creditsStx, { runId });
 
   const { bonusStx: milestoneBonusStx, milestoneTier } = await runService.computeAndAddMilestoneBonus(
     walletAddress,

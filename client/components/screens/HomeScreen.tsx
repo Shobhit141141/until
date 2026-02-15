@@ -91,7 +91,12 @@ interface HomeScreenProps {
   bestScore: number;
   categories: string[];
   selectedCategory: string | null;
-  onCategorySelect: (category: string | null) => void;
+  practiceMode: boolean;
+  onPracticeModeChange: (on: boolean) => void;
+  /** Start game with this category (real or practice depending on toggle). */
+  onCategoryClick: (category: string) => void;
+  /** When true, hide the stats row (e.g. when not connected). */
+  hideStats?: boolean;
 }
 
 export function HomeScreen({
@@ -101,7 +106,10 @@ export function HomeScreen({
   bestScore,
   categories,
   selectedCategory,
-  onCategorySelect,
+  practiceMode,
+  onPracticeModeChange,
+  onCategoryClick,
+  hideStats = false,
 }: HomeScreenProps) {
   const statValues: ReactNode[] = [
     <Money key="spent" stx={totalSpent} />,
@@ -112,47 +120,63 @@ export function HomeScreen({
 
   return (
     <div className="flex-1 min-h-0 flex flex-col">
-      {/* Stats row — fixed at top */}
-      <div className="shrink-0 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-        {STAT_COLORS.map((s, i) => (
-          <div
-            key={s.label}
-            className={`rounded-xl border-2 ${s.border} ${s.bg} ${s.text} p-4 shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] transition-all hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] hover:-translate-y-0.5`}
-          >
-            <p className="text-xs font-semibold uppercase tracking-wider opacity-80">{s.label}</p>
-            <p className="mt-1 font-mono font-tabular text-lg font-bold">
-              {statValues[i]}
-            </p>
-          </div>
-        ))}
-      </div>
+      {/* Stats row — fixed at top (hidden when not connected) */}
+      {!hideStats && (
+        <div className="shrink-0 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+          {STAT_COLORS.map((s, i) => (
+            <div
+              key={s.label}
+              className={`rounded-xl border-2 ${s.border} ${s.bg} ${s.text} p-4 shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] transition-all hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] hover:-translate-y-0.5`}
+            >
+              <p className="text-xs font-semibold uppercase tracking-wider opacity-80">{s.label}</p>
+              <p className="mt-1 font-mono font-tabular text-lg font-bold">
+                {statValues[i]}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Content: on mobile categories flow full height (page scrolls); on desktop categories scroll in viewport */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3 min-h-0">
 
         {/* Categories — on mobile no height limit; on md+ card grid scrolls inside column */}
         <div className="md:col-span-2 flex flex-col min-w-0 md:min-h-0">
-          <h2 className="shrink-0 text-lg pb-2 font-bold uppercase tracking-wider text-gray-900">Categories</h2>
+          <div className="shrink-0 flex flex-wrap items-center gap-3 pb-2">
+            <h2 className="text-lg font-bold uppercase tracking-wider text-gray-900">Categories</h2>
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <span className="text-sm font-medium text-gray-700">Practice mode</span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={practiceMode}
+                onClick={() => onPracticeModeChange(!practiceMode)}
+                className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-gray-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 ${practiceMode ? "bg-violet-600" : "bg-gray-200"}`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform ${practiceMode ? "translate-x-5" : "translate-x-0.5"}`}
+                  style={{ marginTop: "1px" }}
+                />
+              </button>
+            </label>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2 pt-2 md:overflow-y-auto md:min-h-0">
           {(categories.length ? categories : [...DEFAULT_CATEGORIES]).map(
             (cat) => {
               const style = getCategoryStyle(cat);
-              const isSelected = selectedCategory === cat;
               const title = cat.toUpperCase();
               const hook = getCategoryHook(cat);
               return (
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => onCategorySelect(isSelected ? null : cat)}
-                  className={`${style.bg} border-2 ${style.border} min-h-[160px] flex flex-col p-3 text-left relative overflow-hidden rounded-xl shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] transition-all duration-200 ${
-                    isSelected ? "shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] -translate-y-0.5" : "hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] hover:-translate-y-0.5"
-                  }`}
+                  onClick={() => onCategoryClick(cat)}
+                  className={`${style.bg} border-2 ${style.border} min-h-[160px] flex flex-col p-3 text-left relative overflow-hidden rounded-xl shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] transition-all duration-200 hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] hover:-translate-y-0.5`}
                 >
                   {/* Top: ? icon (right) only */}
                   <div className="relative z-10 flex justify-end shrink-0">
-                    <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-full bg-black text-white pointer-events-auto" title="Category info">
-                      <Link href={`/categories/${encodeURIComponent(cat)}`} onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
+                    <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-full bg-black text-white pointer-events-auto" title="Category details & sample questions">
+                      <Link href={`/categories/${cat.toLowerCase().replace(/\s+/g, "-")}`} onClick={(e) => e.stopPropagation()} className="flex items-center justify-center w-full h-full">
                         <FaQuestion className="w-4 h-4" aria-hidden />
                       </Link>
                     </span>
@@ -191,17 +215,29 @@ export function HomeScreen({
             />
           </div>
 
-          {/* Whitepaper — small section */}
-          <div className="shrink-0 rounded-xl border-2 border-gray-800 bg-[#fcf4ef] p-3 shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] transition-all hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] hover:-translate-y-0.5">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-900 mb-2">Whitepaper</h2>
-            <p className="text-xs text-gray-600 leading-snug">
+          {/* Whitepaper — highlighted section */}
+          <div className="shrink-0 rounded-xl border-2 border-amber-500 bg-amber-50 p-4 shadow-[4px_4px_0_0_rgba(245,158,11,0.4)] transition-all hover:shadow-[6px_6px_0_0_rgba(245,158,11,0.5)] hover:-translate-y-0.5 ring-2 ring-amber-200/60">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-white" aria-hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                  <polyline points="10 9 9 9 8 9" />
+                </svg>
+              </span>
+              <h2 className="text-base font-bold uppercase tracking-wider text-amber-900">Whitepaper</h2>
+            </div>
+            <p className="text-sm text-amber-900/80 leading-snug mb-3">
               Tokenomics, rules, and design. Pay-per-question, credits, optimal stopping.
             </p>
             <Link
               href="/whitepaper"
-              className="mt-2 inline-block text-xs font-medium text-gray-900 underline hover:text-amber-600"
+              className="inline-flex items-center gap-1.5 rounded-lg border-2 border-amber-600 bg-amber-500 px-3 py-2 text-sm font-semibold text-white shadow-[2px_2px_0_rgba(0,0,0,0.2)] hover:bg-amber-600 hover:border-amber-700 transition-colors"
             >
-              Read whitepaper →
+              Read whitepaper
+              <span aria-hidden>→</span>
             </Link>
           </div>
         </div>

@@ -1,7 +1,10 @@
 import winston from "winston";
 
+/** Default "debug" so no step is hidden. Set LOG_LEVEL=info in prod if desired. */
+const LOG_LEVEL = process.env.LOG_LEVEL ?? "debug";
+
 export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL ?? "info",
+  level: LOG_LEVEL,
   format: winston.format.combine(
     winston.format.colorize({
       colors: { info: "green", error: "red", warn: "yellow", debug: "blue" },
@@ -14,9 +17,12 @@ export const logger = winston.createLogger({
       info.timestamp = dateIST;
       return info;
     })(),
-    winston.format.printf(
-      ({ level, message, timestamp }) => `${timestamp} ${level}: ${message}`
-    )
+    winston.format.printf((info) => {
+      const { level, message, timestamp, ...meta } = info;
+      const metaStr =
+        Object.keys(meta).length > 0 ? ` ${JSON.stringify(meta)}` : "";
+      return `${timestamp} ${level}: ${message}${metaStr}`;
+    })
   ),
   transports: [new winston.transports.Console()],
 });

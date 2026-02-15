@@ -14,6 +14,8 @@ export type UserDoc = {
   totalEarned: number;
   bestScore: number;
   creditsMicroStx: number;
+  /** Beta: category name -> number of paid runs started (max 2 per category). */
+  categoryPlayCount?: Record<string, number>;
   createdAt: Date;
   updatedAt: Date;
 };

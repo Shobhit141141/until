@@ -105,3 +105,38 @@ export async function deductCreditsIfSufficient(
     .exec();
   return doc != null;
 }
+
+const MAX_CATEGORY_PLAYS_BETA = 2;
+
+/** Get how many paid runs the user has started for this category (beta: max 2). */
+export async function getCategoryPlayCount(
+  walletAddress: string,
+  category: string
+): Promise<number> {
+  const doc = await User.findOne({ walletAddress })
+    .select("categoryPlayCount")
+    .lean()
+    .exec();
+  const counts = (doc as { categoryPlayCount?: Record<string, number> } | null)?.categoryPlayCount;
+  if (!counts || typeof counts !== "object") return 0;
+  const n = counts[category];
+  return typeof n === "number" ? n : 0;
+}
+
+/** Increment category play count (call when starting a new paid run for that category). */
+export async function incrementCategoryPlayCount(
+  walletAddress: string,
+  category: string
+): Promise<void> {
+  const key = `categoryPlayCount.${category}`;
+  await User.findOneAndUpdate(
+    { walletAddress },
+    { $inc: { [key]: 1 } },
+    { upsert: false }
+  ).exec();
+}
+
+export function getMaxCategoryPlaysBeta(): number {
+  if (process.env.NODE_ENV === "development") return Number.MAX_SAFE_INTEGER;
+  return MAX_CATEGORY_PLAYS_BETA;
+}

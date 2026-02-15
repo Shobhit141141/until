@@ -7,6 +7,7 @@ import { getCategoryPromptContext } from "../config/categories.js";
 import { GEMINI_API_KEY, GEMINI_MODEL } from "../config/gemini.js";
 import { MISTRAL_API_KEY, MISTRAL_MODEL } from "../config/mistral.js";
 import type { AiQuestionPayload } from "../types/question.types.js";
+import { logger } from "../config/logger.js";
 
 const MIN_CONFIDENCE = 0.8;
 const MIN_SOLVE_TIME_SEC = 8;
@@ -41,7 +42,8 @@ TIME (HARD): Every question MUST be solvable in 30 seconds or less. estimated_so
 
 OUTPUT STRICT JSON ONLY:
 {"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":15,"confidence_score":0.91,"reasoning":"Short explanation of why the correct answer is correct."}
-- correct_index is 0–3. difficulty and confidence_score 0–1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" (1-3 sentences).`;
+- correct_index is 0–3. difficulty and confidence_score 0–1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" (1-3 sentences).
+- CRITICAL: "reasoning" must explain why the option at options[correct_index] is correct. It must match that option (e.g. if correct answer is "8", do not write reasoning that concludes "7").`;
 
 /** Exported so question service can hash the same prompt used for the LLM call. */
 export function buildPrompt(input: GenerateQuestionInput): string {
@@ -163,6 +165,7 @@ export async function generateQuestionContent(
         lastError = new Error(`Sanity check: ${fail}`);
         continue;
       }
+      logger.info("[AI] question from provider", { provider: "gemini", level: input.level, category: input.category });
       return payload;
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
@@ -180,9 +183,12 @@ export async function generateQuestionContent(
     }
   }
   const geminiError = lastError ?? new Error("Question generation failed after retries");
+  logger.warn("[AI] Gemini failed, trying Mistral", { reason: geminiError.message, level: input.level });
   if (MISTRAL_API_KEY) {
     try {
-      return await generateQuestionContentMistral(input);
+      const payload = await generateQuestionContentMistral(input);
+      logger.info("[AI] question from provider", { provider: "mistral", level: input.level, category: input.category });
+      return payload;
     } catch (mistralErr) {
       throw new Error(
         `Gemini: ${geminiError.message}; Mistral fallback: ${mistralErr instanceof Error ? mistralErr.message : String(mistralErr)}`
@@ -245,7 +251,8 @@ TIME (HARD): Every question MUST be solvable in 30 seconds or less. estimated_so
 
 Respond with ONLY a JSON array of ${count} objects, no markdown, no explanation:
 [{"question":"...","options":["A","B","C","D"],"correct_index":0,"difficulty":0.73,"estimated_solve_time_sec":15,"confidence_score":0.91,"reasoning":"Why the correct answer is correct."}, ...]
-- correct_index 0-3 per question. difficulty and confidence_score 0-1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" per question.`;
+- correct_index 0-3 per question. difficulty and confidence_score 0-1. estimated_solve_time_sec in [${MIN_SOLVE_TIME_SEC},${MAX_SOLVE_TIME_SEC}]. Include "reasoning" per question.
+- CRITICAL: Each "reasoning" must explain the option at options[correct_index] for that question; it must match that option's value.`;
 }
 
 function parseBatchPayload(text: string): AiQuestionPayload[] {
@@ -315,12 +322,17 @@ export async function generateQuestionBatch(
     return text;
   };
   let text: string;
+  let provider: "gemini" | "mistral" = "gemini";
   try {
     text = await tryGemini();
   } catch (err) {
-    if (MISTRAL_API_KEY) text = await tryMistral();
-    else throw err;
+    logger.warn("[AI] Gemini batch failed, trying Mistral", { category, err: err instanceof Error ? err.message : String(err) });
+    if (MISTRAL_API_KEY) {
+      text = await tryMistral();
+      provider = "mistral";
+    } else throw err;
   }
+  logger.info("[AI] batch from provider", { provider, category, startLevel, requestedCount: actualCount });
   const parsed = parseBatchPayload(text);
   const valid: AiQuestionPayload[] = [];
   for (let i = 0; i < parsed.length; i++) {

@@ -56,6 +56,9 @@ export const TOP_UP_SUGGESTED_STX = 0.05;
 /** Run cap for milestone tiers. */
 export const MAX_QUESTIONS = 10;
 
+/** Every question must be answered within this time (seconds). Static cap for all questions. */
+export const QUESTION_TIME_CAP_SEC = 30;
+
 /** Fixed incentive pool for milestone bonuses (STX) at K=100. Scaled by K for actual payouts. */
 const BONUS_POOL_BASE_STX = Number(process.env.BONUS_POOL_STX) || 4.5;
 
@@ -79,6 +82,16 @@ export function getCostStx(difficulty: number): number {
 export function getCostMicroStx(difficulty: number): bigint {
   const stx = getCostStx(difficulty);
   return BigInt(Math.round(stx * 1_000_000));
+}
+
+/** Total cost in microSTX to play from level 0 through maxLevel (inclusive). Used for pre-start balance check. */
+export function getTotalCostMicroStxThroughLevel(maxLevel: number): bigint {
+  const cap = Math.max(0, Math.min(maxLevel, DIFFICULTY_LEVELS - 1));
+  let total = 0n;
+  for (let d = 0; d <= cap; d++) {
+    total += getCostMicroStx(d);
+  }
+  return total;
 }
 
 /** Base reward in STX for this level (on-paper). Earned = base × time multiplier. */

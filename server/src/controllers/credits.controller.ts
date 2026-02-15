@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import * as creditsService from "../services/credits.service.js";
 import * as stacksService from "../services/stacks.service.js";
-import { STACKS_RECIPIENT_ADDRESS } from "../config/stacks.js";
+import { STACKS_RECIPIENT_ADDRESS, isValidStacksAddress } from "../config/stacks.js";
 import { getTopUpSuggestedMicroStx } from "../config/tokenomics.js";
 import { logger, logTransaction } from "../config/logger.js";
 
@@ -29,6 +29,10 @@ export async function getBalance(req: Request, res: Response): Promise<void> {
     res.status(400).json({ error: "walletAddress query required" });
     return;
   }
+  if (!isValidStacksAddress(walletAddress)) {
+    res.status(400).json({ error: "Invalid wallet address" });
+    return;
+  }
   const balance = await creditsService.getBalance(walletAddress);
   res.json({
     creditsStx: balance.creditsStx,
@@ -41,6 +45,10 @@ export async function getHistory(req: Request, res: Response): Promise<void> {
   const walletAddress = (req.query.walletAddress as string)?.trim();
   if (!walletAddress) {
     res.status(400).json({ error: "walletAddress query required" });
+    return;
+  }
+  if (!isValidStacksAddress(walletAddress)) {
+    res.status(400).json({ error: "Invalid wallet address" });
     return;
   }
   const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 50));
@@ -69,7 +77,11 @@ export async function topUp(req: Request, res: Response): Promise<void> {
   const verification = await stacksService.verifyTopUp(txId, recipient);
   if (!verification.ok) {
     logger.warn(`Top-up verification failed txId=${txId.slice(0, 8)}... reason=${verification.reason}`);
-    res.status(402).json({ error: verification.reason });
+    const message =
+      verification.reason === "Transaction not found"
+        ? "Transaction not found. If you just sent it, wait a minute and try again. Use the same network (testnet/mainnet) as this app."
+        : verification.reason;
+    res.status(402).json({ error: message });
     return;
   }
 
@@ -81,6 +93,10 @@ export async function topUp(req: Request, res: Response): Promise<void> {
     );
     if (!result.ok) {
       res.status(402).json({ error: result.reason });
+      return;
+    }
+    if ("alreadyApplied" in result && result.alreadyApplied) {
+      res.status(200).json({ alreadyApplied: true });
       return;
     }
     const amountStx = Number(verification.amountMicroStx) / MICRO_STX_PER_STX;
@@ -105,6 +121,10 @@ export async function withdraw(req: Request, res: Response): Promise<void> {
 
   if (!walletAddress) {
     res.status(400).json({ error: "walletAddress required" });
+    return;
+  }
+  if (!isValidStacksAddress(walletAddress)) {
+    res.status(400).json({ error: "Invalid wallet address" });
     return;
   }
 

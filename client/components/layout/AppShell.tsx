@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { type ReactNode, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { HiTrophy, HiBanknotes, HiClock, HiDocumentText, HiPlayCircle, HiChatBubbleLeftRight, HiBars3, HiXMark } from "react-icons/hi2";
+import { HiBanknotes, HiClock, HiDocumentText, HiPlayCircle, HiChatBubbleLeftRight, HiBars3, HiXMark } from "react-icons/hi2";
 
 const navItemClass =
   "flex items-center gap-3 w-full rounded-xl border-2 border-gray-800 bg-white py-3 px-4 text-left text-sm font-medium text-gray-900 shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] transition-all hover:bg-amber-50 hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] hover:-translate-y-0.5";
@@ -19,7 +19,8 @@ interface AppShellProps {
   onTxHistoryLabel?: string;
   onCredits?: () => void;
   onProfile?: () => void;
-  onPracticeRun?: () => void;
+  /** When connected, show disconnect in profile area. */
+  onDisconnect?: () => void;
   /** If not connected, show connect CTA in profile area. */
   onConnect?: () => void;
   isConnecting?: boolean;
@@ -35,7 +36,7 @@ export function AppShell({
   onTxHistoryLabel = "Tx History",
   onCredits,
   onProfile,
-  onPracticeRun,
+  onDisconnect,
   onConnect,
   isConnecting,
 }: AppShellProps) {
@@ -48,35 +49,46 @@ export function AppShell({
   }, [pathname]);
 
   const profileSection = (
-    <button
-      type="button"
-      onClick={() => { onProfile?.(); setSidebarOpen(false); }}
-      className="w-full rounded-xl border-2 border-gray-800 bg-white p-4 text-left shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] transition-all hover:bg-amber-50 hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] hover:-translate-y-0.5"
-    >
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border-2 border-gray-800 bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-600">
-          {profileImageUrl ? (
-            <img src={profileImageUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            (username?.slice(0, 2) || "?").toUpperCase()
-          )}
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        onClick={() => { onProfile?.(); setSidebarOpen(false); }}
+        className="w-full rounded-xl border-2 border-gray-800 bg-white p-4 text-left shadow-[4px_4px_0_0_rgba(0,0,0,0.12)] transition-all hover:bg-amber-50 hover:shadow-[6px_6px_0_0_rgba(0,0,0,0.14)] hover:-translate-y-0.5"
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border-2 border-gray-800 bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-600">
+            {profileImageUrl ? (
+              <img src={profileImageUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              (username?.slice(0, 2) || "?").toUpperCase()
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-gray-900">{username || "—"}</p>
+            <p className="truncate text-xs text-gray-500 font-mono">{walletAbbrev || "—"}</p>
+          </div>
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-gray-900">{username || "—"}</p>
-          <p className="truncate text-xs text-gray-500 font-mono">{walletAbbrev || "—"}</p>
-        </div>
-      </div>
-    </button>
+      </button>
+      {onDisconnect && (
+        <button
+          type="button"
+          onClick={() => {
+            onDisconnect();
+            setSidebarOpen(false);
+            window.location.href = "/";
+          }}
+          className="w-full rounded-xl border-2 border-gray-300 bg-white py-2 px-3 text-sm font-medium text-gray-600 hover:bg-gray-50"
+        >
+          Disconnect
+        </button>
+      )}
+    </div>
   );
 
   const closeSidebar = () => setSidebarOpen(false);
 
   const nav = (
     <nav className="flex flex-col gap-2 border-gray-800">
-      <Link href="/leaderboard" className={navItemClass} onClick={closeSidebar}>
-        <HiTrophy className="w-5 h-5 shrink-0 text-amber-600" aria-hidden />
-        Leaderboard
-      </Link>
       {onCredits && (
         <button type="button" onClick={() => { onCredits(); closeSidebar(); }} className={navItemClass}>
           <HiBanknotes className="w-5 h-5 shrink-0 text-emerald-600" aria-hidden />
@@ -95,12 +107,6 @@ export function AppShell({
           {onTxHistoryLabel}
         </button>
       )}
-      {onPracticeRun && (
-        <button type="button" onClick={() => { onPracticeRun(); closeSidebar(); }} className={navItemClass}>
-          <HiPlayCircle className="w-5 h-5 shrink-0 text-violet-600" aria-hidden />
-          Practice Run?
-        </button>
-      )}
       <Link href="/feedback" className={navItemClass} onClick={closeSidebar}>
         <HiChatBubbleLeftRight className="w-5 h-5 shrink-0 text-gray-600" aria-hidden />
         Feedback?
@@ -110,9 +116,10 @@ export function AppShell({
 
   const sidebarContent = (
     <>
-      <div className="border- border-gray-800 p-3 flex items-centerjustify-between">
-        <Link href="/" className="text-lg font-bold text-gray-900" onClick={() => setSidebarOpen(false)}>
-          UNTIL
+      <div className="border-none border-gray-800 p-3 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 text-gray-900" onClick={() => setSidebarOpen(false)}>
+          <img src="/logo.png" alt="UNTIL" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
+          <span className="text-lg font-bold">UNTIL</span>
         </Link>
         <button
           type="button"
@@ -156,8 +163,9 @@ export function AppShell({
         >
           <HiBars3 className="w-6 h-6 text-gray-800" />
         </button>
-        <Link href="/" className="text-lg font-bold text-gray-900">
-          UNTIL
+        <Link href="/" className="flex items-center gap-2 text-gray-900">
+          <img src="/logo.png" alt="UNTIL" width={28} height={28} className="h-7 w-7 shrink-0 object-contain" />
+          <span className="text-lg font-bold">UNTIL</span>
         </Link>
       </header>
 

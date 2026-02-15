@@ -11,7 +11,7 @@ export function getRedis(): Redis | null {
 
 export async function connectRedis(): Promise<Redis | null> {
   if (!REDIS_URL) {
-    logger.info("REDIS_URL not set; challenge store will use in-memory");
+    logger.info("REDIS_URL not set; challenge store, run batch, and used_questions use in-memory only");
     return null;
   }
   try {
@@ -24,10 +24,10 @@ export async function connectRedis(): Promise<Redis | null> {
     });
     client.on("error", (err: Error) => logger.warn("Redis error", { err: String(err) }));
     await client.ping();
-    logger.info("Redis connected");
+    logger.info("Redis connected; run batch and used_questions stored in Redis");
     return client;
   } catch (err) {
-    logger.warn("Redis connect failed; challenge store will use in-memory", { err: String(err) });
+    logger.warn("Redis connect failed; challenge store, run batch, and used_questions will use in-memory", { err: String(err) });
     client = null;
     return null;
   }

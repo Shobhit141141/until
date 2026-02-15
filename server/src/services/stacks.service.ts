@@ -81,19 +81,31 @@ function decodeMemo(memo: string | undefined): string {
   return raw;
 }
 
+const TX_LOOKUP_RETRIES = 3;
+const TX_LOOKUP_DELAY_MS = 2000;
+
 export async function getTransaction(
   txId: string
 ): Promise<StacksTxApiResponse | null> {
   const url = `${STACKS_API_URL}${TX_PATH}/${encodeURIComponent(txId)}`;
-  const res = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
-  if (!res.ok) {
-    if (res.status === 404) return null;
+  for (let attempt = 1; attempt <= TX_LOOKUP_RETRIES; attempt++) {
+    const res = await fetch(url, {
+      headers: { Accept: "application/json" },
+    });
+    if (res.ok) {
+      const data = (await res.json()) as StacksTxApiResponse;
+      return data;
+    }
+    if (res.status === 404) {
+      if (attempt < TX_LOOKUP_RETRIES) {
+        await new Promise((r) => setTimeout(r, TX_LOOKUP_DELAY_MS));
+        continue;
+      }
+      return null;
+    }
     throw new Error(`Stacks API error: ${res.status} ${res.statusText}`);
   }
-  const data = (await res.json()) as StacksTxApiResponse;
-  return data;
+  return null;
 }
 
 /**

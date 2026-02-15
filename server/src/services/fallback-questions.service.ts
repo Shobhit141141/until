@@ -7,6 +7,7 @@ import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { isValidCategory } from "../config/categories.js";
+import { QUESTION_TIME_CAP_SEC } from "../config/tokenomics.js";
 import type { AiQuestionPayload } from "../types/question.types.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -23,8 +24,6 @@ export type FallbackQuestionRecord = {
 };
 
 let fallbackByCategory: Record<string, FallbackQuestionRecord[]> | null = null;
-
-const MAX_SOLVE_TIME_SEC = 30;
 
 function loadFallback(): Record<string, FallbackQuestionRecord[]> {
   if (fallbackByCategory !== null) return fallbackByCategory;
@@ -46,7 +45,7 @@ function toPayload(rec: FallbackQuestionRecord): AiQuestionPayload {
     options: opts,
     correct_index: Math.max(0, Math.min(3, rec.correct_index)),
     difficulty: rec.difficulty,
-    estimated_solve_time_sec: Math.min(MAX_SOLVE_TIME_SEC, Math.max(8, rec.estimated_solve_time_sec ?? 20)),
+    estimated_solve_time_sec: QUESTION_TIME_CAP_SEC,
     confidence_score: rec.confidence_score ?? 0.9,
     ...(rec.reason && { reasoning: rec.reason }),
   };

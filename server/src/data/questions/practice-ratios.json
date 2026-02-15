@@ -1,0 +1,142 @@
+[
+  {
+    "level": 0,
+    "question": "If 2 cats catch 2 mice in 2 minutes, how many cats are needed to catch 10 mice in 10 minutes?",
+    "options": [
+      "2",
+      "10",
+      "5",
+      "1"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.1,
+    "confidence_score": 0.99,
+    "reason": "It takes the same team (2 cats) to perform the task. The time scales with the workload, but the workforce remains constant."
+  },
+  {
+    "level": 1,
+    "question": "6 eggs cost $1.20. How much does 1 egg cost?",
+    "options": [
+      "$0.10",
+      "$0.20",
+      "$0.12",
+      "$0.06"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.2,
+    "confidence_score": 0.99,
+    "reason": "1.20 / 6 = 0.20."
+  },
+  {
+    "level": 2,
+    "question": "If 3 lemons make 1 cup of lemonade, how many lemons for a gallon (16 cups)?",
+    "options": [
+      "16",
+      "32",
+      "48",
+      "64"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.3,
+    "confidence_score": 0.99,
+    "reason": "3 lemons/cup * 16 cups = 48 lemons."
+  },
+  {
+    "level": 3,
+    "question": "Recipe: 2 parts Oil, 1 part Vinegar. You want 3 cups of dressing total. How much Oil?",
+    "options": [
+      "1 cup",
+      "1.5 cups",
+      "2 cups",
+      "2.5 cups"
+    ],
+    "correct_index": 2,
+    "difficulty": 0.4,
+    "confidence_score": 0.99,
+    "reason": "2+1=3 parts total. 2 parts oil. Since total is 3 cups, oil is 2 cups."
+  },
+  {
+    "level": 4,
+    "question": "If you drive faster, you arrive sooner. Speed 50mph -> 2 hours. Speed 100mph -> ?",
+    "options": [
+      "4 hours",
+      "1 hour",
+      "30 mins",
+      "1.5 hours"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.45,
+    "confidence_score": 0.99,
+    "reason": "Double speed = Half time."
+  },
+  {
+    "level": 5,
+    "question": "Compound Speed: Swim downstream. Current 5mph. Swim speed 5mph. Distance 10 miles. Time?",
+    "options": [
+      "2 hours",
+      "1 hour",
+      "30 mins",
+      "4 hours"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.55,
+    "confidence_score": 0.99,
+    "reason": "Effective speed = 5+5 = 10mph. 10 miles / 10 mph = 1 hour."
+  },
+  {
+    "level": 6,
+    "question": "Compound: Double speed AND double time. How far do you go?",
+    "options": [
+      "2x distance",
+      "4x distance",
+      "Same distance",
+      "8x distance"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.65,
+    "confidence_score": 0.99,
+    "reason": "Distance = Speed x Time. (2S) * (2T) = 4ST."
+  },
+  {
+    "level": 7,
+    "question": "A Pizza with radius Z and thickness A has Volume...?",
+    "options": [
+      "Pi*Z*Z*A",
+      "2*Pi*Z*A",
+      "Pi*Z*A",
+      "Z*Z*A"
+    ],
+    "correct_index": 0,
+    "difficulty": 0.7,
+    "confidence_score": 0.99,
+    "reason": "Standard volume formula (Pi*r^2*h) spells 'PIZZA'."
+  },
+  {
+    "level": 8,
+    "question": "Mixing: Solution A (20% alcohol), B (40% alcohol). Mix 1:1. Result?",
+    "options": [
+      "20%",
+      "30%",
+      "40%",
+      "60%"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.75,
+    "confidence_score": 0.99,
+    "reason": "Average of 20 and 40 is 30."
+  },
+  {
+    "level": 9,
+    "question": "Square-Cube Law: Giant ant scaled up 10x size. Weight scales 1000x. Strength (cross-section) scales 100x. Can it stand?",
+    "options": [
+      "Yes easily",
+      "No, collapses",
+      "Same as before",
+      "Depends"
+    ],
+    "correct_index": 1,
+    "difficulty": 0.9,
+    "confidence_score": 0.95,
+    "reason": "Weight (Volume) grows faster than Strength (Area). Relative strength drops 10x."
+  }
+]

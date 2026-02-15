@@ -7,6 +7,7 @@ import {
   isTimeout,
   DIFFICULTY_LEVELS,
 } from "../config/tokenomics.js";
+import { logger } from "../config/logger.js";
 
 const store = new Map<string, RunStateEntry>();
 
@@ -86,6 +87,13 @@ export function setQuestionForRun(
   entry.questionDeliveredAt = now;
   entry.estimatedSolveTimeSec = estimatedSolveTimeSec;
   store.set(runId, entry);
+  logger.info("[setQuestionForRun] question delivered", {
+    runId: runId.slice(0, 8),
+    level,
+    correctIndex,
+    estimatedSolveTimeSec,
+    questionDeliveredAt: now.toISOString(),
+  });
   return true;
 }
 
@@ -93,21 +101,65 @@ export type QuestionResultEntry = { questionId: string; selectedIndex: number; p
 
 export type SubmitResult =
   | { ok: true; correct: true; level: number; completedLevels: number; totalPoints: number }
-  | { ok: true; correct: false; runEnded: true; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number; questionIds: string[]; questionResults: QuestionResultEntry[]; deliveredQuestionInfo: DeliveredQuestionInfo[]; correctOptionText?: string; reasoning?: string; isPractice?: boolean }
+  | { ok: true; correct: false; runEnded: true; timedOut: boolean; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number; questionIds: string[]; questionResults: QuestionResultEntry[]; deliveredQuestionInfo: DeliveredQuestionInfo[]; selectedOptionText?: string; correctOptionText?: string; reasoning?: string; isPractice?: boolean }
   | { ok: false; reason: string };
 
 /** Verify answer server-side. Earned = baseRewardStx × timeMultiplier. Timeout = wrong (run ends). */
 export function submitAnswer(runId: string, selectedIndex: number): SubmitResult {
+  logger.info("[submitAnswer] request", { runId: runId.slice(0, 8), selectedIndex });
+
   const entry = store.get(runId);
-  if (!entry) return { ok: false, reason: "Run not found or expired" };
+  if (!entry) {
+    logger.warn("[submitAnswer] run not found or expired", { runId: runId.slice(0, 8) });
+    return { ok: false, reason: "Run not found or expired" };
+  }
   if (new Date() > entry.expiresAt) {
+    logger.warn("[submitAnswer] run expired", { runId: runId.slice(0, 8) });
     store.delete(runId);
     return { ok: false, reason: "Run expired" };
   }
 
   const solveTimeSec = (Date.now() - entry.questionDeliveredAt.getTime()) / 1000;
   const timedOut = isTimeout(solveTimeSec, entry.estimatedSolveTimeSec);
-  const correct = !timedOut && selectedIndex === entry.correctIndex;
+
+  const deliveredList = entry.deliveredQuestionInfo ?? [];
+  const lastDelivered = deliveredList[deliveredList.length - 1];
+  const options = lastDelivered?.options ?? [];
+  const selectedOptionText = options[selectedIndex];
+  const correctOptionText = options[entry.correctIndex];
+  const indexMatch = selectedIndex === entry.correctIndex;
+  const textMatch =
+    selectedOptionText != null &&
+    correctOptionText != null &&
+    String(selectedOptionText).trim() === String(correctOptionText).trim();
+  const correct = !timedOut && (indexMatch || textMatch);
+
+  logger.info("[submitAnswer] verify", {
+    runId: runId.slice(0, 8),
+    selectedIndex,
+    selectedIndexType: typeof selectedIndex,
+    serverCorrectIndex: entry.correctIndex,
+    serverCorrectIndexType: typeof entry.correctIndex,
+    indexMatch,
+    textMatch,
+    selectedOptionText: selectedOptionText ?? "(out of range)",
+    correctOptionText: correctOptionText ?? "(out of range)",
+    optionsLength: options.length,
+    solveTimeSec: Math.round(solveTimeSec * 1000) / 1000,
+    allowedSec: entry.estimatedSolveTimeSec,
+    timedOut,
+    correct,
+    questionDeliveredAt: entry.questionDeliveredAt.toISOString(),
+    now: new Date().toISOString(),
+  });
+  if (!indexMatch && textMatch) {
+    logger.warn("[submitAnswer] index mismatch but option text match — treating as correct", {
+      runId: runId.slice(0, 8),
+      selectedIndex,
+      serverCorrectIndex: entry.correctIndex,
+    });
+  }
+
   const timeMultiplier = computeTimeMultiplier(solveTimeSec, entry.estimatedSolveTimeSec);
   const earnedStx = correct ? getBaseRewardStx(entry.level) * timeMultiplier : 0;
   const currentQuestionId = entry.questionIds[entry.questionIds.length - 1];
@@ -129,15 +181,23 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
   }
 
   // Wrong answer or timeout: run ends; earned so far kept, current level cost lost
+  logger.info("[submitAnswer] wrong or timeout — run ended", {
+    runId: runId.slice(0, 8),
+    reason: timedOut ? "timeout" : "index_mismatch",
+    selectedIndex,
+    serverCorrectIndex: entry.correctIndex,
+    solveTimeSec: Math.round(solveTimeSec * 1000) / 1000,
+    allowedSec: entry.estimatedSolveTimeSec,
+  });
+
   const { walletAddress, completedLevels, spentMicroStx, totalPoints, questionIds, questionResults, deliveredQuestionInfo, isPractice } = entry;
-  const lastDelivered = (deliveredQuestionInfo ?? [])[(deliveredQuestionInfo ?? []).length - 1];
-  const correctOptionText = lastDelivered?.options?.[entry.correctIndex];
   const reasoning = lastDelivered?.reasoning;
   store.delete(runId);
   return {
     ok: true,
     correct: false,
     runEnded: true,
+    timedOut,
     walletAddress,
     completedLevels,
     spentMicroStx,
@@ -145,6 +205,7 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
     questionIds: questionIds ?? [],
     questionResults: questionResults ?? [],
     deliveredQuestionInfo: deliveredQuestionInfo ?? [],
+    selectedOptionText: selectedOptionText ?? undefined,
     correctOptionText,
     reasoning,
     isPractice,
@@ -162,7 +223,7 @@ export function addQuestionIdToRun(runId: string, questionId: string): boolean {
 
 export type DeliveredQuestionInfo = { questionId: string; correctIndex: number; options: string[]; reasoning?: string };
 
-/** Store correct answer options and reasoning for a delivered question (for showing on wrong / history). */
+/** Store correct answer options and reasoning for a delivered question (for showing on wrong / history). Options are cloned so run state is the single source of truth and cannot be mutated. */
 export function addDeliveredQuestionInfo(
   runId: string,
   questionId: string,
@@ -173,7 +234,12 @@ export function addDeliveredQuestionInfo(
   const entry = store.get(runId);
   if (!entry || new Date() > entry.expiresAt) return false;
   entry.deliveredQuestionInfo = entry.deliveredQuestionInfo ?? [];
-  entry.deliveredQuestionInfo.push({ questionId, correctIndex, options, reasoning });
+  entry.deliveredQuestionInfo.push({
+    questionId,
+    correctIndex,
+    options: [...options],
+    reasoning,
+  });
   store.set(runId, entry);
   return true;
 }
