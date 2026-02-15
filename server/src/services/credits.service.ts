@@ -119,6 +119,8 @@ export type TopUpResult =
 
 /**
  * Apply a verified top-up tx: idempotent by txId. If txId already applied, returns current balance.
+ * Caller must only invoke after stacksService.verifyTopUp() returns ok (tx confirmed and anchored).
+ * No amount or transaction is written until the on-chain tx is confirmed.
  */
 export async function applyTopUp(
   txId: string,

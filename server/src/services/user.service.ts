@@ -8,6 +8,23 @@ export async function findByWallet(
   return doc as UserDoc | null;
 }
 
+/** Check if username is available (not taken by another user). Empty username is invalid. */
+export async function isUsernameAvailable(
+  username: string,
+  excludeWalletAddress: string
+): Promise<boolean> {
+  const name = username?.trim();
+  if (!name) return false;
+  const existing = await User.findOne({
+    username: name,
+    walletAddress: { $ne: excludeWalletAddress },
+  })
+    .select("_id")
+    .lean()
+    .exec();
+  return existing == null;
+}
+
 export async function updateProfile(
   walletAddress: string,
   data: UpdateUserProfile

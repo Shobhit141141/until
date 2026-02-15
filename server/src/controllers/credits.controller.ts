@@ -50,7 +50,8 @@ export async function getHistory(req: Request, res: Response): Promise<void> {
 
 /**
  * POST /credits/top-up { txId }
- * Verify STX transfer to platform, then add to user credits (idempotent by txId).
+ * Verify STX transfer to platform (must be confirmed/anchored). Only then add to user credits (idempotent by txId).
+ * No amount or transaction is written to the DB until the on-chain tx is confirmed.
  */
 export async function topUp(req: Request, res: Response): Promise<void> {
   const txId = typeof req.body?.txId === "string" ? req.body.txId.trim() : "";

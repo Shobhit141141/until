@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { request } from "@stacks/connect";
 import {
   apiFetch,
@@ -9,7 +9,6 @@ import {
   type SubmitAnswerCorrect,
   type SubmitAnswerWrong,
   type StopRunResponse,
-  type TopUpInfo,
   type TopUpRequiredPayload,
   type CreditsHistoryResponse,
   type CategoriesResponse,
@@ -19,6 +18,20 @@ import {
   Challenge,
 } from "@/lib/api";
 import { useWallet } from "@/contexts/WalletContext";
+import { Button } from "@/components/ui";
+import {
+  HomeScreen,
+  TopUpScreen,
+  QuestionScreen,
+  FeedbackCorrect,
+  FeedbackWrong,
+  ContinueOrStopScreen,
+  RunSummaryScreen,
+  CreditsScreen,
+  ProfileModal,
+} from "@/components/screens";
+import { Modal } from "@/components/ui";
+import toast from "react-hot-toast";
 
 const COST_STX_BY_LEVEL = [0.72, 1.44, 2.16, 2.88, 4.32, 6.48, 9.36, 12.96, 17.28, 22.32];
 const MIN_LEVEL_BEFORE_STOP = 4;
@@ -40,7 +53,9 @@ type Step =
   | "stopped";
 
 export default function Home() {
-  const { address: wallet, isConnecting, connectWallet } = useWallet();
+  const { address: wallet } = useWallet();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [difficulty, setDifficulty] = useState(0);
   const [runId, setRunId] = useState<string | null>(null);
   const [step, setStep] = useState<Step>("ready");
@@ -62,16 +77,12 @@ export default function Home() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [topUpRequired, setTopUpRequired] = useState<TopUpRequiredPayload | null>(null);
   const [creditsHistory, setCreditsHistory] = useState<CreditsHistoryResponse["transactions"]>([]);
-  const [showHistory, setShowHistory] = useState(false);
   const [pendingAfterTopUp, setPendingAfterTopUp] = useState<{ level: number; runId?: string } | null>(null);
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isGettingQuestion, setIsGettingQuestion] = useState(false);
   const [isSubmittingAnswer, setIsSubmittingAnswer] = useState(false);
   const [isStoppingRun, setIsStoppingRun] = useState(false);
-  const [topUpAmountStx, setTopUpAmountStx] = useState<number>(0.05);
-  const [customTopUpStx, setCustomTopUpStx] = useState("");
-  const [showTopUpPanel, setShowTopUpPanel] = useState(false);
   const [runHistory, setRunHistory] = useState<RunHistoryEntry[]>([]);
   const [showRunHistory, setShowRunHistory] = useState(false);
   const [isLoadingRunHistory, setIsLoadingRunHistory] = useState(false);
@@ -79,13 +90,21 @@ export default function Home() {
   const [withdrawSuccess, setWithdrawSuccess] = useState<string | null>(null);
   const [completedLevelsInRun, setCompletedLevelsInRun] = useState(0);
   const [isPracticeRun, setIsPracticeRun] = useState(false);
+  const [showCreditsView, setShowCreditsView] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showCreditsModal, setShowCreditsModal] = useState(false);
+  const [user, setUser] = useState<UserMe | null>(null);
+  const practiceHandledRef = useRef(false);
 
   const costForLevel = (level: number) => COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.72;
 
   const refreshCreditsBalance = useCallback(() => {
     if (!wallet) return;
     apiFetch<UserMe>(`/users/me?wallet=${encodeURIComponent(wallet)}`).then((res) => {
-      if (res.data?.creditsStx != null) setCreditsStx(res.data.creditsStx);
+      if (res.data) {
+        setCreditsStx(res.data.creditsStx);
+        setUser(res.data);
+      }
     }).catch(() => {});
   }, [wallet]);
 
@@ -103,6 +122,30 @@ export default function Home() {
       .then((res) => res.data?.categories && setCategories(res.data.categories))
       .catch(() => {});
   }, [wallet]);
+
+  // Open run history / credits from sidebar when navigating with ?open=...
+  useEffect(() => {
+    const open = searchParams.get("open");
+    if (open === "runHistory") {
+      setShowRunHistory(true);
+      router.replace("/", { scroll: false });
+    } else if (open === "credits") {
+      setShowCreditsModal(true);
+      router.replace("/", { scroll: false });
+    }
+  }, [searchParams, router]);
+
+  // Start practice run when navigating with ?practice=1
+  useEffect(() => {
+    if (searchParams.get("practice") !== "1") {
+      practiceHandledRef.current = false;
+      return;
+    }
+    if (!wallet || practiceHandledRef.current) return;
+    practiceHandledRef.current = true;
+    router.replace("/", { scroll: false });
+    getNextQuestionWithPractice(0);
+  }, [searchParams, router, wallet]);
 
   useEffect(() => {
     if (step !== "question" || questionStartedAt == null) return;
@@ -443,46 +486,34 @@ export default function Home() {
     doTopUpWithWallet(topUpRequired.suggestedAmountStx, topUpRequired.recipient);
   };
 
-  const getEffectiveTopUpAmount = (): number => {
-    const custom = parseFloat(customTopUpStx);
-    if (Number.isFinite(custom) && custom >= MIN_TOP_UP_STX) return custom;
-    return topUpAmountStx;
-  };
-
-  const handleStandaloneTopUp = async () => {
-    const res = await apiFetch<TopUpInfo>("/credits/top-up-info");
-    if (!res.data?.recipient) {
-      setError(res.error ?? "Top-up not configured");
-      return;
-    }
-    const amount = getEffectiveTopUpAmount();
-    if (amount < MIN_TOP_UP_STX) {
-      setError(`Minimum top-up is ${MIN_TOP_UP_STX} STX`);
-      return;
-    }
-    await doTopUpWithWallet(amount, res.data.recipient);
-    setShowTopUpPanel(false);
-  };
-
-  const loadRunHistory = () => {
+  const loadRunHistory = useCallback(() => {
     if (!wallet) return;
-    setShowRunHistory(true);
     setIsLoadingRunHistory(true);
     apiFetch<RunHistoryResponse>(`/run/history?walletAddress=${encodeURIComponent(wallet)}&limit=20`)
       .then((r) => r.data?.runs && setRunHistory(r.data.runs))
       .catch(() => setRunHistory([]))
       .finally(() => setIsLoadingRunHistory(false));
+  }, [wallet]);
+
+  const openRunHistory = () => {
+    setShowRunHistory(true);
+    loadRunHistory();
   };
+
+  useEffect(() => {
+    if (!wallet) return;
+    loadRunHistory();
+  }, [wallet, loadRunHistory]);
 
   const handleWithdraw = async () => {
     if (!wallet) return;
     const amount = parseFloat(withdrawAmount);
     if (!Number.isFinite(amount) || amount < MIN_WITHDRAW_STX) {
-      setError(`Enter at least ${MIN_WITHDRAW_STX} STX to withdraw`);
+      toast.error(`Enter at least ${MIN_WITHDRAW_STX} STX to withdraw`);
       return;
     }
     if (amount > creditsStx) {
-      setError("Insufficient credits");
+      toast.error("Insufficient credits");
       return;
     }
     setError(null);
@@ -493,11 +524,12 @@ export default function Home() {
     });
     setIsWithdrawing(false);
     if (res.error) {
-      setError(res.error);
+      toast.error(res.error);
       return;
     }
     setWithdrawAmount("");
     refreshCreditsBalance();
+    toast.success(res.data?.message ?? `Sent ${res.data?.withdrawnStx} STX to your wallet.`);
     setWithdrawSuccess(res.data?.message ?? `Sent ${res.data?.withdrawnStx} STX to your wallet.`);
     if (res.data?.txId) {
       const base = process.env.NEXT_PUBLIC_STACKS_EXPLORER_URL ?? "https://explorer.hiro.so";
@@ -508,517 +540,84 @@ export default function Home() {
     window.setTimeout(() => setWithdrawSuccess(null), 12000);
   };
 
-  const loadCreditsHistory = () => {
+  const loadCreditsHistory = useCallback(() => {
     if (!wallet) return;
     apiFetch<CreditsHistoryResponse>(`/credits/history?walletAddress=${encodeURIComponent(wallet)}&limit=50`).then(
       (r) => r.data?.transactions && setCreditsHistory(r.data.transactions)
     );
-    setShowHistory(true);
+  }, [wallet]);
+
+  const openCreditsModal = () => {
+    setShowCreditsModal(true);
+    loadCreditsHistory();
+  };
+
+  const openCreditsView = () => {
+    setShowCreditsView(true);
+    loadCreditsHistory();
   };
 
   const microStxToStx = (micro: string) =>
     (Number(micro) / 1_000_000).toFixed(4);
 
-  if (!wallet) {
-    return (
-      <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-semibold">Play</h1>
-        <p className="text-zinc-600">
-          Connect your wallet to play. Each question requires a small STX payment.
-        </p>
-        <button
-          type="button"
-          onClick={connectWallet}
-          disabled={isConnecting}
-          className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit disabled:opacity-50"
-        >
-          {isConnecting ? "Connecting…" : "Connect wallet"}
-        </button>
-      </div>
-    );
-  }
+  const mainContent = () => {
+    if (!wallet) return null;
 
-  return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Play</h1>
-
-      {/* Credits panel */}
-      <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-3">
-        <p className="font-medium text-zinc-800 dark:text-zinc-200">
-          Credits: <span className="font-mono">{creditsStx.toFixed(4)}</span> STX
-        </p>
-        <div className="flex flex-wrap gap-2 items-center">
-          <button
-            type="button"
-            onClick={() => setShowTopUpPanel(!showTopUpPanel)}
-            disabled={isToppingUp}
-            className="rounded bg-foreground text-background px-3 py-1.5 text-sm font-medium disabled:opacity-50"
-          >
-            {isToppingUp ? "Topping up…" : "Top up credits"}
-          </button>
-          {showTopUpPanel && (
-            <div className="flex flex-wrap gap-2 items-center border border-zinc-200 dark:border-zinc-700 rounded p-2 mt-1 w-full">
-              <span className="text-xs text-zinc-500 w-full">Predefined:</span>
-              {PREDEFINED_TOP_UPS_STX.map((amt) => (
-                <button
-                  key={amt}
-                  type="button"
-                  onClick={() => { setTopUpAmountStx(amt); setCustomTopUpStx(""); }}
-                  className={`rounded px-2 py-1 text-sm ${topUpAmountStx === amt && !customTopUpStx ? "bg-foreground text-background" : "border"}`}
-                >
-                  {amt} STX
-                </button>
-              ))}
-              <span className="text-xs text-zinc-500">Custom:</span>
-              <input
-                type="number"
-                min={MIN_TOP_UP_STX}
-                step="0.01"
-                placeholder="STX"
-                value={customTopUpStx}
-                onChange={(e) => setCustomTopUpStx(e.target.value)}
-                className="rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1 w-20 text-sm bg-background"
-              />
-              <button
-                type="button"
-                onClick={handleStandaloneTopUp}
-                disabled={isToppingUp}
-                className="rounded bg-foreground text-background px-2 py-1 text-sm disabled:opacity-50"
-              >
-                {isToppingUp ? "…" : `Send ${getEffectiveTopUpAmount().toFixed(3)} STX`}
-              </button>
-            </div>
-          )}
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min={MIN_WITHDRAW_STX}
-              step="0.01"
-              placeholder={`Withdraw (min ${MIN_WITHDRAW_STX})`}
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-              className="rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1.5 w-32 text-sm bg-background"
-            />
-            <button
-              type="button"
-              onClick={handleWithdraw}
-              disabled={isWithdrawing || creditsStx < MIN_WITHDRAW_STX}
-              className="rounded border px-3 py-1.5 text-sm disabled:opacity-50"
-            >
-              {isWithdrawing ? "…" : "Withdraw"}
-            </button>
-          </div>
-          <button type="button" onClick={loadCreditsHistory} className="rounded border px-3 py-1.5 text-sm">
-            Transaction history
-          </button>
-          <button type="button" onClick={loadRunHistory} className="rounded border px-3 py-1.5 text-sm">
-            Run history
-          </button>
+    if (step === "ready" && showCreditsView) {
+      return (
+        <div className="space-y-4">
+          <CreditsScreen
+            balanceStx={creditsStx}
+            minWithdrawStx={MIN_WITHDRAW_STX}
+            withdrawAmount={withdrawAmount}
+            onWithdrawAmountChange={setWithdrawAmount}
+            onWithdraw={handleWithdraw}
+            isWithdrawing={isWithdrawing}
+            transactions={creditsHistory}
+            onClose={() => setShowCreditsView(false)}
+          />
+          {withdrawSuccess && <p className="text-sm text-green-700">{withdrawSuccess}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
-        {showHistory && creditsHistory.length > 0 && (
-          <div className="mt-2 border-t border-zinc-200 dark:border-zinc-700 pt-2">
-            <p className="text-xs font-medium text-zinc-500 mb-1">Recent transactions</p>
-            <ul className="text-xs space-y-1 max-h-40 overflow-y-auto">
-              {creditsHistory.map((tx) => (
-                <li key={tx.id} className="flex justify-between gap-2">
-                  <span className="text-zinc-600 dark:text-zinc-400">
-                    {tx.type} {(tx.amountMicroStx / MICRO_STX_PER_STX).toFixed(4)} STX
-                  </span>
-                  <span className="font-mono">{(tx.balanceAfterMicroStx / MICRO_STX_PER_STX).toFixed(4)}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+      );
+    }
 
-      {step === "ready" && (
-        <div className="flex flex-col gap-3">
-          {categories.length > 0 && (
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Category (server-only)</label>
-              <div className="flex flex-wrap items-center gap-2">
-                <select
-                  value={selectedCategory ?? ""}
-                  onChange={(e) => setSelectedCategory(e.target.value || null)}
-                  className="rounded border border-zinc-300 dark:border-zinc-600 px-3 py-2 bg-background text-sm max-w-xs"
-                >
-                  <option value="">Random</option>
-                  {categories.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-                <Link
-                  href="/categories"
-                  className="text-sm text-zinc-500 hover:text-foreground underline"
-                >
-                  Browse categories
-                </Link>
-              </div>
-            </div>
-          )}
-          <div className="flex flex-wrap gap-2 items-center">
+    if (step === "ready" && showRunHistory) {
+      return (
+        <div className="border-2 border-gray-800 bg-white p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold text-gray-900">Run history</h2>
             <button
               type="button"
-              onClick={() => getNextQuestionWithCredits(0)}
-              disabled={isGettingQuestion}
-              className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit disabled:opacity-50 flex items-center gap-2"
+              onClick={() => setShowRunHistory(false)}
+              className="text-sm text-gray-600 hover:text-gray-900 underline"
             >
-              {isGettingQuestion ? (
-                <>
-                  <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
-                  Loading…
-                </>
-              ) : (
-                "Play game (use credits)"
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => getNextQuestionWithPractice(0)}
-              disabled={isGettingQuestion}
-              className="rounded border border-zinc-400 dark:border-zinc-500 px-4 py-2 font-medium w-fit disabled:opacity-50"
-            >
-              Practice (no cost)
-            </button>
-          </div>
-          <p className="text-sm text-zinc-500 max-w-md">
-            One top-up, then play from credits. Or practice with no tokenomics. Profit by chaining correct answers, then stop & finish to add profit to your balance.
-          </p>
-        </div>
-      )}
-
-      {step === "topup" && topUpRequired && (
-        <div className="flex flex-col gap-3">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Insufficient credits. Top up to continue.
-            {topUpRequired.creditsStx != null && (
-              <> You have {topUpRequired.creditsStx.toFixed(4)} STX.</>
-            )}
-          </p>
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm text-zinc-500">Predefined:</span>
-            {PREDEFINED_TOP_UPS_STX.map((amt) => (
-              <button
-                key={amt}
-                type="button"
-                onClick={() => doTopUpWithWallet(amt, topUpRequired.recipient)}
-                disabled={isToppingUp}
-                className="rounded border px-2 py-1 text-sm disabled:opacity-50 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              >
-                {amt} STX
-              </button>
-            ))}
-            <span className="text-sm text-zinc-500">Custom:</span>
-            <input
-              type="number"
-              min={MIN_TOP_UP_STX}
-              step="0.01"
-              placeholder="STX"
-              value={topUpStepCustomStx}
-              onChange={(e) => setTopUpStepCustomStx(e.target.value)}
-              className="rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1 w-20 text-sm bg-background"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const v = parseFloat(topUpStepCustomStx);
-                  if (Number.isFinite(v) && v >= MIN_TOP_UP_STX) doTopUpWithWallet(v, topUpRequired.recipient);
-                }
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                const v = parseFloat(topUpStepCustomStx);
-                if (Number.isFinite(v) && v >= MIN_TOP_UP_STX) doTopUpWithWallet(v, topUpRequired.recipient);
-              }}
-              disabled={isToppingUp || !topUpStepCustomStx}
-              className="rounded bg-foreground text-background px-2 py-1 text-sm disabled:opacity-50"
-            >
-              {isToppingUp ? "…" : "Send custom"}
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleTopUpFromStep}
-              disabled={isToppingUp}
-              className="rounded bg-foreground text-background px-4 py-2 font-medium disabled:opacity-50"
-            >
-              {isToppingUp ? "Confirm in wallet…" : `Send ${topUpRequired.suggestedAmountStx} STX`}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setStep("ready"); setTopUpRequired(null); setPendingAfterTopUp(null); setError(null); }}
-              className="rounded border px-4 py-2"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === "pay" && challenge && (
-        <div className="flex flex-col gap-3">
-          <p className="text-zinc-600">
-            Pay {microStxToStx(challenge.amount)} STX to unlock this question. Your wallet will open to confirm.
-          </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={payWithWallet}
-              className="rounded bg-foreground text-background px-4 py-2 font-medium"
-            >
-              Pay with wallet
-            </button>
-            <button type="button" onClick={cancelPay} className="rounded border px-4 py-2">
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === "paying" && (
-        <p className="text-zinc-600">Confirm payment in your wallet…</p>
-      )}
-
-      {step === "pending" && (
-        <p className="text-zinc-600">
-          Transaction pending. Waiting for confirmation… (this usually takes a few seconds)
-        </p>
-      )}
-
-      {step === "question" && question && (
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-zinc-500">
-            Level {question.level}
-            {question.difficultyLabel && ` · ${question.difficultyLabel}`}
-          </p>
-          <p className="text-sm text-zinc-500 font-mono">
-            Solve time: {Math.floor(elapsedSec / 60)}:{String(elapsedSec % 60).padStart(2, "0")}
-            {question.estimated_solve_time_sec != null && (
-              <> · Par: {question.estimated_solve_time_sec}s (faster = more points)</>
-            )}
-          </p>
-          <p className="text-lg font-medium">{question.question}</p>
-          {process.env.NODE_ENV === "development" && question.correctIndex !== undefined && (
-            <p className="text-xs text-amber-600 dark:text-amber-400 font-mono">[DEV] Correct answer shown below</p>
-          )}
-          <ul className="flex flex-col gap-2">
-            {question.options.map((opt, i) => (
-              <li key={i}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedIndex(i)}
-                  className={`w-full text-left border rounded px-4 py-2 ${
-                    selectedIndex === i
-                      ? "border-foreground bg-zinc-100 dark:bg-zinc-800"
-                      : "hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                  } ${process.env.NODE_ENV === "development" && question.correctIndex === i ? "ring-1 ring-amber-500/50" : ""}`}
-                >
-                  <span>{opt}</span>
-                  {process.env.NODE_ENV === "development" && question.correctIndex === i && (
-                    <span className="ml-2 text-xs font-medium text-amber-600 dark:text-amber-400">✓ Correct</span>
-                  )}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={submitAnswer}
-              disabled={selectedIndex === null || isSubmittingAnswer}
-              className="rounded bg-foreground text-background px-4 py-2 font-medium disabled:opacity-50 flex items-center gap-2"
-            >
-              {isSubmittingAnswer ? (
-                <>
-                  <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
-                  Checking…
-                </>
-              ) : (
-                "Submit answer"
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={stopRun}
-              disabled={isStoppingRun || (!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP)}
-              title={!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Complete level ${MIN_LEVEL_BEFORE_STOP} to unlock Stop` : undefined}
-              className="rounded border px-4 py-2 disabled:opacity-50 flex items-center gap-2"
-            >
-              {isStoppingRun ? (
-                <>
-                  <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Finishing…
-                </>
-              ) : !isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? (
-                `Stop & finish (level ${MIN_LEVEL_BEFORE_STOP}+)`
-              ) : (
-                "Stop & finish"
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === "submitting" && (
-        <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
-          <span className="inline-block w-5 h-5 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
-          Checking answer…
-        </div>
-      )}
-
-      {step === "correct" && result && "correct" in result && result.correct && (
-        <div className="flex flex-col gap-3">
-          <p className="font-medium text-green-700 dark:text-green-400">
-            Correct. Level {result.level}, {result.completedLevels} completed.
-            {!isPracticeRun && result.totalPoints != null && typeof result.totalPoints === "number" && ` ${result.totalPoints.toFixed(4)} STX earned so far.`}
-          </p>
-          <button
-            type="button"
-            onClick={() => isPracticeRun ? getNextQuestionWithPractice(result.level, runId) : getNextQuestionWithCredits(result.level, runId)}
-            disabled={isGettingQuestion}
-            className="rounded bg-foreground text-background px-4 py-2 font-medium w-fit disabled:opacity-50 flex items-center gap-2"
-          >
-            {isGettingQuestion ? (
-              <>
-                <span className="inline-block w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
-                Loading next…
-              </>
-            ) : isPracticeRun ? (
-              "Next question (practice)"
-            ) : (
-              `Next question (−${costForLevel(result.level)} STX from credits)`
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={stopRun}
-            disabled={isStoppingRun || (!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP)}
-            title={!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Complete level ${MIN_LEVEL_BEFORE_STOP} to unlock Stop` : undefined}
-            className="rounded border px-4 py-2 w-fit disabled:opacity-50"
-          >
-            {!isPracticeRun && completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Stop & finish (level ${MIN_LEVEL_BEFORE_STOP}+)` : "Stop & finish"}
-          </button>
-        </div>
-      )}
-
-      {step === "wrong" && result && "runEnded" in result && (() => {
-        const r = result as SubmitAnswerWrong & { practice?: boolean };
-        const isPractice = r.practice === true;
-        const hasBreakdown = !isPractice && r.grossEarnedStx != null && r.netEarnedStx != null && r.profit != null && (r.spent != null || r.spentMicroStx);
-        const spentStx = r.spent ?? (r.spentMicroStx ? Number(r.spentMicroStx) / MICRO_STX_PER_STX : 0);
-        return (
-          <div className="flex flex-col gap-4">
-            <p className="font-medium text-red-700 dark:text-red-400">Wrong. Run ended.{isPractice && " (Practice — no cost.)"}</p>
-            {"correctOptionText" in r && r.correctOptionText && (
-              <p className="text-sm text-zinc-700 dark:text-zinc-300">
-                Correct answer: <strong>{r.correctOptionText}</strong>
-              </p>
-            )}
-            {"reasoning" in r && r.reasoning && (
-              <div className="rounded border border-zinc-200 dark:border-zinc-700 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">Why</p>
-                <p className="text-sm text-zinc-700 dark:text-zinc-300">{r.reasoning}</p>
-              </div>
-            )}
-            {hasBreakdown && (
-              <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-2 text-sm">
-                <p className="font-medium text-zinc-700 dark:text-zinc-300">How points and returns were decided</p>
-                <ul className="list-none space-y-1 text-zinc-600 dark:text-zinc-400">
-                  <li>• Total earned: <strong className="text-foreground">{(r.totalPoints ?? 0).toFixed(4)}</strong> STX (from {r.completedLevels} correct; each = base reward × time multiplier)</li>
-                  <li>• Spent (questions paid): <strong className="text-foreground">{spentStx.toFixed(4)}</strong> STX</li>
-                  <li>• Settlement: earned − spent = <strong className="text-foreground">{(r.profit ?? 0).toFixed(4)}</strong> STX applied to your credits {(r.profit ?? 0) > 0 ? "(win)" : (r.profit ?? 0) < 0 ? "(loss)" : "(break-even)"}</li>
-                  {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && (
-                    <li>• Milestone bonus ({r.milestoneTier === "100" ? "100%" : "70%"}): <strong className="text-foreground">{r.milestoneBonusStx.toFixed(4)}</strong> STX</li>
-                  )}
-                </ul>
-              </div>
-            )}
-            <button type="button" onClick={startOver} className="rounded border px-4 py-2 w-fit">
-              Start over
-            </button>
-          </div>
-        );
-      })()}
-
-      {step === "stopped" && result && "totalPoints" in result && (() => {
-        const r = result as StopRunResponse & { practice?: boolean };
-        const isPractice = r.practice === true;
-        return (
-          <div className="flex flex-col gap-4">
-            <p className="font-medium">Run finished.{isPractice && " (Practice — no cost.)"}</p>
-            {!isPractice && r.creditsStx != null && (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Your credits balance: <strong className="font-mono text-foreground">{r.creditsStx.toFixed(4)}</strong> STX
-              </p>
-            )}
-            {!isPractice && "grossEarnedStx" in r && "spent" in r && (
-            <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-2 text-sm">
-              <p className="font-medium text-zinc-700 dark:text-zinc-300">How profit was decided</p>
-              <ul className="list-none space-y-1 text-zinc-600 dark:text-zinc-400">
-                <li>• Total earned: <strong className="text-foreground">{typeof r.totalPoints === "number" ? r.totalPoints.toFixed(4) : r.totalPoints}</strong> STX (from {r.completedLevels} correct; each = base reward × time multiplier)</li>
-                <li>• Spent (questions paid): <strong className="text-foreground">{r.spent.toFixed(4)}</strong> STX</li>
-                <li>• Settlement: earned − spent = <strong className="text-foreground">{r.profit.toFixed(4)}</strong> STX applied to your credits {r.profit > 0 ? "(win)" : r.profit < 0 ? "(loss)" : "(break-even)"}</li>
-                {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && (
-                  <li>• Milestone bonus ({r.milestoneTier === "100" ? "100%" : "70%"}): <strong className="text-foreground">{r.milestoneBonusStx.toFixed(4)}</strong> STX</li>
-                )}
-              </ul>
-            </div>
-            )}
-            {!isPractice && "grossEarnedStx" in r && "spent" in r && (
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Summary: {r.completedLevels} correct → {r.netEarnedStx.toFixed(4)} STX earned. Spent {r.spent.toFixed(4)} STX. Profit: {r.profit.toFixed(4)} STX.
-              {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && ` Milestone bonus: ${r.milestoneBonusStx.toFixed(4)} STX.`}
-            </p>
-            )}
-            <button type="button" onClick={startOver} className="rounded border px-4 py-2 w-fit">
-              Play again
-            </button>
-          </div>
-        );
-      })()}
-
-      {showRunHistory && (
-        <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-3">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">Run history</h2>
-            <button type="button" onClick={() => setShowRunHistory(false)} className="text-sm underline">
               Close
             </button>
           </div>
           {isLoadingRunHistory ? (
-            <div className="flex items-center gap-2 text-zinc-500">
-              <span className="inline-block w-4 h-4 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
-              Loading…
-            </div>
+            <p className="text-sm text-gray-500">Loading…</p>
           ) : runHistory.length === 0 ? (
-            <p className="text-sm text-zinc-500">No runs yet. Play a game to see history here.</p>
+            <p className="text-sm text-gray-500">No runs yet.</p>
           ) : (
             <ul className="space-y-4">
               {runHistory.map((run) => (
-                <li key={run.runId} className="border border-zinc-200 dark:border-zinc-700 rounded p-3 text-sm">
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-zinc-600 dark:text-zinc-400 mb-2">
+                <li key={run.runId} className="border-2 border-gray-200 p-3 text-sm">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-gray-600 mb-2">
                     <span>{new Date(run.createdAt).toLocaleString()}</span>
-                    <span>Score: <strong className="text-foreground">{run.score}</strong></span>
+                    <span>Score: <strong className="text-gray-900">{run.score}</strong></span>
                     <span>Spent: {run.spent.toFixed(4)} STX</span>
                     <span>Earned: {run.earned.toFixed(4)} STX</span>
                   </div>
                   <details className="mt-2">
-                    <summary className="cursor-pointer font-medium text-zinc-700 dark:text-zinc-300">Questions</summary>
-                    <ul className="mt-2 space-y-3 pl-2 border-l-2 border-zinc-200 dark:border-zinc-700">
+                    <summary className="cursor-pointer font-medium text-gray-900">Questions</summary>
+                    <ul className="mt-2 space-y-3 pl-2 border-l-2 border-gray-300">
                       {run.questions.map((q, i) => (
                         <li key={i} className="pl-2">
-                          <p className="font-medium text-zinc-800 dark:text-zinc-200">{q.question}</p>
-                          <p className="text-zinc-600 dark:text-zinc-400 mt-0.5">
+                          <p className="font-medium text-gray-900">{q.question}</p>
+                          <p className="text-gray-600 mt-0.5">
                             Your answer: {q.options[q.selectedIndex] ?? "—"} · Points: {q.points}
-                            {q.correctOptionText != null && q.correctOptionText !== (q.options[q.selectedIndex] ?? "—") && (
-                              <> · Correct: <strong className="text-zinc-800 dark:text-zinc-200">{q.correctOptionText}</strong></>
-                            )}
                           </p>
-                          {q.reasoning && (
-                            <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1 italic">Why: {q.reasoning}</p>
-                          )}
                         </li>
                       ))}
                     </ul>
@@ -1028,30 +627,179 @@ export default function Home() {
             </ul>
           )}
         </div>
-      )}
+      );
+    }
 
-      {withdrawSuccess && (
-        <p className="text-green-700 dark:text-green-400 text-sm">
+    if (step === "ready" && !showCreditsView && !showRunHistory) {
+      return (
+        <>
+          <HomeScreen
+            creditsStx={creditsStx}
+            totalSpent={user?.totalSpent ?? 0}
+            totalEarned={user?.totalEarned ?? 0}
+            bestScore={user?.bestScore ?? 0}
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategorySelect={setSelectedCategory}
+          />
+          {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+        </>
+      );
+    }
+
+    if (step === "topup" && topUpRequired) {
+      return (
+        <TopUpScreen
+          suggestedStx={topUpRequired.suggestedAmountStx}
+          recipient={topUpRequired.recipient}
+          currentCreditsStx={topUpRequired.creditsStx}
+          predefinedAmounts={PREDEFINED_TOP_UPS_STX}
+          customAmount={topUpStepCustomStx}
+          onCustomAmountChange={setTopUpStepCustomStx}
+          onTopUp={(amt) => doTopUpWithWallet(amt, topUpRequired.recipient)}
+          onCancel={() => { setStep("ready"); setTopUpRequired(null); setPendingAfterTopUp(null); setError(null); }}
+          isToppingUp={isToppingUp}
+          minTopUpStx={MIN_TOP_UP_STX}
+        />
+      );
+    }
+
+    if (step === "pay" && challenge) {
+      return (
+        <div className="space-y-4 max-w-md">
+          <p className="text-gray-900">Pay {microStxToStx(challenge.amount)} STX to unlock. Confirm in your wallet.</p>
+          <div className="flex gap-2">
+            <Button onClick={payWithWallet} variant="primary" className="flex-1 py-2">Pay with wallet</Button>
+            <Button onClick={cancelPay} variant="secondary" className="py-2">Cancel</Button>
+          </div>
+        </div>
+      );
+    }
+
+    if ((step === "paying" || step === "pending") && wallet) {
+      return (
+        <p className="text-gray-600">
+          {step === "paying" ? "Confirm payment in your wallet…" : "Transaction pending. Waiting for confirmation…"}
+        </p>
+      );
+    }
+
+    if (step === "question" && question) {
+      return (
+        <QuestionScreen
+          question={question}
+          level={difficulty}
+          elapsedSec={elapsedSec}
+          selectedIndex={selectedIndex}
+          completedLevelsInRun={completedLevelsInRun}
+          isSubmitting={isSubmittingAnswer}
+          isStopping={isStoppingRun}
+          onSelectOption={setSelectedIndex}
+          onSubmit={submitAnswer}
+          onStop={stopRun}
+        />
+      );
+    }
+
+    if (step === "submitting" && wallet) {
+      return <p className="text-gray-600">Checking answer…</p>;
+    }
+
+    if (step === "correct" && result && "correct" in result && result.correct) {
+      return (
+        <div className="space-y-6 max-w-md">
+          <FeedbackCorrect earnedStx={result.totalPoints} />
+          <ContinueOrStopScreen
+            earnedSoFarStx={result.totalPoints ?? 0}
+            nextLevel={result.level}
+            completedLevels={completedLevelsInRun}
+            isPractice={isPracticeRun}
+            onContinue={() => isPracticeRun ? getNextQuestionWithPractice(result.level, runId) : getNextQuestionWithCredits(result.level, runId)}
+            onStop={stopRun}
+            isContinueLoading={isGettingQuestion}
+            isStopping={isStoppingRun}
+          />
+        </div>
+      );
+    }
+
+    if (step === "wrong" && result && "runEnded" in result) {
+      const r = result as SubmitAnswerWrong & { practice?: boolean };
+      return (
+        <div className="space-y-6 max-w-md">
+          <FeedbackWrong isPractice={r.practice === true} />
+          <Button onClick={startOver} variant="primary" className="w-full py-3">Start over</Button>
+        </div>
+      );
+    }
+
+    if (step === "stopped" && result && "totalPoints" in result) {
+      const r = result as StopRunResponse & { practice?: boolean };
+      const totalEarned = typeof r.totalPoints === "number" ? r.totalPoints : Number(r.totalPoints);
+      const profit = r.profit ?? totalEarned - r.spent;
+      return (
+        <RunSummaryScreen
+          correctCount={r.completedLevels}
+          totalSpentStx={r.spent}
+          totalEarnedStx={totalEarned}
+          profitStx={profit}
+          isPractice={r.practice === true}
+          onPlayAgain={startOver}
+          onViewCredits={openCreditsModal}
+        />
+      );
+    }
+
+    if (withdrawSuccess && !showCreditsView) {
+      return (
+        <p className="text-sm text-green-700">
           {withdrawSuccess.includes("View on explorer:") ? (
             <>
               {withdrawSuccess.split("View on explorer:")[0]}
-              <a
-                href={withdrawSuccess.split("View on explorer:")[1]?.trim() ?? "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline ml-1"
-              >
-                View on explorer
-              </a>
+              <a href={withdrawSuccess.split("View on explorer:")[1]?.trim() ?? "#"} target="_blank" rel="noopener noreferrer" className="underline ml-1">View on explorer</a>
             </>
-          ) : (
-            withdrawSuccess
-          )}
+          ) : withdrawSuccess}
         </p>
+      );
+    }
+
+    if (error && step === "ready") return <p className="text-sm text-red-600">{error}</p>;
+
+    return null;
+  };
+
+  return (
+    <>
+      {mainContent()}
+
+      {showProfileModal && wallet && (
+        <ProfileModal
+          wallet={wallet}
+          initialUser={user}
+          onClose={() => setShowProfileModal(false)}
+          onSaved={(updated) => {
+            setUser(updated);
+            setShowProfileModal(false);
+          }}
+        />
       )}
-      {error && (
-        <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+
+      {showCreditsModal && (
+        <Modal onClose={() => setShowCreditsModal(false)} title="Credits">
+          <CreditsScreen
+            balanceStx={creditsStx}
+            minWithdrawStx={MIN_WITHDRAW_STX}
+            withdrawAmount={withdrawAmount}
+            onWithdrawAmountChange={setWithdrawAmount}
+            onWithdraw={handleWithdraw}
+            isWithdrawing={isWithdrawing}
+            transactions={creditsHistory}
+            onClose={() => setShowCreditsModal(false)}
+            hideHeader
+          />
+          {withdrawSuccess && <p className="text-sm text-green-700 mt-2">{withdrawSuccess}</p>}
+        </Modal>
       )}
-    </div>
+    </>
   );
 }

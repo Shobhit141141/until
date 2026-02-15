@@ -66,6 +66,18 @@ export async function updateMe(req: Request, res: Response): Promise<void> {
   }
 }
 
+/** GET /users/check-username?username=...&wallet=... — for debounced availability check. */
+export async function checkUsername(req: Request, res: Response): Promise<void> {
+  const username = (req.query.username as string)?.trim();
+  const wallet = (req.query.wallet as string)?.trim();
+  if (!username || !wallet) {
+    res.status(400).json({ error: "username and wallet query required" });
+    return;
+  }
+  const available = await userService.isUsernameAvailable(username, wallet);
+  res.json({ available });
+}
+
 export async function getByWallet(req: Request, res: Response): Promise<void> {
   const { walletAddress } = req.params;
   const user = await userService.findByWallet(walletAddress);

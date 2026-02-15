@@ -141,6 +141,8 @@ export type UserMe = {
   updatedAt: string;
 };
 
+export type CheckUsernameResponse = { available: boolean };
+
 export type TopUpInfo = {
   recipient: string;
   suggestedAmountMicroStx: number;

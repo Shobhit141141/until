@@ -47,17 +47,6 @@ export const CATEGORY_METADATA: Record<string, CategoryMetadata> = {
     difficulty_scaling: "Use closer comparisons and less obvious shortcuts.",
     example: "Which is larger: 49×2 or 50×2−3?",
   },
-  "Cause & Effect": {
-    description:
-      "Focuses on identifying the immediate, direct consequence of a single change. Tests understanding of simple causal relationships without deep scientific knowledge.",
-    rules: [
-      "Only one direct effect considered",
-      "No long causal chains",
-      "Everyday contexts only",
-    ],
-    difficulty_scaling: "Introduce less obvious but still direct consequences.",
-    example: "If everyone sets clocks 10 minutes ahead, what changes first?",
-  },
   "Constraint Puzzles": {
     description:
       "Logic puzzles where multiple explicit constraints must all be satisfied. Only one option fits all constraints simultaneously.",

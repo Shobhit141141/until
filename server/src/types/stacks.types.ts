@@ -3,6 +3,10 @@ export type StacksTxApiResponse = {
   tx_id: string;
   tx_status: string;
   sender_address: string;
+  /** Present when tx is in an anchored block. Required for confirmation. */
+  block_height?: number;
+  /** True if tx is in a microblock not yet confirmed by an anchor block. Do not credit until false. */
+  is_unanchored?: boolean;
   token_transfer?: {
     recipient_address: string;
     amount: string;

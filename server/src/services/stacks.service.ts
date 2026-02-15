@@ -96,6 +96,17 @@ export async function getTransaction(
   return data;
 }
 
+/**
+ * Safety: do not add credits or apply payment until the transaction is confirmed (anchored).
+ * Rejects if the API reports is_unanchored === true.
+ */
+function requireTransactionConfirmed(tx: StacksTxApiResponse): { ok: false; reason: string } | null {
+  if (tx.is_unanchored === true) {
+    return { ok: false, reason: "Transaction not yet confirmed (wait for anchor block)" };
+  }
+  return null;
+}
+
 export async function verifyPayment(
   txId: string,
   expected: PaymentVerificationExpected
@@ -109,6 +120,8 @@ export async function verifyPayment(
   if (tx.tx_status !== "success") {
     return { ok: false, reason: "Transaction not successful" };
   }
+  const notConfirmed = requireTransactionConfirmed(tx);
+  if (notConfirmed) return notConfirmed;
 
   const transfer = tx.token_transfer;
   if (!transfer)
@@ -146,6 +159,9 @@ export async function verifyTopUp(
   if (!tx) return { ok: false, reason: "Transaction not found" };
   if (tx.tx_status === "pending") return { ok: false, reason: "Transaction pending" };
   if (tx.tx_status !== "success") return { ok: false, reason: "Transaction not successful" };
+  const notConfirmed = requireTransactionConfirmed(tx);
+  if (notConfirmed) return notConfirmed;
+
   const transfer = tx.token_transfer;
   if (!transfer) return { ok: false, reason: "Not an STX transfer transaction" };
   if (transfer.recipient_address !== recipientAddress)
