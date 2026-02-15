@@ -7,6 +7,7 @@ import {
   pointsToGrossEarnedStx,
   grossToNetEarnedStx,
   computeProfit,
+  MIN_LEVEL_BEFORE_STOP,
 } from "../config/tokenomics.js";
 import { logTransaction } from "../config/logger.js";
 
@@ -23,6 +24,24 @@ export async function stopRun(req: Request, res: Response): Promise<void> {
   }
   if (!runId || typeof runId !== "string") {
     res.status(400).json({ error: "runId required" });
+    return;
+  }
+
+  const existing = runStateService.getRun(runId);
+  if (!existing) {
+    res.status(404).json({ error: "Run not found or expired" });
+    return;
+  }
+  if (existing.walletAddress !== walletAddress) {
+    res.status(403).json({ error: "Run does not belong to this wallet" });
+    return;
+  }
+  if (existing.completedLevels < MIN_LEVEL_BEFORE_STOP) {
+    res.status(400).json({
+      error: "Must complete at least 4 levels before stopping",
+      completedLevels: existing.completedLevels,
+      minRequired: MIN_LEVEL_BEFORE_STOP,
+    });
     return;
   }
 

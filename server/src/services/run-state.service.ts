@@ -2,8 +2,9 @@ import { randomUUID } from "crypto";
 import type { RunStateEntry } from "../types/question.types.js";
 import { RUN_STATE_TTL_MS } from "../types/question.types.js";
 import {
-  getBasePoints,
+  getBaseRewardStx,
   computeTimeMultiplier,
+  isTimeout,
   DIFFICULTY_LEVELS,
 } from "../config/tokenomics.js";
 
@@ -93,7 +94,7 @@ export type SubmitResult =
   | { ok: true; correct: false; runEnded: true; walletAddress: string; completedLevels: number; spentMicroStx: bigint; totalPoints: number; questionIds: string[]; questionResults: QuestionResultEntry[]; deliveredQuestionInfo: DeliveredQuestionInfo[]; correctOptionText?: string; reasoning?: string }
   | { ok: false; reason: string };
 
-/** Verify answer server-side. Score = basePoints × timeMultiplier. Record per-question result for history. */
+/** Verify answer server-side. Earned = baseRewardStx × timeMultiplier. Timeout = wrong (run ends). */
 export function submitAnswer(runId: string, selectedIndex: number): SubmitResult {
   const entry = store.get(runId);
   if (!entry) return { ok: false, reason: "Run not found or expired" };
@@ -102,19 +103,19 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
     return { ok: false, reason: "Run expired" };
   }
 
-  const correct = selectedIndex === entry.correctIndex;
   const solveTimeSec = (Date.now() - entry.questionDeliveredAt.getTime()) / 1000;
+  const timedOut = isTimeout(solveTimeSec, entry.estimatedSolveTimeSec);
+  const correct = !timedOut && selectedIndex === entry.correctIndex;
   const timeMultiplier = computeTimeMultiplier(solveTimeSec, entry.estimatedSolveTimeSec);
-  const basePoints = getBasePoints(entry.level);
-  const points = correct ? basePoints * timeMultiplier : 0;
+  const earnedStx = correct ? getBaseRewardStx(entry.level) * timeMultiplier : 0;
   const currentQuestionId = entry.questionIds[entry.questionIds.length - 1];
   if (currentQuestionId) {
     entry.questionResults = entry.questionResults ?? [];
-    entry.questionResults.push({ questionId: currentQuestionId, selectedIndex, points });
+    entry.questionResults.push({ questionId: currentQuestionId, selectedIndex, points: earnedStx });
   }
 
   if (correct) {
-    entry.totalPoints += points;
+    entry.totalPoints += earnedStx;
     const completedLevels = entry.completedLevels + 1;
     const nextLevel = Math.min(entry.level + 1, DIFFICULTY_LEVELS - 1);
     entry.completedLevels = completedLevels;
@@ -125,7 +126,7 @@ export function submitAnswer(runId: string, selectedIndex: number): SubmitResult
     return { ok: true, correct: true, level: nextLevel, completedLevels, totalPoints: entry.totalPoints };
   }
 
-  // Wrong answer: run ends; return questionResults and correct-answer info for this question
+  // Wrong answer or timeout: run ends; earned so far kept, current level cost lost
   const { walletAddress, completedLevels, spentMicroStx, totalPoints, questionIds, questionResults, deliveredQuestionInfo } = entry;
   const lastDelivered = (deliveredQuestionInfo ?? [])[(deliveredQuestionInfo ?? []).length - 1];
   const correctOptionText = lastDelivered?.options?.[entry.correctIndex];

@@ -19,7 +19,8 @@ import {
 } from "@/lib/api";
 import { useWallet } from "@/contexts/WalletContext";
 
-const COST_STX_BY_LEVEL = [0.001, 0.002, 0.003, 0.005, 0.007, 0.01, 0.015, 0.02, 0.03, 0.05];
+const COST_STX_BY_LEVEL = [0.002, 0.004, 0.006, 0.008, 0.012, 0.018, 0.026, 0.036, 0.048, 0.062];
+const MIN_LEVEL_BEFORE_STOP = 4;
 const MIN_WITHDRAW_STX = 0.01;
 const MICRO_STX_PER_STX = 1_000_000;
 const PREDEFINED_TOP_UPS_STX = [0.05, 0.1, 0.25, 0.5, 1];
@@ -74,8 +75,9 @@ export default function Home() {
   const [showRunHistory, setShowRunHistory] = useState(false);
   const [isLoadingRunHistory, setIsLoadingRunHistory] = useState(false);
   const [topUpStepCustomStx, setTopUpStepCustomStx] = useState("");
+  const [completedLevelsInRun, setCompletedLevelsInRun] = useState(0);
 
-  const costForLevel = (level: number) => COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.001;
+  const costForLevel = (level: number) => COST_STX_BY_LEVEL[Math.max(0, Math.min(level, 9))] ?? 0.002;
 
   const refreshCreditsBalance = useCallback(() => {
     if (!wallet) return;
@@ -144,6 +146,7 @@ export default function Home() {
       if (res.data) {
         setQuestion(res.data);
         setQuestionStartedAt(Date.now());
+        if (!runId) setCompletedLevelsInRun(0);
         setRunId(res.data.runId);
         setDifficulty(res.data.level);
         setStep("question");
@@ -195,6 +198,7 @@ export default function Home() {
         if (res.status === 200 && res.data) {
           setQuestion(res.data);
           setQuestionStartedAt(Date.now());
+          if (!runId) setCompletedLevelsInRun(0);
           setRunId(res.data.runId);
           setDifficulty(res.data.level);
           setStep("question");
@@ -228,6 +232,7 @@ export default function Home() {
     if (res.data) {
       setQuestion(res.data);
       setQuestionStartedAt(Date.now());
+      if (!runId) setCompletedLevelsInRun(0);
       setRunId(res.data.runId);
       setDifficulty(res.data.level);
       setStep("question");
@@ -284,6 +289,7 @@ export default function Home() {
     }
     if (res.data?.correct) {
       setResult(res.data);
+      setCompletedLevelsInRun(res.data.completedLevels);
       setStep("correct");
       setSelectedIndex(null);
       setQuestion(null);
@@ -291,6 +297,7 @@ export default function Home() {
       setResult(res.data);
       setStep("wrong");
       setRunId(null);
+      setCompletedLevelsInRun(0);
     }
     setIsSubmittingAnswer(false);
   };
@@ -316,6 +323,7 @@ export default function Home() {
       setStep("stopped");
       setRunId(null);
       setQuestion(null);
+      setCompletedLevelsInRun(0);
     }
   };
 
@@ -328,6 +336,7 @@ export default function Home() {
     setChallenge(null);
     setSelectedIndex(null);
     setError(null);
+    setCompletedLevelsInRun(0);
   };
 
   const cancelPay = () => {
@@ -758,7 +767,8 @@ export default function Home() {
             <button
               type="button"
               onClick={stopRun}
-              disabled={isStoppingRun}
+              disabled={isStoppingRun || completedLevelsInRun < MIN_LEVEL_BEFORE_STOP}
+              title={completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Complete level ${MIN_LEVEL_BEFORE_STOP} to unlock Stop` : undefined}
               className="rounded border px-4 py-2 disabled:opacity-50 flex items-center gap-2"
             >
               {isStoppingRun ? (
@@ -766,6 +776,8 @@ export default function Home() {
                   <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   Finishing…
                 </>
+              ) : completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? (
+                `Stop & finish (level ${MIN_LEVEL_BEFORE_STOP}+)`
               ) : (
                 "Stop & finish"
               )}
@@ -785,7 +797,7 @@ export default function Home() {
         <div className="flex flex-col gap-3">
           <p className="font-medium text-green-700 dark:text-green-400">
             Correct. Level {result.level}, {result.completedLevels} completed.
-            {result.totalPoints != null && ` ${result.totalPoints} points.`}
+            {result.totalPoints != null && typeof result.totalPoints === "number" && ` ${result.totalPoints.toFixed(4)} STX earned so far.`}
           </p>
           <button
             type="button"
@@ -802,8 +814,14 @@ export default function Home() {
               `Next question (−${costForLevel(result.level)} STX from credits)`
             )}
           </button>
-          <button type="button" onClick={stopRun} disabled={isStoppingRun} className="rounded border px-4 py-2 w-fit disabled:opacity-50">
-            Stop & finish
+          <button
+            type="button"
+            onClick={stopRun}
+            disabled={isStoppingRun || completedLevelsInRun < MIN_LEVEL_BEFORE_STOP}
+            title={completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Complete level ${MIN_LEVEL_BEFORE_STOP} to unlock Stop` : undefined}
+            className="rounded border px-4 py-2 w-fit disabled:opacity-50"
+          >
+            {completedLevelsInRun < MIN_LEVEL_BEFORE_STOP ? `Stop & finish (level ${MIN_LEVEL_BEFORE_STOP}+)` : "Stop & finish"}
           </button>
         </div>
       )}
@@ -830,10 +848,9 @@ export default function Home() {
               <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-2 text-sm">
                 <p className="font-medium text-zinc-700 dark:text-zinc-300">How points and returns were decided</p>
                 <ul className="list-none space-y-1 text-zinc-600 dark:text-zinc-400">
-                  <li>• Total points: <strong className="text-foreground">{r.totalPoints ?? 0}</strong> (from {r.completedLevels} correct answer{r.completedLevels !== 1 ? "s" : ""}; each = base points x time multiplier)</li>
-                  <li>• Points to STX: 100 pts = 0.01 STX, earned = <strong className="text-foreground">{(r.totalPoints ?? 0) * 0.0001} = {(r.netEarnedStx ?? 0).toFixed(4)}</strong> STX</li>
+                  <li>• Total earned: <strong className="text-foreground">{(r.totalPoints ?? 0).toFixed(4)}</strong> STX (from {r.completedLevels} correct; each = base reward × time multiplier)</li>
                   <li>• Spent (questions paid): <strong className="text-foreground">{spentStx.toFixed(4)}</strong> STX</li>
-                  <li>• Profit: earned minus spent = <strong className="text-foreground">{(r.profit ?? 0).toFixed(4)}</strong> STX (added to your credits)</li>
+                  <li>• Profit: earned − spent = <strong className="text-foreground">{(r.profit ?? 0).toFixed(4)}</strong> STX (added to your credits)</li>
                   {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && (
                     <li>• Milestone bonus ({r.milestoneTier === "100" ? "100%" : "70%"}): <strong className="text-foreground">{r.milestoneBonusStx.toFixed(4)}</strong> STX</li>
                   )}
@@ -858,10 +875,9 @@ export default function Home() {
               </p>
             )}
             <div className="rounded border border-zinc-300 dark:border-zinc-600 p-4 flex flex-col gap-2 text-sm">
-              <p className="font-medium text-zinc-700 dark:text-zinc-300">How points and profit were decided</p>
+              <p className="font-medium text-zinc-700 dark:text-zinc-300">How profit was decided</p>
               <ul className="list-none space-y-1 text-zinc-600 dark:text-zinc-400">
-                <li>• Total points: <strong className="text-foreground">{r.totalPoints}</strong> (from {r.completedLevels} correct answer{r.completedLevels !== 1 ? "s" : ""}; each = base points × time multiplier)</li>
-                <li>• Points → STX: 100 pts = 0.01 STX → earned = <strong className="text-foreground">{r.totalPoints} × 0.0001 = {r.netEarnedStx.toFixed(4)}</strong> STX</li>
+                <li>• Total earned: <strong className="text-foreground">{typeof r.totalPoints === "number" ? r.totalPoints.toFixed(4) : r.totalPoints}</strong> STX (from {r.completedLevels} correct; each = base reward × time multiplier)</li>
                 <li>• Spent (questions paid): <strong className="text-foreground">{r.spent.toFixed(4)}</strong> STX</li>
                 <li>• Profit: earned − spent = <strong className="text-foreground">{r.profit.toFixed(4)}</strong> STX (added to your credits)</li>
                 {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && (
@@ -870,7 +886,7 @@ export default function Home() {
               </ul>
             </div>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Summary: {r.completedLevels} correct, {r.totalPoints} pts → {r.netEarnedStx.toFixed(4)} STX earned. Spent {r.spent.toFixed(4)} STX. Profit: {r.profit.toFixed(4)} STX.
+              Summary: {r.completedLevels} correct → {r.netEarnedStx.toFixed(4)} STX earned. Spent {r.spent.toFixed(4)} STX. Profit: {r.profit.toFixed(4)} STX.
               {r.milestoneBonusStx != null && r.milestoneBonusStx > 0 && ` Milestone bonus: ${r.milestoneBonusStx.toFixed(4)} STX.`}
             </p>
             <button type="button" onClick={startOver} className="rounded border px-4 py-2 w-fit">
