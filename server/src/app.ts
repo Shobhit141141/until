@@ -16,6 +16,14 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(errorResponseLogger);
 
+app.get("/", (_req, res) => {
+  res.json({
+    name: "until-server",
+    version: "1.0.0",
+    description: "UNTIL — skill-based quiz API. Pay per question (STX), credits, optimal stopping.",
+  });
+});
+
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
