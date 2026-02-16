@@ -917,7 +917,16 @@ export default function Home() {
       return (
         <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center">
           <div className="space-y-6 max-w-md w-full">
-            <FeedbackCorrect earnedStx={result.totalPoints} />
+            <FeedbackCorrect
+              earnedStx={result.totalPoints}
+              report={{
+                runId,
+                questionText: question?.question,
+                options: question?.options ?? [],
+                userAnswerText: selectedIndex != null && question?.options?.[selectedIndex] != null ? question.options[selectedIndex] : "",
+                walletAddress: wallet ?? null,
+              }}
+            />
             <ContinueOrStopScreen
             earnedSoFarStx={result.totalPoints ?? 0}
             profitLossSoFarStx={isPracticeRun ? undefined : profitLossSoFarStx}
@@ -943,16 +952,23 @@ export default function Home() {
         <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center">
           <div className="space-y-6 max-w-md w-full">
             <FeedbackWrong
-            isPractice={r.practice === true}
-            timedOut={r.timedOut === true}
-            levelBreakdown={levelBreakdown}
-            selectedOptionText={r.selectedOptionText ?? (selectedIndex != null && question?.options?.[selectedIndex] != null ? question.options[selectedIndex] : undefined)}
-            correctOptionText={r.correctOptionText}
-            reasoning={r.reasoning}
-            totalSpentStx={totalSpentStx}
-            totalEarnedStx={totalEarnedStx}
-            profitStx={profitStx}
-          />
+              isPractice={r.practice === true}
+              timedOut={r.timedOut === true}
+              levelBreakdown={levelBreakdown}
+              selectedOptionText={r.selectedOptionText ?? (selectedIndex != null && question?.options?.[selectedIndex] != null ? question.options[selectedIndex] : undefined)}
+              correctOptionText={r.correctOptionText}
+              reasoning={r.reasoning}
+              totalSpentStx={totalSpentStx}
+              totalEarnedStx={totalEarnedStx}
+              profitStx={profitStx}
+              report={{
+                runId,
+                questionText: question?.question,
+                options: question?.options ?? [],
+                userAnswerText: r.selectedOptionText ?? (selectedIndex != null && question?.options?.[selectedIndex] != null ? question.options[selectedIndex] : ""),
+                walletAddress: wallet ?? null,
+              }}
+            />
             <Button onClick={startOver} variant="primary" className="w-full py-3">Start over</Button>
           </div>
         </div>

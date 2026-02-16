@@ -12,6 +12,27 @@ export type FeedbackPayload = {
   proposedSolution?: string;
 };
 
+export type ReportPayload = {
+  /** Reporter name (optional). */
+  name?: string;
+  /** Reporter email (optional, for reply). */
+  email?: string;
+  /** Issue / description (required). */
+  issue: string;
+  /** Proposed solution (optional). */
+  proposedSolution?: string;
+  /** Run ID. */
+  runId?: string | null;
+  /** Question text. */
+  questionText?: string;
+  /** Options A–D. */
+  options?: string[];
+  /** User's selected answer text. */
+  userAnswerText?: string;
+  /** Wallet address. */
+  walletAddress?: string | null;
+};
+
 const FEEDBACK_TO = process.env.FEEDBACK_EMAIL_TO ?? "";
 const SMTP_HOST = process.env.SMTP_HOST;
 const SMTP_PORT = Number(process.env.SMTP_PORT) || 587;
@@ -71,6 +92,62 @@ export async function sendFeedbackEmail(payload: FeedbackPayload): Promise<{ ok:
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     logger.error("[feedback] send failed", { err: msg });
+    return { ok: false, error: msg };
+  }
+}
+
+export async function sendReportEmail(payload: ReportPayload): Promise<{ ok: boolean; error?: string }> {
+  if (!FEEDBACK_TO) {
+    logger.warn("[report] FEEDBACK_EMAIL_TO not set; skipping send");
+    return { ok: true };
+  }
+  const transporter = getTransporter();
+  if (!transporter) {
+    logger.warn("[report] SMTP not configured; skipping send");
+    return { ok: true };
+  }
+  const opts = payload.options ?? [];
+  const body = [
+    "--- Report context ---",
+    `Run ID: ${payload.runId ?? "—"}`,
+    `Wallet: ${payload.walletAddress ?? "—"}`,
+    "",
+    "Question:",
+    payload.questionText ?? "—",
+    "",
+    "Options:",
+    ...opts.slice(0, 4).map((o, i) => `${["A", "B", "C", "D"][i]}: ${o}`),
+    "",
+    `User's answer: ${payload.userAnswerText ?? "—"}`,
+    "",
+    "--- Reporter ---",
+    ...(payload.name?.trim() ? [`Name: ${payload.name.trim()}`] : []),
+    ...(payload.email?.trim() ? [`Email: ${payload.email.trim()}`] : []),
+    "",
+    "--- Issue ---",
+    payload.issue.trim(),
+    "",
+  ];
+  if (payload.proposedSolution?.trim()) {
+    body.push("--- Proposed solution ---", payload.proposedSolution.trim(), "");
+  }
+  body.push("---", `Sent at: ${new Date().toISOString()}`);
+
+  const replyTo = payload.email?.includes("@") ? payload.email : undefined;
+
+  try {
+    await transporter.sendMail({
+      from: `UNTIL Report <${SMTP_USER}>`,
+      to: FEEDBACK_TO,
+      replyTo,
+      subject: `[UNTIL Report] Run ${payload.runId ?? "?"} – ${payload.issue.slice(0, 40)}${payload.issue.length > 40 ? "…" : ""}`,
+      text: body.join("\n"),
+    });
+    logger.info("[report] email sent", { runId: payload.runId ?? "—" });
+    return { ok: true };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logger.error("[report] send failed", { err: msg });
     return { ok: false, error: msg };
   }
 }

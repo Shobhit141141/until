@@ -1,8 +1,20 @@
 "use client";
 
+import { useState } from "react";
+import { HiFlag } from "react-icons/hi2";
 import { Money } from "@/components/ui/Money";
+import { Button } from "@/components/ui/Button";
+import { ReportModal, type ReportContext } from "./ReportModal";
 import { getBaseRewardStx, getTimeMultiplier } from "@/lib/tokenomics";
 import type { LevelBreakdownEntry } from "./RunSummaryScreen";
+
+export interface FeedbackWrongReportProps {
+  runId?: string | null;
+  questionText?: string;
+  options?: string[];
+  userAnswerText?: string;
+  walletAddress?: string | null;
+}
 
 export interface FeedbackWrongProps {
   isPractice?: boolean;
@@ -21,6 +33,8 @@ export interface FeedbackWrongProps {
   totalEarnedStx?: number;
   /** Net profit/loss (earned − spent) for paid runs */
   profitStx?: number;
+  /** If set, show Report button (opens modal, sends via API) */
+  report?: FeedbackWrongReportProps;
 }
 
 /** Wrong / Timeout: full feedback — correct answer, reasoning, level breakdown, net profit/loss. */
@@ -34,8 +48,20 @@ export function FeedbackWrong({
   totalSpentStx = 0,
   totalEarnedStx = 0,
   profitStx = 0,
+  report,
 }: FeedbackWrongProps) {
+  const [reportModalOpen, setReportModalOpen] = useState(false);
   const showEconomics = !isPractice && (totalSpentStx > 0 || totalEarnedStx > 0 || profitStx !== 0);
+  const showReport = report && (report.runId != null || report.questionText);
+  const reportContext: ReportContext = showReport
+    ? {
+        runId: report.runId ?? null,
+        questionText: report.questionText ?? "",
+        options: report.options ?? [],
+        userAnswerText: report.userAnswerText ?? "",
+        walletAddress: report.walletAddress ?? null,
+      }
+    : {};
 
   return (
     <section className="flex flex-col gap-6 max-w-md">
@@ -139,6 +165,25 @@ export function FeedbackWrong({
 
       {isPractice && (
         <p className="text-sm text-gray-500">Practice — no cost. Your credits were not changed.</p>
+      )}
+
+      {showReport && (
+        <>
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full rounded-xl border-2 border-gray-400 text-gray-700 hover:bg-gray-50 text-sm py-2 inline-flex items-center justify-center gap-2"
+            onClick={() => setReportModalOpen(true)}
+          >
+            <HiFlag className="w-4 h-4 shrink-0" aria-hidden />
+            Report this question
+          </Button>
+          <ReportModal
+            open={reportModalOpen}
+            onClose={() => setReportModalOpen(false)}
+            reportContext={reportContext}
+          />
+        </>
       )}
     </section>
   );
