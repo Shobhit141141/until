@@ -10,10 +10,9 @@
 
 ## Links
 
-| | |
-|:--|:--|
-| **Whitepaper** | [until.gg/whitepaper](./client/public/whitepaper.md) |
-| **Live Demo** | [until.gg](https://until-stx.vercel.app) |
+- **Whitepaper**: [until/whitepaper](./client/docs/WHITEPAPER.md)
+- **Live webapp**: [until](https://until-stx.vercel.app)
+- **Demo Video**: [until/video](https://drive.google.com/file/d/1e6g2s7xp1jsxqbXlJlja6M3Gw8Y8tQZO/view?usp=drive_link)
 
 ## Tech stack
 
