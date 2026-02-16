@@ -12,7 +12,7 @@
 
 - **Whitepaper**: [until/whitepaper](./docs/WHITEPAPER.md)
 - **Live webapp**: [until](https://until-stx.vercel.app)
-- **Demo Video**: [until/video](https://drive.google.com/file/d/1e6g2s7xp1jsxqbXlJlja6M3Gw8Y8tQZO/view?usp=drive_link)
+- **Demo Video**: [until/video](https://youtu.be/UDaQAhREsOU)
 
 ## Tech stack
 
