@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import { ensureDb } from "./config/db.js";
 import { errorResponseLogger } from "./middleware/error-response-logger.js";
 import { categoriesRoutes } from "./routes/categories.routes.js";
 import { creditsRoutes } from "./routes/credits.routes.js";
@@ -26,6 +27,16 @@ app.get("/", (_req, res) => {
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
+});
+
+/** Ensure MongoDB is connected before any route that uses the DB (handles serverless cold start). */
+app.use(async (_req, _res, next) => {
+  try {
+    await ensureDb();
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use("/categories", categoriesRoutes);
