@@ -10,9 +10,10 @@
 
 ## Links
 
+- **Demo Video**: 
 - **Whitepaper**: [until/whitepaper](./docs/WHITEPAPER.md)
+[![Demo Video](https://img.youtube.com/vi/UDaQAhREsOU/0.jpg)](https://youtu.be/UDaQAhREsOU)
 - **Live webapp**: [until](https://until-stx.vercel.app)
-- **Demo Video**: [until/video](https://youtu.be/UDaQAhREsOU)
 
 ## Tech stack
 
